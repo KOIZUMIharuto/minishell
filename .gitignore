@@ -1,2 +1,4 @@
 setting.json
 pyminish
+.devcontainer/
+.vscode/
