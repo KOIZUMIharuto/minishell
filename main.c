@@ -14,6 +14,7 @@ void builtin_exit();
 void builtin_export(char **args);
 void builtin_unset(char **args);
 void builtin_env();
+void builtin_exit();
 
 // 内部コマンドの一覧
 typedef struct {
