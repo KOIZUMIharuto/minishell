@@ -1,9 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <unistd.h>
-
+#include "minishell.h"
 
 /**
  * is_valid_identifier - 変数名が有効な識別子かどうかをチェックします。

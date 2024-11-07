@@ -12,6 +12,7 @@ void builtin_cd(char **args);
 void builtin_pwd();
 void builtin_exit();
 void builtin_export(char **args);
+void builtin_unset(char **args);
 
 // 内部コマンドの一覧
 typedef struct {
@@ -26,6 +27,7 @@ BuiltinCommand builtins[] = {
     {"pwd", builtin_pwd},
     {"exit", builtin_exit},
     {"export", builtin_export},
+    {"unset", builtin_unset},
 };
 
 // 内部コマンドの数
