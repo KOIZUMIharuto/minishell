@@ -1,16 +1,9 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <readline/readline.h>
-#include <readline/history.h>
 #include "includes/minishell.h"
 
 // 内部コマンドのプロトタイプ宣言
 void builtin_echo(char **args);
 void builtin_cd(char **args);
 void builtin_pwd();
-void builtin_exit();
 void builtin_export(char **args);
 void builtin_unset(char **args);
 void builtin_env();
@@ -46,7 +39,7 @@ int execute_builtin(char **args) {
             return 1;  // 実行成功
         }
     }
-    return 0;  // 未定義コマンド
+    return 0;  // 未定義コマンド 
 }
 
 
@@ -68,13 +61,19 @@ int main() {
         // 入力の分割
         tokens = ft_split(line, ' ');
 
-        // 内部コマンドの実行
-        if (tokens[0] != NULL) {
+     if (tokens[0] != NULL) {
+            // 内部コマンドの確認と実行
             if (!execute_builtin(tokens)) {
-                printf("Unknown command: %s\n", tokens[0]);
+                // 外部コマンドのパスを検索
+                char *full_path = find_command(tokens[0]);
+                if (full_path != NULL) {
+                    printf("Found command path: %s\n", full_path);
+                    free(full_path);
+                } else {
+                    printf("%s: command not found\n", tokens[0]);
+                }
             }
         }
-
         // メモリ解放
         free(line);
         for (int i = 0; tokens[i] != NULL; i++) {
