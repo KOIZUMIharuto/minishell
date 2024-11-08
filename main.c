@@ -1,13 +1,5 @@
 #include "includes/minishell.h"
-
-// 内部コマンドのプロトタイプ宣言
-void builtin_echo(char **args);
-void builtin_cd(char **args);
-void builtin_pwd();
-void builtin_export(char **args);
-void builtin_unset(char **args);
-void builtin_env();
-void builtin_exit();
+#include <signal.h>
 
 // 内部コマンドの一覧
 typedef struct {
@@ -47,6 +39,24 @@ int execute_builtin(char **args) {
 int main() {
     char *line;
     char **tokens;
+
+    struct sigaction sa;
+    sa.sa_handler = signal_handler; // ハンドラ関数を指定
+    sigemptyset(&sa.sa_mask);       //  ブロックするシグナルを空に設定
+    sa.sa_flags = SA_RESTART;       // 中断されたシステムコールを再開
+
+    // SIGINT (Ctrl+C) の設定
+    if (sigaction(SIGINT, &sa, NULL) == -1) {
+        perror("Error setting up sigaction for SIGINT");
+        return 1;
+    }
+
+    // SIGQUIT (Ctrl+\) の動作を無視するように設定
+    sa.sa_handler = SIG_IGN; // 無視する設定
+    if (sigaction(SIGQUIT, &sa, NULL) == -1) {
+        perror("Error setting up sigaction for SIGQUIT");
+        return 1;
+    }
 
     while (1) {
         line = readline("> ");

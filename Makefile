@@ -5,7 +5,7 @@ CC = cc
 CFLAGS = -Wall -Wextra -Werror
 INCLUDES = -I./includes -I./libft
 LIBFT = libft/libft.a
-SRCS = main.c echo.c exit.c pwd.c cd.c export.c unset.c env.c execve.c
+SRCS = main.c echo.c exit.c pwd.c cd.c export.c unset.c env.c execve.c signal.c
 OBJS = $(SRCS:.c=.o)
 READLINE = -lreadline
 RM = rm -f  # 削除コマンドを変数に定義

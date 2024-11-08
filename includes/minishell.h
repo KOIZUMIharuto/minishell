@@ -7,10 +7,16 @@
 # include <unistd.h> // POSIX標準の関数（write, read, fork, execve など）を使用するためのヘッダー
 # include <sys/stat.h> // ファイルの情報を取得するための `stat` 構造体や関数を使用するためのヘッダー
 # include <stdio.h> // 標準入出力関数（printf, perror など）を使用するためのヘッダー
+# include <signal.h> // シグナル処理のためのヘッダー
 # include <string.h> // 文字列操作関数（strcpy, strcat, strlen など）を使用するためのヘッダー
 # include <readline/readline.h> // GNU Readline ライブラリを使用して、コマンドライン入力を扱うためのヘッダー
 # include <readline/history.h> // Readline の履歴機能を使用するためのヘッダー
 #include <sys/wait.h>  // waitpid を使用するために必要なヘッダー
+
+
+
+// 環境変数の定義
+extern char **environ;
 
 // 内部コマンドのプロトタイプ宣言
 void builtin_echo(char **args);
@@ -21,11 +27,8 @@ void builtin_unset(char **args);
 void builtin_env();
 void builtin_exit();
 
-
-// 環境変数の定義
-extern char **environ;
-
 char *find_command(char *command);
 void my_execve(char *argv_cmd);
+void signal_handler(int signum);
 
 #endif
