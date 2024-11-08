@@ -10,11 +10,22 @@
 # include <string.h> // 文字列操作関数（strcpy, strcat, strlen など）を使用するためのヘッダー
 # include <readline/readline.h> // GNU Readline ライブラリを使用して、コマンドライン入力を扱うためのヘッダー
 # include <readline/history.h> // Readline の履歴機能を使用するためのヘッダー
+#include <sys/wait.h>  // waitpid を使用するために必要なヘッダー
 
+// 内部コマンドのプロトタイプ宣言
+void builtin_echo(char **args);
+void builtin_cd(char **args);
+void builtin_pwd();
+void builtin_export(char **args);
+void builtin_unset(char **args);
+void builtin_env();
+void builtin_exit();
 
-char *find_command(char *command);
 
 // 環境変数の定義
 extern char **environ;
+
+char *find_command(char *command);
+void my_execve(char *argv_cmd);
 
 #endif

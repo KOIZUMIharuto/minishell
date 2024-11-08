@@ -64,14 +64,8 @@ int main() {
      if (tokens[0] != NULL) {
             // 内部コマンドの確認と実行
             if (!execute_builtin(tokens)) {
-                // 外部コマンドのパスを検索
-                char *full_path = find_command(tokens[0]);
-                if (full_path != NULL) {
-                    printf("Found command path: %s\n", full_path);
-                    free(full_path);
-                } else {
-                    printf("%s: command not found\n", tokens[0]);
-                }
+                // 外部コマンドを実行
+                my_execve(line);
             }
         }
         // メモリ解放

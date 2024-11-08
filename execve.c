@@ -1,50 +1,29 @@
 #include "minishell.h"
 
-// ファイルが実行可能かを確認する関数
+// コマンドが実行可能かを確認する関数
 int is_executable(char *path) {
     struct stat sb;
-    // `stat` 関数でファイル情報を取得し、取得に成功した場合に
-    // そのファイルが通常ファイルかつ実行可能かを確認
     return (stat(path, &sb) == 0 && S_ISREG(sb.st_mode) && (sb.st_mode & S_IXUSR));
 }
 
 // コマンドのパスを探す関数
-char *find_command(char *command) {
-    // 絶対パスまたは相対パスで指定されているかを確認
-    if (strchr(command, '/') != NULL) {
-        // 絶対パスや相対パスで指定されている場合、そのまま実行可能か確認
-        if (is_executable(command)) {
-            // 実行可能な場合はそのパスを複製して返す
-            char *result = (char *)malloc(strlen(command) + 1);
-            if (result != NULL) {
-                strcpy(result, command);
-            }
-            return result;
-        }
-        // 実行不可能な場合は NULL を返す
-        return NULL;
-    }
-
-    // 環境変数 PATH を取得
+char *find_cmd_path(char *cmd) {
     char *path_env = getenv("PATH");
+    char **path_dirs;
+    char *cmd_path;
+
     if (path_env == NULL) {
-        // PATH 環境変数が取得できない場合、NULL を返す
         return NULL;
     }
 
-    // `:` で PATH を分割してディレクトリのリストを取得
-    char **path_dirs = ft_split(path_env, ':');
+    path_dirs = ft_split(path_env, ':');
     if (path_dirs == NULL) {
-        // メモリ割り当てに失敗した場合、NULL を返す
         return NULL;
     }
 
-    // 各ディレクトリを走査してコマンドのフルパスを構築し、実行可能か確認
     for (int i = 0; path_dirs[i] != NULL; i++) {
-        // フルパスのバッファを確保
-        char *full_path = (char *)malloc(strlen(path_dirs[i]) + strlen(command) + 2);
-        if (full_path == NULL) {
-            // メモリ割り当てに失敗した場合、メモリ解放して NULL を返す
+        cmd_path = malloc(strlen(path_dirs[i]) + strlen(cmd) + 2);
+        if (cmd_path == NULL) {
             for (int j = 0; path_dirs[j] != NULL; j++) {
                 free(path_dirs[j]);
             }
@@ -52,29 +31,69 @@ char *find_command(char *command) {
             return NULL;
         }
 
-        // ディレクトリパスとコマンド名を結合してフルパスを構築
-        strcpy(full_path, path_dirs[i]);
-        strcat(full_path, "/");
-        strcat(full_path, command);
+        strcpy(cmd_path, path_dirs[i]);
+        strcat(cmd_path, "/");
+        strcat(cmd_path, cmd);
 
-        // 実行可能か確認
-        if (is_executable(full_path)) {
-            // 実行可能なパスが見つかった場合、使用済みメモリを解放してフルパスを返す
+        if (is_executable(cmd_path)) {
             for (int j = 0; path_dirs[j] != NULL; j++) {
                 free(path_dirs[j]);
             }
             free(path_dirs);
-            return full_path;
+            return cmd_path;
         }
-
-        // 実行不可能な場合、バッファを解放
-        free(full_path);
+        free(cmd_path);
     }
 
-    // すべてのディレクトリを調べても見つからなかった場合、メモリを解放して NULL を返す
     for (int i = 0; path_dirs[i] != NULL; i++) {
         free(path_dirs[i]);
     }
     free(path_dirs);
     return NULL;
+}
+
+// 外部コマンドを実行する関数
+void my_execve(char *argv_cmd) {
+    char **cmd;
+    char *cmd_path;
+    int pid;
+
+    cmd = ft_split(argv_cmd, ' ');
+    if (cmd == NULL || cmd[0] == NULL) {
+        exit(EXIT_FAILURE);
+    }
+
+    pid = fork();
+    if (pid == -1) {
+        perror("fork");
+        exit(EXIT_FAILURE);
+    }
+
+    if (pid == 0) { // 子プロセス
+        if (ft_strchr(cmd[0], '/') != NULL) {
+            if (execve(cmd[0], cmd, environ) == -1) {
+                perror("execve");
+                exit(EXIT_FAILURE);
+            }
+        } else {
+            cmd_path = find_cmd_path(cmd[0]);
+            if (cmd_path == NULL) {
+                fprintf(stderr, "%s: command not found\n", cmd[0]);
+                exit(EXIT_FAILURE);
+            }
+            if (execve(cmd_path, cmd, environ) == -1) {
+                perror("execve");
+                free(cmd_path);
+                exit(EXIT_FAILURE);
+            }
+            free(cmd_path);
+        }
+    } else { // 親プロセス
+        waitpid(pid, NULL, 0);
+    }
+
+    for (int i = 0; cmd[i] != NULL; i++) {
+        free(cmd[i]);
+    }
+    free(cmd);
 }
