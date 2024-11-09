@@ -59,7 +59,7 @@ int main() {
     }
 
     while (1) {
-        line = readline("> ");
+        line = readline("$ ");
         if (line == NULL) {  // EOF (Ctrl+D)
             printf("\n");
             break;
