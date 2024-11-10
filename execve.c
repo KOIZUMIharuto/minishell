@@ -1,3 +1,4 @@
+// execve.c
 #include "minishell.h"
 
 // コマンドが実行可能かを確認する関数
@@ -7,10 +8,10 @@ int is_executable(char *path) {
 }
 
 // コマンドのパスを探す関数
-char *find_cmd_path(char *cmd) {
+char *find_command_path(char *command) {
     char *path_env = getenv("PATH");
     char **path_dirs;
-    char *cmd_path;
+    char *command_path;
 
     if (path_env == NULL) {
         return NULL;
@@ -22,8 +23,8 @@ char *find_cmd_path(char *cmd) {
     }
 
     for (int i = 0; path_dirs[i] != NULL; i++) {
-        cmd_path = malloc(strlen(path_dirs[i]) + strlen(cmd) + 2);
-        if (cmd_path == NULL) {
+        command_path = malloc(strlen(path_dirs[i]) + strlen(command) + 2);
+        if (command_path == NULL) {
             for (int j = 0; path_dirs[j] != NULL; j++) {
                 free(path_dirs[j]);
             }
@@ -31,18 +32,18 @@ char *find_cmd_path(char *cmd) {
             return NULL;
         }
 
-        strcpy(cmd_path, path_dirs[i]);
-        strcat(cmd_path, "/");
-        strcat(cmd_path, cmd);
+        strcpy(command_path, path_dirs[i]);
+        strcat(command_path, "/");
+        strcat(command_path, command);
 
-        if (is_executable(cmd_path)) {
+        if (is_executable(command_path)) {
             for (int j = 0; path_dirs[j] != NULL; j++) {
                 free(path_dirs[j]);
             }
             free(path_dirs);
-            return cmd_path;
+            return command_path;
         }
-        free(cmd_path);
+        free(command_path);
     }
 
     for (int i = 0; path_dirs[i] != NULL; i++) {
@@ -53,47 +54,53 @@ char *find_cmd_path(char *cmd) {
 }
 
 // 外部コマンドを実行する関数
-void my_execve(char *argv_cmd) {
-    char **cmd;
-    char *cmd_path;
+void my_execve(char **command, int redirect_fd) {
+    char *command_path;
     int pid;
-
-    cmd = ft_split(argv_cmd, ' ');
-    if (cmd == NULL || cmd[0] == NULL) {
-        exit(EXIT_FAILURE);
-    }
 
     pid = fork();
     if (pid == -1) {
         perror("fork");
+        if (redirect_fd != -1) {
+            close(redirect_fd);
+        }
         exit(EXIT_FAILURE);
     }
 
     if (pid == 0) { // 子プロセス
-        if (ft_strchr(cmd[0], '/') != NULL) {
-            if (execve(cmd[0], cmd, environ) == -1) {
+        // リダイレクトの設定
+        if (redirect_fd != -1) {
+            if (dup2(redirect_fd, STDOUT_FILENO) == -1) {
+                perror("dup2");
+                exit(EXIT_FAILURE);
+            }
+            close(redirect_fd);  // 不要なfdはクローズ
+        }
+
+        if (ft_strchr(command[0], '/') != NULL) {
+            if (execve(command[0], command, environ) == -1) {
                 perror("execve");
                 exit(EXIT_FAILURE);
             }
         } else {
-            cmd_path = find_cmd_path(cmd[0]);
-            if (cmd_path == NULL) {
-                fprintf(stderr, "%s: command not found\n", cmd[0]);
+            command_path = find_command_path(command[0]);
+            if (command_path == NULL) {
+                fprintf(stderr, "%s: command not found\n", command[0]);
                 exit(EXIT_FAILURE);
             }
-            if (execve(cmd_path, cmd, environ) == -1) {
+            if (execve(command_path, command, environ) == -1) {
                 perror("execve");
-                free(cmd_path);
+                free(command_path);
                 exit(EXIT_FAILURE);
             }
-            free(cmd_path);
+            free(command_path);
         }
     } else { // 親プロセス
+        if (redirect_fd != -1) {
+            close(redirect_fd);  // 親プロセスでもfdをクローズ
+        }
         waitpid(pid, NULL, 0);
     }
-
-    for (int i = 0; cmd[i] != NULL; i++) {
-        free(cmd[i]);
-    }
-    free(cmd);
 }
+
+

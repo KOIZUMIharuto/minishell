@@ -1,3 +1,4 @@
+// echo.c
 #include "minishell.h"
 
 void builtin_echo(char **args) {

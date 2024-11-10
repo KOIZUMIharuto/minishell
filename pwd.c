@@ -1,3 +1,4 @@
+// pwd.c
 #include "minishell.h"
 
 void builtin_pwd() {

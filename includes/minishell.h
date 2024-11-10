@@ -12,6 +12,7 @@
 # include <readline/readline.h> // GNU Readline ライブラリを使用して、コマンドライン入力を扱うためのヘッダー
 # include <readline/history.h> // Readline の履歴機能を使用するためのヘッダー
 #include <sys/wait.h>  // waitpid を使用するために必要なヘッダー
+#include <fcntl.h> // open, close, O_RDONLY, O_WRONLY, O_CREAT を使用するために必要なヘッダー
 
 
 
@@ -28,7 +29,9 @@ void builtin_env();
 void builtin_exit();
 
 char *find_command(char *command);
-void my_execve(char *argv_cmd);
+void my_execve(char **command, int redirect_fd);
 void signal_handler(int signum);
+int handle_redirection(char **tokens);
+
 
 #endif
