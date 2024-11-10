@@ -4,7 +4,7 @@
 int open_redirect_file(char *filename) {
     int fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
     if (fd == -1) {
-        perror("open");
+        perror(filename); 
         return -1;
     }
     return fd;

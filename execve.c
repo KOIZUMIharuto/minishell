@@ -21,7 +21,6 @@ char *find_command_path(char *command) {
     if (path_dirs == NULL) {
         return NULL;
     }
-
     for (int i = 0; path_dirs[i] != NULL; i++) {
         command_path = malloc(strlen(path_dirs[i]) + strlen(command) + 2);
         if (command_path == NULL) {
@@ -68,7 +67,7 @@ void my_execve(char **command, int redirect_fd) {
     }
 
     if (pid == 0) { // 子プロセス
-        // リダイレクトの設定
+        // リダイレクトが指定されている場合のみ標準出力を変更
         if (redirect_fd != -1) {
             if (dup2(redirect_fd, STDOUT_FILENO) == -1) {
                 perror("dup2");
