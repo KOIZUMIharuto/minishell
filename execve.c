@@ -53,28 +53,24 @@ char *find_command_path(char *command) {
 }
 
 // 外部コマンドを実行する関数
-void my_execve(char **command, int redirect_fd) {
+void my_execve(char **command) {
     char *command_path;
     int pid;
 
     pid = fork();
     if (pid == -1) {
         perror("fork");
-        if (redirect_fd != -1) {
-            close(redirect_fd);
-        }
         exit(EXIT_FAILURE);
     }
 
     if (pid == 0) { // 子プロセス
-        // リダイレクトが指定されている場合のみ標準出力を変更
-        if (redirect_fd != -1) {
-            if (dup2(redirect_fd, STDOUT_FILENO) == -1) {
-                perror("dup2");
-                exit(EXIT_FAILURE);
-            }
-            close(redirect_fd);  // 不要なfdはクローズ
+        
+        // リダイレクト処理
+        if (handle_redirection(command) == -1) {
+            // エラーメッセージは handle_redirection 内で出力済み
+            exit(EXIT_FAILURE);
         }
+        
 
         if (ft_strchr(command[0], '/') != NULL) {
             if (execve(command[0], command, environ) == -1) {
@@ -95,9 +91,6 @@ void my_execve(char **command, int redirect_fd) {
             free(command_path);
         }
     } else { // 親プロセス
-        if (redirect_fd != -1) {
-            close(redirect_fd);  // 親プロセスでもfdをクローズ
-        }
         waitpid(pid, NULL, 0);
     }
 }

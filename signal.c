@@ -1,7 +1,6 @@
 // signal.c
 # include "minishell.h"
 
-
 // グローバル変数 (シグナルの番号を示す)
 volatile sig_atomic_t g_signal_received = 0;
 

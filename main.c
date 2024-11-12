@@ -24,97 +24,75 @@ int num_builtins() {
     return sizeof(builtins) / sizeof(BuiltinCommand);
 }
 
-// 内部コマンドを実行する関数
-int execute_builtin(char **args, int redirect_fd) {
+// 内部コマンドかををチェックし、内部コマンドの場合はインデックスを返す
+int is_builtin_mark_index(char *cmd) {
+    for (int i = 0; i < num_builtins(); i++) {
+        if (strcmp(cmd, builtins[i].name) == 0)
+            return i;
+    }
+    return 0;
+}
+
+int execute_builtin(char **command, int index) {
     int backup_stdout = -1;
-    int builtin_executed = 0;
-    
-    // リダイレクトが指定されている場合
-    if (redirect_fd != -1) {
-        // 現在の標準出力をバックアップ
-        backup_stdout = dup(STDOUT_FILENO);
-        if (backup_stdout == -1) {
-            perror("dup");
-            return 0;  // 内部コマンドではないとして扱う
-        }
-        
-        // 標準出力をリダイレクト先に変更
-        if (dup2(redirect_fd, STDOUT_FILENO) == -1) {
-            perror("dup2");
-            close(backup_stdout);
-            return 0;  // 内部コマンドではないとして扱う
+    int redirect_fd;
+
+    // リダイレクトの有無をチェック
+    for (int i = 0; command[i] != NULL; i++) {
+        if (strcmp(command[i], ">") == 0 && command[i + 1] != NULL) {
+        	// 標準出力をバックアップ
+            backup_stdout = dup(STDOUT_FILENO);
+            if (backup_stdout == -1) {
+                perror("dup");
+                return -1;
+            }
         }
     }
+
+    // リダイレクトの処理
+    redirect_fd = handle_redirection(command);
+    if (redirect_fd == -1) {
+        if (backup_stdout != -1) {
+            close(backup_stdout);
+        }
+        return -1;
+    }  
 
     // コマンドを実行
-    for (int i = 0; i < num_builtins(); i++) {
-        if (strcmp(args[0], builtins[i].name) == 0) {
-            builtins[i].func(args);
-            builtin_executed = 1;
-            break;
-        }
-    }
+    builtins[index].func(command);
+
 
     // 標準出力を元に戻す
-    if (redirect_fd != -1) {
+    if (backup_stdout != -1) {
         if (dup2(backup_stdout, STDOUT_FILENO) == -1) {
             perror("dup2");
             close(backup_stdout);
-            return 0;  // 内部コマンドではないとして扱う
+            return -1;
         }
-        if (close(backup_stdout) == -1) {
-            perror("close");
-            return 0;  // 内部コマンドではないとして扱う
-        }
+        close(backup_stdout);
     }
-
-    return builtin_executed;  // 内部コマンドが見つかった場合は1、見つからなかった場合は0を返す
+    
+    return 0;
 }
 
   
 void interpret_line(char *line) {
+    int is_builtin_index;
     char **tokens = ft_split(line, ' ');
     if (tokens == NULL || tokens[0] == NULL) {
         free(tokens);
         return;
     }
 
-    // リダイレクトの存在確認
-    int redirect_fd = -1;
-    int has_redirect = 0;
-    
-    // トークンを走査してリダイレクトを探す
-    for (int i = 0; tokens[i] != NULL; i++) {
-        if (strcmp(tokens[i], ">") == 0 && tokens[i + 1] != NULL) {
-            has_redirect = 1;
-            break;
-        }
-    }
-
-    // リダイレクトがある場合のみ処理
-    if (has_redirect) {
-        redirect_fd = handle_redirection(tokens);
-        if (redirect_fd == -1) {
-            // エラーメッセージは handle_redirection で出力済み
-            for (int i = 0; tokens[i] != NULL; i++) {
-                free(tokens[i]);
-            }
-            free(tokens);
-            return;
-        }
-    }
-
     // 内部コマンドの実行または外部コマンドの実行
     if (tokens[0] != NULL) {
-        int is_builtin = execute_builtin(tokens, redirect_fd);
-        if (is_builtin == 0) {  // 内部コマンドが見つからなかった場合は外部コマンドを実行
-            my_execve(tokens, redirect_fd);
+        // 内部コマンドかを判断、内部コマンドの場合はインデックスを渡す
+        is_builtin_index = is_builtin_mark_index(tokens[0]);
+        if (is_builtin_index) {
+            execute_builtin(tokens,is_builtin_index);
+        } else {
+            my_execve(tokens);
         }
-    }
-
-    // リソースのクリーンアップ
-    if (redirect_fd != -1) {
-        close(redirect_fd);
     }
     for (int i = 0; tokens[i] != NULL; i++) {
         free(tokens[i]);

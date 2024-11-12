@@ -1,3 +1,4 @@
+// redirect.c
 #include "minishell.h"
 
 // リダイレクト用のファイルをオープンする関数
@@ -10,26 +11,31 @@ int open_redirect_file(char *filename) {
     return fd;
 }
 
-// リダイレクトを検出して処理する関数
-int handle_redirection(char **tokens) {
-    int redirect_fd = -1;
-    
-    for (int i = 0; tokens[i] != NULL; i++) {
-        if (strcmp(tokens[i], ">") == 0 && tokens[i + 1] != NULL) {
-            // リダイレクト先のファイルを親プロセスでオープン
-            redirect_fd = open_redirect_file(tokens[i + 1]);
+int handle_redirection(char **command) {
+    int redirect_fd;
+    for (int i = 0; command[i] != NULL; i++) {
+        if (strcmp(command[i], ">") == 0 && command[i + 1] != NULL) {
+            redirect_fd = open(command[i + 1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
             if (redirect_fd == -1) {
-                return -1;  // エラー発生
+                perror(command[i + 1]); 
+                return -1;
             }
-            
-            // リダイレクト記号とファイル名を削除
-            free(tokens[i]);
-            tokens[i] = NULL;
-            free(tokens[i + 1]);
-            tokens[i + 1] = NULL;
+
+            // 標準出力をリダイレクト
+            if (dup2(redirect_fd, STDOUT_FILENO) == -1) {
+                perror("dup2");
+                close(redirect_fd);
+                return -1;
+            }
+            close(redirect_fd);
+
+            // リダイレクト演算子とファイル名をコマンドから削除
+            free(command[i]);
+            free(command[i + 1]);
+            command[i] = NULL;
+            command[i + 1] = NULL;
             break;
         }
     }
-    
-    return redirect_fd;
+    return 0; // 正常終了
 }

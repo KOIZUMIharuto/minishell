@@ -13,14 +13,14 @@ void builtin_echo(char **args) {
 
     // 引数を順に出力
     for (; args[i]; i++) {
-        printf("%s", args[i]);
+        write(STDOUT_FILENO, args[i], strlen(args[i]));
         if (args[i + 1]) {
-            printf(" ");
+            write(STDOUT_FILENO, " ", 1);
         }
     }
 
     // 改行の有無
     if (newline) {
-        printf("\n");
+        write(STDOUT_FILENO, "\n", 1);
     }
 }

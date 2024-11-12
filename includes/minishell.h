@@ -29,9 +29,9 @@ void builtin_env();
 void builtin_exit();
 
 char *find_command(char *command);
-void my_execve(char **command, int redirect_fd);
+void my_execve(char **command);
 void signal_handler(int signum);
-int handle_redirection(char **tokens);
+int handle_redirection(char **command);
 
 
 #endif
