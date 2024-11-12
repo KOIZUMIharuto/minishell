@@ -1,80 +1,5 @@
 // main.c
 #include "includes/minishell.h"
-#include <signal.h>
-
-// 内部コマンドの一覧
-typedef struct {
-    char *name;
-    void (*func)(char **);
-} BuiltinCommand;
-
-// 内部コマンドのテーブル
-BuiltinCommand builtins[] = {
-    {"echo", builtin_echo},
-    {"cd", builtin_cd},
-    {"pwd", builtin_pwd},
-    {"exit", builtin_exit},
-    {"export", builtin_export},
-    {"unset", builtin_unset},
-    {"env", builtin_env},
-};
-
-// 内部コマンドの数を返す関数
-int num_builtins() {
-    return sizeof(builtins) / sizeof(BuiltinCommand);
-}
-
-// 内部コマンドかををチェックし、内部コマンドの場合はインデックスを返す
-int is_builtin_mark_index(char *cmd) {
-    for (int i = 0; i < num_builtins(); i++) {
-        if (strcmp(cmd, builtins[i].name) == 0)
-            return i;
-    }
-    return 0;
-}
-
-int execute_builtin(char **command, int index) {
-    int backup_stdout = -1;
-    int redirect_fd;
-
-    // リダイレクトの有無をチェック
-    for (int i = 0; command[i] != NULL; i++) {
-        if (strcmp(command[i], ">") == 0 && command[i + 1] != NULL) {
-        	// 標準出力をバックアップ
-            backup_stdout = dup(STDOUT_FILENO);
-            if (backup_stdout == -1) {
-                perror("dup");
-                return -1;
-            }
-        }
-    }
-
-    // リダイレクトの処理
-    redirect_fd = handle_redirection(command);
-    if (redirect_fd == -1) {
-        if (backup_stdout != -1) {
-            close(backup_stdout);
-        }
-        return -1;
-    }  
-
-    // コマンドを実行
-    builtins[index].func(command);
-
-
-    // 標準出力を元に戻す
-    if (backup_stdout != -1) {
-        if (dup2(backup_stdout, STDOUT_FILENO) == -1) {
-            perror("dup2");
-            close(backup_stdout);
-            return -1;
-        }
-        close(backup_stdout);
-    }
-    
-    return 0;
-}
-
   
 void interpret_line(char *line) {
     int is_builtin_index;
@@ -99,7 +24,6 @@ void interpret_line(char *line) {
     }
     free(tokens);
 }
-
 
 // メイン関数
 int main() {

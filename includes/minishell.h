@@ -28,10 +28,13 @@ void builtin_unset(char **args);
 void builtin_env();
 void builtin_exit();
 
-char *find_command(char *command);
+int execute_builtin(char **command, int index);
+int is_builtin_mark_index(char *cmd);
 void my_execve(char **command);
-void signal_handler(int signum);
+
 int handle_redirection(char **command);
+char *find_command(char *command);
+void signal_handler(int signum);
 
 
 #endif
