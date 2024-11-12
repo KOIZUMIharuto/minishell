@@ -3,12 +3,16 @@
   
 void interpret_line(char *line) {
     int is_builtin_index;
-    char **tokens = ft_split(line, ' ');
+    // char **tokens = ft_split(line, ' ');
+    // if (tokens == NULL || tokens[0] == NULL) {
+    //     free(tokens);
+    //     return;
+    // }
+     char **tokens = ft_split(line, '|'); // パイプで分割
     if (tokens == NULL || tokens[0] == NULL) {
         free(tokens);
         return;
     }
-
     // 内部コマンドの実行または外部コマンドの実行
     if (tokens[0] != NULL) {
         // 内部コマンドかを判断、内部コマンドの場合はインデックスを渡す
@@ -16,7 +20,7 @@ void interpret_line(char *line) {
         if (is_builtin_index) {
             execute_builtin(tokens,is_builtin_index);
         } else {
-            my_execve(tokens);
+            pipe_command(tokens);
         }
     }
     for (int i = 0; tokens[i] != NULL; i++) {
@@ -62,3 +66,4 @@ int main() {
 
     return 0;
 }
+

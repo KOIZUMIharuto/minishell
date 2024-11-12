@@ -53,46 +53,37 @@ char *find_command_path(char *command) {
 }
 
 // 外部コマンドを実行する関数
-void my_execve(char **command) {
+void execute_command(char **command)
+{
     char *command_path;
-    int pid;
 
-    pid = fork();
-    if (pid == -1) {
-        perror("fork");
-        exit(EXIT_FAILURE);
-    }
-
-    if (pid == 0) { // 子プロセス
-        
-        // リダイレクト処理
-        if (handle_redirection(command) == -1) {
-            // エラーメッセージは handle_redirection 内で出力済み
+    if (ft_strchr(command[0], '/') != NULL)
+    {
+        if (execve(command[0], command, environ) == -1)
+        {
+            perror("execve");
             exit(EXIT_FAILURE);
         }
-        
-
-        if (ft_strchr(command[0], '/') != NULL) {
-            if (execve(command[0], command, environ) == -1) {
-                perror("execve");
-                exit(EXIT_FAILURE);
-            }
-        } else {
-            command_path = find_command_path(command[0]);
-            if (command_path == NULL) {
-                fprintf(stderr, "%s: command not found\n", command[0]);
-                exit(EXIT_FAILURE);
-            }
-            if (execve(command_path, command, environ) == -1) {
-                perror("execve");
-                free(command_path);
-                exit(EXIT_FAILURE);
-            }
-            free(command_path);
+    }
+    else
+    {
+        command_path = find_command_path(command[0]);
+        if (command_path == NULL)
+        {
+            fprintf(stderr, "%s: command not found\n", command[0]);
+            exit(EXIT_FAILURE);
         }
-    } else { // 親プロセス
-        waitpid(pid, NULL, 0);
+        if (execve(command_path, command, environ) == -1)
+        {
+            perror("execve");
+            free(command_path);
+            exit(EXIT_FAILURE);
+        }
+        free(command_path);
     }
 }
+
+
+
 
 
