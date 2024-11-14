@@ -2,13 +2,7 @@
 #include "includes/minishell.h"
   
 void interpret_line(char *line) {
-    int is_builtin_index;
-    // char **tokens = ft_split(line, ' ');
-    // if (tokens == NULL || tokens[0] == NULL) {
-    //     free(tokens);
-    //     return;
-    // }
-     char **tokens = ft_split(line, '|'); // パイプで分割
+    char **tokens = ft_split(line, '|'); // パイプで分割
     if (tokens == NULL || tokens[0] == NULL) {
         free(tokens);
         return;
@@ -16,12 +10,7 @@ void interpret_line(char *line) {
     // 内部コマンドの実行または外部コマンドの実行
     if (tokens[0] != NULL) {
         // 内部コマンドかを判断、内部コマンドの場合はインデックスを渡す
-        is_builtin_index = is_builtin_mark_index(tokens[0]);
-        if (is_builtin_index) {
-            execute_builtin(tokens,is_builtin_index);
-        } else {
-            pipe_command(tokens);
-        }
+        pipe_command(tokens);
     }
     for (int i = 0; tokens[i] != NULL; i++) {
         free(tokens[i]);

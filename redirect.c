@@ -13,6 +13,7 @@ int open_redirect_file(char *filename) {
 
 int handle_redirection(char **command) {
     int redirect_fd;
+
     for (int i = 0; command[i] != NULL; i++) {
         if (strcmp(command[i], ">") == 0 && command[i + 1] != NULL) {
             redirect_fd = open(command[i + 1], O_WRONLY | O_CREAT | O_TRUNC, 0644);

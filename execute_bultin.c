@@ -23,7 +23,6 @@ int num_builtins() {
     return sizeof(builtins) / sizeof(BuiltinCommand);
 }
 
-// 内部コマンドかををチェックし、内部コマンドの場合はインデックスを返す
 int is_builtin_mark_index(char *cmd) {
     for (int i = 0; i < num_builtins(); i++) {
         if (strcmp(cmd, builtins[i].name) == 0)
@@ -73,3 +72,4 @@ int execute_builtin(char **command, int index) {
     
     return 0;
 }
+
