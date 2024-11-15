@@ -35,6 +35,8 @@ int execute_builtin(char **command, int index) {
     int backup_stdout = -1;
     int redirect_fd;
 
+    handle_heredocument(command);
+
     // リダイレクトの有無をチェック
     for (int i = 0; command[i] != NULL; i++) {
         if (strcmp(command[i], ">") == 0 && command[i + 1] != NULL) {

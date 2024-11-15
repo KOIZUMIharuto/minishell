@@ -33,6 +33,7 @@ int is_builtin_mark_index(char *cmd);
 void execute_command(char **command);
 
 int handle_redirection(char **command);
+int handle_heredocument(char **command);
 char *find_command(char *command);
 void signal_handler(int signum);
 int  pipe_command(char **commands);

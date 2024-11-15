@@ -63,18 +63,19 @@ int pipe_command(char **commands) {
             }
 
             if (pid == 0) { // 子プロセス内の処理
+                if(handle_heredocument(command_tokens) == -1)
+                    exit(EXIT_FAILURE);
+
                 if (prev_fd != -1) {
                     dup2(prev_fd, STDIN_FILENO);
                     close(prev_fd);
                 }
-
 
                 if (i < num_commands - 1) {
                     dup2(pipe_fds[1], STDOUT_FILENO);
                     close(pipe_fds[0]);
                     close(pipe_fds[1]);
                 } 
-
                 // リダイレクト処理ここに追加！
                 if (handle_redirection(command_tokens) == -1)
                 // エラーメッセージは handle_redirection 内で出力済み

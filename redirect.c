@@ -13,10 +13,17 @@ int open_redirect_file(char *filename) {
 
 int handle_redirection(char **command) {
     int redirect_fd;
-
+    // 標準出力の上書きリダイレクト ">"
     for (int i = 0; command[i] != NULL; i++) {
-        if (strcmp(command[i], ">") == 0 && command[i + 1] != NULL) {
-            redirect_fd = open(command[i + 1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+        if ((strcmp(command[i], ">") == 0 || strcmp(command[i], ">>") == 0)  && command[i + 1] != NULL) {
+            if (strcmp(command[i], ">") == 0) 
+            {
+                redirect_fd = open(command[i + 1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+            }
+            else
+            {
+                redirect_fd = open(command[i + 1], O_WRONLY | O_CREAT | O_APPEND, 0644);
+            }
             if (redirect_fd == -1) {
                 perror(command[i + 1]); 
                 return -1;
