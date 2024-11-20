@@ -1,15 +1,34 @@
 # Makefile for Minishell
 
 NAME = minishell
+
 CC = cc
+RM = rm
+
 CFLAGS = -Wall -Wextra -Werror
-INCLUDES = -I./includes -I./libft
-LIBFT = libft/libft.a
-SRCS = main.c echo.c exit.c pwd.c cd.c export.c unset.c env.c execve.c signal.c redirect.c execute_bultin.c pipe.c \
-       heredocument.c
-OBJS = $(SRCS:.c=.o)
 READLINE = -lreadline
-RM = rm -f  # 削除コマンドを変数に定義
+INCLUDES = -I ./includes
+
+LIBFT_DIR = libft
+LIBFT_NAME = libft.a
+
+SRCS = \
+cd.c\
+echo.c\
+env.c\
+execute_bultin.c\
+execve.c\
+exit.c\
+export.c\
+heredocument.c\
+main.c\
+pipe.c\
+pwd.c\
+redirect.c\
+signal.c\
+unset.c
+OBJ_DIR = objs
+OBJS = $(addprefix $(OBJ_DIR)/, $(SRCS:.c=.o))
 
 .PHONY: all clean fclean re
 
@@ -17,26 +36,30 @@ RM = rm -f  # 削除コマンドを変数に定義
 all: $(NAME)
 
 # バイナリ生成ルール
-$(NAME): $(OBJS) $(LIBFT)
-	$(CC) $(CFLAGS) $(OBJS) $(LIBFT) $(READLINE) -o $(NAME)
+$(NAME): $(OBJS) $(LIBFT_DIR)/$(LIBFT_NAME)
+	$(CC) $(CFLAGS) $(OBJS) $(LIBFT_DIR)/$(LIBFT_NAME) $(READLINE) -o $(NAME)
 
 # libftのビルドルール
-$(LIBFT):
-	$(MAKE) -C libft
+$(LIBFT_DIR)/$(LIBFT_NAME):
+	$(MAKE) -C $(LIBFT_DIR)
 
 # ソースファイルからオブジェクトファイル生成
-%.o: %.c
+$(OBJ_DIR)/%.o: %.c | $(OBJ_DIR)
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+# オブジェクトファイル生成ディレクトリ生成
+$(OBJ_DIR):
+	mkdir -p $(OBJ_DIR)
 
 # クリーンアップ
 clean:
-	$(MAKE) clean -C libft
-	$(RM) $(OBJS)
+	$(MAKE) clean -C $(LIBFT_DIR)
+	$(RM) -fr $(OBJ_DIR)
 
 # 全ての生成物を削除
 fclean: clean
-	$(MAKE) fclean -C libft
-	$(RM) $(NAME)
+	$(MAKE) fclean -C $(LIBFT_DIR)
+	$(RM) -f $(NAME)
 
 # 再ビルド
 re: fclean all
