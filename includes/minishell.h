@@ -14,8 +14,6 @@
 #include <sys/wait.h>  // waitpid を使用するために必要なヘッダー
 #include <fcntl.h> // open, close, O_RDONLY, O_WRONLY, O_CREAT を使用するために必要なヘッダー
 
-
-
 // 環境変数の定義
 extern char **environ;
 
