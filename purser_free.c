@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   purse_free.c                                       :+:      :+:    :+:   */
+/*   purser_free.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 21:13:44 by hkoizumi          #+#    #+#             */
-/*   Updated: 2024/11/20 21:24:29 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2024/11/26 14:20:16 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "purser.h"
+#include <purser.h>
 
 void	free_cmds(t_cmd **cmds)
 {
@@ -28,6 +28,7 @@ void	free_cmd(t_cmd *cmd)
 {
 	if (!cmd)
 		return ;
+	ft_lstclear(&cmd->args, free);
 	free_tokens(cmd->cmd);
 	free_redirections(cmd->input_redurection);
 	free_redirections(cmd->output_redurection);

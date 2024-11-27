@@ -2,7 +2,8 @@
 
 NAME = minishell
 CC = cc
-CFLAGS = -Wall -Wextra -Werror
+FSANITIZE = -fsanitize=address
+CFLAGS = -Wall -Wextra -Werror $(FSANITIZE)
 INCLUDES = -I./includes -I./libft
 LIBFT = libft/libft.a
 SRCS = main.c echo.c exit.c pwd.c cd.c export.c unset.c env.c execve.c signal.c redirect.c execute_bultin.c pipe.c \
@@ -10,6 +11,16 @@ SRCS = main.c echo.c exit.c pwd.c cd.c export.c unset.c env.c execve.c signal.c 
 OBJS = $(SRCS:.c=.o)
 READLINE = -lreadline
 RM = rm -f  # 削除コマンドを変数に定義
+
+PURSER = purser
+PURSER_SRCS =\
+	purser_args.c\
+	purser_free.c\
+	purser_redirect.c\
+	purser.c
+PURSER_OBJ_DIR = purser_obj
+PURSER_OBJS = $(addprefix $(PURSER_OBJ_DIR)/, $(PURSER_SRCS:.c=.o))
+PURSER_INCLUDES = -I./includes -I./libft
 
 .PHONY: all clean fclean re
 
@@ -22,7 +33,7 @@ $(NAME): $(OBJS) $(LIBFT)
 
 # libftのビルドルール
 $(LIBFT):
-	$(MAKE) -C libft
+	$(MAKE) -C libft bonus
 
 # ソースファイルからオブジェクトファイル生成
 %.o: %.c
@@ -32,11 +43,23 @@ $(LIBFT):
 clean:
 	$(MAKE) clean -C libft
 	$(RM) $(OBJS)
+	$(RM) -frd $(PURSER_OBJ_DIR)
 
 # 全ての生成物を削除
 fclean: clean
 	$(MAKE) fclean -C libft
-	$(RM) $(NAME)
+	$(RM) $(NAME) $(PURSER)
+
+p: $(PURSER)
+
+$(PURSER): $(PURSER_OBJS) $(LIBFT) | $(PURSER_OBJ_DIR)
+	$(CC) $(CFLAGS) $(PURSER_OBJS) $(LIBFT) $(PURSER_INCLUDES) -o $(PURSER)
+
+$(PURSER_OBJ_DIR)/%.o: %.c | $(PURSER_OBJ_DIR)
+	$(CC) $(CFLAGS) $(PURSER_INCLUDES) -c $< -o $@
+
+$(PURSER_OBJ_DIR):
+	mkdir -p $(PURSER_OBJ_DIR)
 
 # 再ビルド
 re: fclean all
