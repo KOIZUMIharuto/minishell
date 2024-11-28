@@ -6,12 +6,14 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 16:45:21 by hkoizumi          #+#    #+#             */
-/*   Updated: 2024/11/27 17:18:27 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2024/11/28 12:24:36 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <purser.h>
-#include <get_next_line.h>
+
+static char		**recursive_split(char *line, char *del, int word_cnt);
+static t_cmd	**recursive_purser(char **tokens, int cmd_cnt);
 
 t_cmd	**purser(char *line)
 {
@@ -27,6 +29,73 @@ t_cmd	**purser(char *line)
 	return (cmds);
 }
 
+static char	**recursive_split(char *line, char *del, int word_cnt)
+{
+	char	**tokens;
+	char	*token;
+	t_quote	quote;
+	int		i;
+
+	while (*line && is_del(*line, del, NULL))
+		line++;
+	if (!*line)
+	{
+		tokens = (char **)ft_calloc(word_cnt + 1, sizeof(char *));
+	}
+	else
+	{
+		quote = NONE_QUOTE;
+		i = 0;
+		while (line[i] && !is_del(line[i], del, &quote))
+			i++;
+		token = ft_substr(line, 0, i);
+		if (!token)
+			return (NULL);
+		tokens = recursive_split(line + i, del, word_cnt + 1);
+		if (!tokens)
+			free(token);
+		else
+			tokens[word_cnt] = token;
+	}
+	return (tokens);
+}
+
+static t_cmd	**recursive_purser(char **tokens, int cmd_cnt)
+{
+	t_cmd	**cmds;
+	t_cmd	*cmd;
+
+	if (!tokens[cmd_cnt])
+	{
+		cmds = (t_cmd **)ft_calloc(cmd_cnt + 1, sizeof(t_cmd *));
+		if (!cmds)
+			return (NULL);
+	}
+	else
+	{
+		cmd = (t_cmd *)ft_calloc(1, sizeof(t_cmd));
+		if (!cmd)
+			return (NULL);
+		cmd->input_redurection = check_redirection(tokens[cmd_cnt], "<", 0);
+		cmd->output_redurection = check_redirection(tokens[cmd_cnt], ">", 0);
+		cmd->cmd = split_arg(tokens[cmd_cnt]);
+		cmd->infile_fd = -1;
+		cmd->outfile_fd = -1;
+		if (!cmd->input_redurection || !cmd->output_redurection || !cmd->cmd)
+		{
+			free_cmd(cmd);
+			return (NULL);
+		}
+		cmds = recursive_purser(tokens, cmd_cnt + 1);
+		if (!cmds)
+		{
+			free_cmd(cmd);
+			return (NULL);
+		}
+		cmds[cmd_cnt] = cmd;	
+	}
+	return (cmds);
+}
 
 bool	is_del(char c, char *del, t_quote *quote)
 {
@@ -99,18 +168,6 @@ static void print_cmds(t_cmd **cmds)
 	for (int i = 0; cmds[i]; i++)
 	{
 		printf("cmds[%d]:\n", i);
-		printf("\targs:\n");
-		t_list *tmp = cmds[i]->args;
-		while (1)
-		{
-			if (!tmp)
-			{
-				printf("\t\t(null)\n");
-				break;
-			}
-			printf("\t\t%s\n", (char *)tmp->content);
-			tmp = tmp->next;
-		}
 		printf("\tcmd: ");
 		for (int j = 0; cmds[i]->cmd[j]; j++)
 		{
@@ -124,7 +181,15 @@ static void print_cmds(t_cmd **cmds)
 		for (int j = 0; cmds[i]->input_redurection[j]; j++)
 		{
 			printf("\t\t[%d]:", j);
-			printf("\tfile: <%s>\n", cmds[i]->input_redurection[j]->file);
+			printf("\tfile: <");
+			if (!cmds[i]->input_redurection[j]->file)
+				printf("(null)>\n");
+			else
+			{
+				for (int k = 0; cmds[i]->input_redurection[j]->file[k]; k++)
+					printf("[%s]", cmds[i]->input_redurection[j]->file[k]);
+				printf(">\n");
+			}
 			if (cmds[i]->input_redurection[j]->type == INPUT_REDIRECTION)
 				printf("\t\t\ttype: INPUT_REDIRECTION\n");
 			else
@@ -136,7 +201,15 @@ static void print_cmds(t_cmd **cmds)
 		for (int j = 0; cmds[i]->output_redurection[j]; j++)
 		{
 			printf("\t\t[%d]:", j);
-			printf("\tfile: <%s>\n", cmds[i]->output_redurection[j]->file);
+			printf("\tfile: <");
+			if (!cmds[i]->output_redurection[j]->file)
+				printf("(null)>\n");
+			else
+			{
+				for (int k = 0; cmds[i]->output_redurection[j]->file[k]; k++)
+					printf("[%s]", cmds[i]->output_redurection[j]->file[k]);
+				printf(">\n");
+			}
 			if (cmds[i]->output_redurection[j]->type == OVERWRITE_REDIRECTION)
 				printf("\t\t\ttype: OVERWRITE_REDIRECTION\n");
 			else
@@ -145,8 +218,7 @@ static void print_cmds(t_cmd **cmds)
 	}
 }
 
-// // leak check destractor
-// void __attribute__((destructor)) destructor(void)
-// {
-// 	system("leaks purser");
+// __attribute__((destructor))
+// static void destructor() {
+// 	system("leaks -q purser");
 // }

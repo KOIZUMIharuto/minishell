@@ -4,7 +4,7 @@ NAME = minishell
 CC = cc
 FSANITIZE = -fsanitize=address
 CFLAGS = -Wall -Wextra -Werror $(FSANITIZE)
-INCLUDES = -I./includes -I./libft
+INCLUDES = -I./includes
 LIBFT = libft/libft.a
 SRCS = main.c echo.c exit.c pwd.c cd.c export.c unset.c env.c execve.c signal.c redirect.c execute_bultin.c pipe.c \
        heredocument.c
@@ -20,7 +20,6 @@ PURSER_SRCS =\
 	purser.c
 PURSER_OBJ_DIR = purser_obj
 PURSER_OBJS = $(addprefix $(PURSER_OBJ_DIR)/, $(PURSER_SRCS:.c=.o))
-PURSER_INCLUDES = -I./includes -I./libft
 
 .PHONY: all clean fclean re
 
@@ -53,10 +52,10 @@ fclean: clean
 p: $(PURSER)
 
 $(PURSER): $(PURSER_OBJS) $(LIBFT) | $(PURSER_OBJ_DIR)
-	$(CC) $(CFLAGS) $(PURSER_OBJS) $(LIBFT) $(PURSER_INCLUDES) -o $(PURSER)
+	$(CC) $(CFLAGS) $(PURSER_OBJS) $(LIBFT) $(INCLUDES) -o $(PURSER)
 
 $(PURSER_OBJ_DIR)/%.o: %.c | $(PURSER_OBJ_DIR)
-	$(CC) $(CFLAGS) $(PURSER_INCLUDES) -c $< -o $@
+	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 $(PURSER_OBJ_DIR):
 	mkdir -p $(PURSER_OBJ_DIR)

@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 14:21:02 by hkoizumi          #+#    #+#             */
-/*   Updated: 2024/11/27 17:43:47 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2024/11/28 11:58:49 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,13 +16,14 @@ static t_list	*handle_quotes_and_env(char *arg);
 static char		*recursive_expand_quote_and_env(char **arg, char **env, t_quote quote, int len);
 static int		expand_env(char *arg, char **env);
 
-t_list	*split_arg(char *line)
+char	**split_arg(char *line)
 {
 	t_list	*args;
 	t_list	*tmp;
 	char	*arg;
 	t_quote	quote;
 	int		i;
+	char	**cmd;
 
 	if (!line)
 		return (NULL);
@@ -50,7 +51,22 @@ t_list	*split_arg(char *line)
 		}
 		line += i;
 	}
-	return (args);
+	cmd = (char **)malloc(sizeof(char *) * (ft_lstsize(args) + 1));
+	if (!cmd)
+	{
+		ft_lstclear(&args, free);
+		return (NULL);
+	}
+	i = 0;
+	while (args)
+	{
+		tmp = args;
+		cmd[i++] = args->content;
+		args = args->next;
+		free(tmp);
+	}
+	cmd[i] = NULL;
+	return (cmd);
 }
 
 static t_list *handle_quotes_and_env(char *arg)
@@ -63,22 +79,18 @@ static t_list *handle_quotes_and_env(char *arg)
 	list = NULL;
 	tmp = NULL;
 	env = NULL;
-	while (*arg)
+	while (*arg || (env && *env))
 	{
-		printf ("arg = [%s]\n", arg);
 		arg_tmp = recursive_expand_quote_and_env(&arg, &env, NONE_QUOTE, 0);
 		if (arg_tmp)
-		{
-			printf ("arg_tmp = [%s]\n", arg_tmp);
 			tmp = ft_lstnew(arg_tmp);
-		}
 		ft_lstadd_back(&list, tmp);
 		if (!arg_tmp || !tmp)
 		{
 			ft_lstclear(&list, free);
 			return (NULL);
 		}
-		read(0, NULL, 1); // for test
+		// read(0, NULL, 1); // for test
 	}
 	return (list);
 }
@@ -91,21 +103,16 @@ static char	*recursive_expand_quote_and_env(char **arg, char **env, t_quote quot
 
 	expanded = NULL;
 	i = 0;
-	printf ("arg = [%s], env = [%s], quote = %d, len = %d\n", *arg, *env, quote, len);
-	if (*env)
+	if (*env && **env)
 	{
 		while (**env && quote == NONE_QUOTE && ft_strchr(" \t\n", **env))
 			(*env)++;
 		tmp = *env;
-		printf ("1: env = [%s]\n", *env);
 		while (tmp[i] && !(quote == NONE_QUOTE && ft_strchr(" \t\n", tmp[i])))
-		{
-			printf ("env[%d] = %c\n", i, tmp[i]);
 			i++;
-		}
+		*env += i;
 		if (!tmp[i])
 		{
-			*env = NULL;
 			expanded = recursive_expand_quote_and_env(arg, env, quote, len + i);
 			if (!expanded)
 				return (NULL);
@@ -117,23 +124,16 @@ static char	*recursive_expand_quote_and_env(char **arg, char **env, t_quote quot
 				return (NULL);
 			expanded[len + i] = '\0';
 		}
-		printf ("2: env = [%s]\n", tmp);
-		*env += i;
 		while (i--)
 			expanded[len + i] = tmp[i];
-		printf ("3: env = [%s]\n", tmp);
 	}
 	else
 	{
 		tmp = *arg;
 		while (tmp[i] && !is_del(tmp[i], "\"'", &quote) && !(quote != SINGLE_QUOTE && tmp[i] == '$'))
-		{
-			printf ("arg[%d] = %c\n", i, tmp[i]);
 			i++;
-		}
 		if (!tmp[i])
 		{
-			printf ("END: arg = [%s], i = %d\n", *arg, i);
 			*arg += i;
 			expanded = (char *)malloc(len + i + 1);
 			if (!expanded)
@@ -142,14 +142,11 @@ static char	*recursive_expand_quote_and_env(char **arg, char **env, t_quote quot
 		}
 		else if (tmp[i] == '$')
 		{
-			printf ("$: arg = [%s], i = %d\n", *arg, i);
 			*arg += expand_env(*arg + i + 1, env) + i + 1;
-			printf ("env = [%s]\n", *env);
 			expanded = recursive_expand_quote_and_env(arg, env, quote, len + i);
 		}
 		else if (tmp[i] == '\'' || tmp[i] == '"')
 		{
-			printf ("QUOTE: arg = [%s], i = %d\n", *arg, i);
 			*arg += i + 1;
 			expanded = recursive_expand_quote_and_env(arg, env, quote, len + i);
 		}

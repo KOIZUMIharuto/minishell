@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 21:15:37 by hkoizumi          #+#    #+#             */
-/*   Updated: 2024/11/26 14:24:35 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2024/11/28 12:16:21 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,13 +35,12 @@ typedef enum s_redirection_type
 typedef struct s_redirection
 {
 	t_redirection_type	type;
-	char				*file;
+	char				**file;
 	int					fd;
 }	t_redirection;
 
 typedef struct s_cmd
 {
-	t_list			*args;
 	char			**cmd;
 	t_redirection	**input_redurection;
 	t_redirection	**output_redurection;
@@ -49,18 +48,17 @@ typedef struct s_cmd
 	int				outfile_fd;
 }	t_cmd;
 
-t_cmd	**purser(char *line);
-bool	is_del(char c, char *del, t_quote *quote);
+t_cmd			**purser(char *line);
+bool			is_del(char c, char *del, t_quote *quote);
 
-char	**recursive_split(char *line, char *del, int word_cnt);
-t_cmd	**recursive_purser(char **tokens, int cmd_cnt);
+t_redirection	**check_redirection(char *line, char *key, int redirect_cnt);
 
-t_list	*split_arg(char *line);
+char			**split_arg(char *line);
 
-void	free_redirections(t_redirection **redirections);
-void	free_redirection(t_redirection *redirection);
-void	free_cmds(t_cmd **cmds);
-void	free_cmd(t_cmd *cmd);
-void	free_tokens(char **tokens);
+void			free_redirections(t_redirection **redirections);
+void			free_redirection(t_redirection *redirection);
+void			free_cmds(t_cmd **cmds);
+void			free_cmd(t_cmd *cmd);
+void			free_tokens(char **tokens);
 
 #endif
