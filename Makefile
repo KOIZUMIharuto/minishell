@@ -3,7 +3,7 @@
 NAME = minishell
 CC = cc
 FSANITIZE = -fsanitize=address
-CFLAGS = -Wall -Wextra -Werror $(FSANITIZE)
+CFLAGS = -Wall -Wextra -Werror
 INCLUDES = -I./includes
 LIBFT = libft/libft.a
 SRCS = main.c echo.c exit.c pwd.c cd.c export.c unset.c env.c execve.c signal.c redirect.c execute_bultin.c pipe.c \

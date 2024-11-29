@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   purser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 16:45:21 by hkoizumi          #+#    #+#             */
-/*   Updated: 2024/11/28 12:24:36 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2024/11/29 12:21:22 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ t_cmd	**purser(char *line)
 	if (!tokens)
 		return (NULL);
 	cmds = recursive_purser(tokens, 0);
+	free_tokens(tokens);
 	return (cmds);
 }
 
