@@ -3,22 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   purser_free.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 21:13:44 by hkoizumi          #+#    #+#             */
-/*   Updated: 2024/11/28 12:20:42 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2024/11/29 14:49:13 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <purser.h>
 
-void	free_cmds(t_cmd **cmds)
+void	free_cmds(t_cmd **cmds, int i)
 {
-	int	i;
-
 	if (!cmds)
 		return ;
-	i = 0;
 	while (cmds[i])
 		free_cmd(cmds[i++]);
 	free(cmds);
@@ -29,8 +26,8 @@ void	free_cmd(t_cmd *cmd)
 	if (!cmd)
 		return ;
 	free_tokens(cmd->cmd);
-	free_redirections(cmd->input_redurection);
-	free_redirections(cmd->output_redurection);
+	free_rdrcts(cmd->input_rdrct, 0);
+	free_rdrcts(cmd->output_rdrct, 0);
 	free(cmd);
 }
 
@@ -46,30 +43,27 @@ void	free_tokens(char **tokens)
 	free(tokens);
 }
 
-void	free_redirections(t_redirection **redirections)
+void	free_rdrcts(t_rdrct **rdrcts, int i)
+{
+	if (!rdrcts)
+		return ;
+	while (rdrcts[i])
+		free_rdrct(rdrcts[i++]);
+	free(rdrcts);
+}
+
+void	free_rdrct(t_rdrct *rdrct)
 {
 	int	i;
 
-	if (!redirections)
+	if (!rdrct)
 		return ;
-	i = 0;
-	while (redirections[i])
-		free_redirection(redirections[i++]);
-	free(redirections);
-}
-
-void	free_redirection(t_redirection *redirection)
-{
-	int i;
-
-	if (!redirection)
-		return ;
-	if (redirection->file)
+	if (rdrct->file)
 	{
 		i = 0;
-		while (redirection->file[i])
-			free(redirection->file[i++]);
-		free(redirection->file);
+		while (rdrct->file[i])
+			free(rdrct->file[i++]);
+		free(rdrct->file);
 	}
-	free(redirection);
+	free(rdrct);
 }

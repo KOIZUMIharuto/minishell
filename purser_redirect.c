@@ -1,28 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   purser_redirect.c                                  :+:      :+:    :+:   */
+/*   purser_rdrct.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 14:15:15 by hkoizumi          #+#    #+#             */
-/*   Updated: 2024/11/28 12:28:47 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2024/11/29 14:48:11 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <purser.h>
 
-static int	set_redirection_type(char *key_pos, char key, t_redirection *redirection);
+static t_rdrct	*set_rdrct(char **key_pos, char *key);
+static int		set_rdrct_type(char *key_pos, char key, t_rdrct *rdrct);
+static bool		set_rdrct_file(char *key_pos, t_rdrct *rdrct, int file_len);
 
-t_redirection	**check_redirection(char *line, char *key, int redirect_cnt)
+t_rdrct	**check_rdrct(char *line, char *key, int rdrct_cnt)
 {
-	t_redirection	**redirections;
-	t_redirection	*redirection;
-	t_quote			quote;
-	char			*key_pos;
-	char			*key_pos_tmp;
-	char			*file_name_tmp;
-	int				i;
+	t_rdrct	**rdrcts;
+	t_rdrct	*rdrct;
+	char	*key_pos;
 
 	if (!line)
 		return (NULL);
@@ -30,90 +28,98 @@ t_redirection	**check_redirection(char *line, char *key, int redirect_cnt)
 	while (*key_pos && !is_del(*key_pos, key, NULL))
 			key_pos++;
 	if (!*key_pos)
-	{
-		redirections = (t_redirection **)ft_calloc(redirect_cnt + 1, sizeof(t_redirection *));
-		if (!redirections)
-			return (NULL);
-	}
+		rdrcts = (t_rdrct **)ft_calloc(rdrct_cnt + 1, sizeof(t_rdrct *));
 	else
 	{
-		redirection = (t_redirection *)ft_calloc(1, sizeof(t_redirection));
-		if (!redirection)
+		rdrct = set_rdrct(&key_pos, key);
+		if (!rdrct)
 			return (NULL);
-		key_pos_tmp = key_pos++;
-		key_pos += set_redirection_type(key_pos, key[0], redirection);
-		while (*key_pos && is_del(*key_pos, " \t\n", NULL))
-			key_pos++;
-		quote = NONE_QUOTE;
-		i = 0;
-		while (key_pos[i] && !is_del(key_pos[i], " \t\n", &quote))
-			i++;
-		if (key_pos[0])
-		{
-			file_name_tmp = ft_substr(key_pos, 0, i);
-			if (!file_name_tmp)
-			{
-				free(redirection);
-				return (NULL);
-			}
-			if (redirection->type == HEREDOCUMENT)
-			{
-				redirection->file = (char **)ft_calloc(2, sizeof(char *));
-				if (!redirection->file)
-				{
-					free(file_name_tmp);
-					free(redirection);
-					return (NULL);
-				}
-				redirection->file[0] = file_name_tmp;
-			}
-			else
-			{
-				redirection->file = split_arg(file_name_tmp);
-				free(file_name_tmp);
-				if (!redirection->file)
-				{
-					free(redirection);
-					return (NULL);
-				}
-			}
-		}
+		rdrcts = check_rdrct(line, key, rdrct_cnt + 1);
+		if (!rdrcts)
+			free_rdrct(rdrct);
 		else
-			redirection->file = NULL;
-		redirection->fd = -1;
-		(void)ft_strlcpy(key_pos_tmp, key_pos + i, ft_strlen(key_pos_tmp) + 1);
-		redirections = check_redirection(line, key, redirect_cnt + 1);
-		if (!redirections)
-		{
-			free_redirection(redirection);
-			return (NULL);
-		}
-		redirections[redirect_cnt] = redirection;
+			rdrcts[rdrct_cnt] = rdrct;
 	}
-	return (redirections);
+	return (rdrcts);
 }
 
-static int	set_redirection_type(char *key_pos, char key, t_redirection *redirection)
+static t_rdrct	*set_rdrct(char **key_pos, char *key)
+{
+	t_rdrct	*rdrct;
+	t_quote	quote;
+	char	*key_pos_tmp;
+	int		i;
+
+	rdrct = (t_rdrct *)ft_calloc(1, sizeof(t_rdrct));
+	if (!rdrct)
+		return (NULL);
+	key_pos_tmp = *key_pos;
+	*key_pos += set_rdrct_type(*key_pos, key[0], rdrct);
+	while (**key_pos && is_del(**key_pos, " \t\n", NULL))
+		(*key_pos)++;
+	quote = NONE_QUOTE;
+	i = 0;
+	while ((*key_pos)[i] && !is_del((*key_pos)[i], " \t\n", &quote))
+		i++;
+	if (!set_rdrct_file(*key_pos, rdrct, i))
+	{
+		free_rdrct (rdrct);
+		return (NULL);
+	}
+	rdrct->fd = -1;
+	(void)ft_strlcpy(key_pos_tmp, *key_pos + i, ft_strlen(key_pos_tmp) + 1);
+	return (rdrct);
+}
+
+static int	set_rdrct_type(char *key_pos, char key, t_rdrct *rdrct)
 {
 	if (key == '<')
 	{
-		if (key_pos[0] == '<')
+		if (key_pos[1] == '<')
 		{
-			redirection->type = HEREDOCUMENT;
-			return (1);
+			rdrct->type = HEREDOCUMENT;
+			return (2);
 		}
 		else
-			redirection->type = INPUT_REDIRECTION;
+			rdrct->type = INPUT_rdrct;
 	}
 	else
 	{
-		if (key_pos[0] == '>')
+		if (key_pos[1] == '>')
 		{
-			redirection->type = APPEND_REDIRECTION;
-			return (1);
+			rdrct->type = APPEND_rdrct;
+			return (2);
 		}
 		else
-			redirection->type = OVERWRITE_REDIRECTION;
+			rdrct->type = OVERWRITE_rdrct;
 	}
-	return (0);
+	return (1);
+}
+
+static bool	set_rdrct_file(char *key_pos, t_rdrct *rdrct, int file_len)
+{
+	char	*file_name_tmp;
+
+	if (key_pos[0])
+	{
+		if (rdrct->type == HEREDOCUMENT)
+		{
+			rdrct->file = (char **)ft_calloc(2, sizeof(char *));
+			if (rdrct->file)
+				rdrct->file[0] = ft_substr(key_pos, 0, file_len);
+		}
+		else
+		{
+			file_name_tmp = ft_substr(key_pos, 0, file_len);
+			if (!file_name_tmp)
+				return (false);
+			rdrct->file = split_arg(file_name_tmp);
+			free(file_name_tmp);
+		}
+		if (!rdrct->file || !rdrct->file[0])
+			return (false);
+	}
+	else
+		rdrct->file = NULL;
+	return (true);
 }

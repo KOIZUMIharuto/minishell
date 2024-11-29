@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   purser.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 21:15:37 by hkoizumi          #+#    #+#             */
-/*   Updated: 2024/11/28 12:16:21 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2024/11/29 15:44:46 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,49 +16,49 @@
 # include "minishell.h"
 # include <stdbool.h>
 
-typedef enum s_quote
+typedef enum e_quote
 {
-    NONE_QUOTE,
+	NONE_QUOTE,
 	SINGLE_QUOTE,
 	DOUBLE_QUOTE
-} 	t_quote;
+}	t_quote;
 
-typedef enum s_redirection_type
+typedef enum s_rdrct_type
 {
-	NONE_REDIRECTION,
-	OVERWRITE_REDIRECTION,
-	APPEND_REDIRECTION,
-	INPUT_REDIRECTION,
+	NONE_rdrct,
+	OVERWRITE_rdrct,
+	APPEND_rdrct,
+	INPUT_rdrct,
 	HEREDOCUMENT
-}	t_redirection_type;
+}	t_rdrct_type;
 
-typedef struct s_redirection
+typedef struct s_rdrct
 {
-	t_redirection_type	type;
-	char				**file;
-	int					fd;
-}	t_redirection;
+	t_rdrct_type	type;
+	char			**file;
+	int				fd;
+}	t_rdrct;
 
 typedef struct s_cmd
 {
-	char			**cmd;
-	t_redirection	**input_redurection;
-	t_redirection	**output_redurection;
-	int				infile_fd;
-	int				outfile_fd;
+	char	**cmd;
+	t_rdrct	**input_rdrct;
+	t_rdrct	**output_rdrct;
+	int		infile_fd;
+	int		outfile_fd;
 }	t_cmd;
 
-t_cmd			**purser(char *line);
-bool			is_del(char c, char *del, t_quote *quote);
+t_cmd	**purser(char *line);
+bool	is_del(char c, char *del, t_quote *quote);
 
-t_redirection	**check_redirection(char *line, char *key, int redirect_cnt);
+t_rdrct	**check_rdrct(char *line, char *key, int rdrct_cnt);
 
-char			**split_arg(char *line);
+char	**split_arg(char *line);
 
-void			free_redirections(t_redirection **redirections);
-void			free_redirection(t_redirection *redirection);
-void			free_cmds(t_cmd **cmds);
-void			free_cmd(t_cmd *cmd);
-void			free_tokens(char **tokens);
+void	free_rdrcts(t_rdrct **rdrcts, int i);
+void	free_rdrct(t_rdrct *rdrct);
+void	free_cmds(t_cmd **cmds, int i);
+void	free_cmd(t_cmd *cmd);
+void	free_tokens(char **tokens);
 
 #endif

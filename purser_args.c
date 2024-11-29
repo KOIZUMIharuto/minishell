@@ -3,15 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   purser_args.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 14:21:02 by hkoizumi          #+#    #+#             */
-/*   Updated: 2024/11/28 11:58:49 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2024/11/29 15:41:24 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <purser.h>
 
+static t_list	*purse_to_list(char *line);
 static t_list	*handle_quotes_and_env(char *arg);
 static char		*recursive_expand_quote_and_env(char **arg, char **env, t_quote quote, int len);
 static int		expand_env(char *arg, char **env);
@@ -20,10 +21,39 @@ char	**split_arg(char *line)
 {
 	t_list	*args;
 	t_list	*tmp;
+	int		i;
+	char	**cmd;
+
+	if (!line)
+		return (NULL);
+	args = purse_to_list(line);
+	if (!args)
+		return (NULL);
+	cmd = (char **)malloc(sizeof(char *) * (ft_lstsize(args) + 1));
+	if (!cmd)
+	{
+		ft_lstclear(&args, free);
+		return (NULL);
+	}
+	i = 0;
+	while (args)
+	{
+		tmp = args;
+		cmd[i++] = args->content;
+		args = args->next;
+		free(tmp);
+	}
+	cmd[i] = NULL;
+	return (cmd);
+}
+
+static t_list	*purse_to_list(char *line)
+{
+	t_list	*args;
+	t_list	*tmp;
 	char	*arg;
 	t_quote	quote;
 	int		i;
-	char	**cmd;
 
 	if (!line)
 		return (NULL);
@@ -51,25 +81,10 @@ char	**split_arg(char *line)
 		}
 		line += i;
 	}
-	cmd = (char **)malloc(sizeof(char *) * (ft_lstsize(args) + 1));
-	if (!cmd)
-	{
-		ft_lstclear(&args, free);
-		return (NULL);
-	}
-	i = 0;
-	while (args)
-	{
-		tmp = args;
-		cmd[i++] = args->content;
-		args = args->next;
-		free(tmp);
-	}
-	cmd[i] = NULL;
-	return (cmd);
+	return (args);
 }
 
-static t_list *handle_quotes_and_env(char *arg)
+static t_list	*handle_quotes_and_env(char *arg)
 {
 	t_list	*list;
 	t_list	*tmp;
@@ -90,7 +105,6 @@ static t_list *handle_quotes_and_env(char *arg)
 			ft_lstclear(&list, free);
 			return (NULL);
 		}
-		// read(0, NULL, 1); // for test
 	}
 	return (list);
 }
@@ -130,7 +144,8 @@ static char	*recursive_expand_quote_and_env(char **arg, char **env, t_quote quot
 	else
 	{
 		tmp = *arg;
-		while (tmp[i] && !is_del(tmp[i], "\"'", &quote) && !(quote != SINGLE_QUOTE && tmp[i] == '$'))
+		while (tmp[i] && !is_del(tmp[i], "\"'", &quote)
+			&& !(quote != SINGLE_QUOTE && tmp[i] == '$'))
 			i++;
 		if (!tmp[i])
 		{
@@ -169,7 +184,8 @@ static int	expand_env(char *arg, char **env)
 	i = 0;
 	while (environ[i])
 	{
-		if (ft_strncmp(arg, environ[i], key_len) == 0 && environ[i][key_len] == '=')
+		if (ft_strncmp(arg, environ[i], key_len) == 0
+			&& environ[i][key_len] == '=')
 		{
 			*env = &(environ[i][key_len + 1]);
 			break ;
