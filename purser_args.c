@@ -6,14 +6,14 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 14:21:02 by hkoizumi          #+#    #+#             */
-/*   Updated: 2024/11/29 15:41:24 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/02/05 15:49:58 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <purser.h>
 
 static t_list	*purse_to_list(char *line);
-static t_list	*handle_quotes_and_env(char *arg);
+static bool		handle_quotes_and_env(t_list **args, char *arg);
 static char		*recursive_expand_quote_and_env(char **arg, char **env, t_quote quote, int len);
 static int		expand_env(char *arg, char **env);
 
@@ -27,10 +27,9 @@ char	**split_arg(char *line)
 	if (!line)
 		return (NULL);
 	args = purse_to_list(line);
-	if (!args)
-		return (NULL);
-	cmd = (char **)malloc(sizeof(char *) * (ft_lstsize(args) + 1));
-	if (!cmd)
+	if (args)
+		cmd = (char **)malloc(sizeof(char *) * (ft_lstsize(args) + 1));
+	if (!args || !cmd)
 	{
 		ft_lstclear(&args, free);
 		return (NULL);
@@ -50,8 +49,6 @@ char	**split_arg(char *line)
 static t_list	*purse_to_list(char *line)
 {
 	t_list	*args;
-	t_list	*tmp;
-	char	*arg;
 	t_quote	quote;
 	int		i;
 
@@ -68,13 +65,7 @@ static t_list	*purse_to_list(char *line)
 		quote = NONE_QUOTE;
 		while (line[i] && !is_del(line[i], " \t\n", &quote))
 			i++;
-		arg = ft_substr(line, 0, i);
-		if (arg)
-			tmp = handle_quotes_and_env(arg);
-		free(arg);
-		if (tmp)
-			ft_lstadd_back(&args, tmp);
-		if (!arg || !tmp)
+		if (!handle_quotes_and_env(&args, ft_substr(line, 0, i)))
 		{
 			ft_lstclear(&args, free);
 			return (NULL);
@@ -84,29 +75,33 @@ static t_list	*purse_to_list(char *line)
 	return (args);
 }
 
-static t_list	*handle_quotes_and_env(char *arg)
+static bool	handle_quotes_and_env(t_list **args, char *arg)
 {
-	t_list	*list;
+	char	*arg_head;
 	t_list	*tmp;
 	char	*arg_tmp;
 	char	*env;
 
-	list = NULL;
+	arg_head = arg;
 	tmp = NULL;
 	env = NULL;
-	while (*arg || (env && *env))
+	while (arg && (*arg || (env && *env)))
 	{
 		arg_tmp = recursive_expand_quote_and_env(&arg, &env, NONE_QUOTE, 0);
-		if (arg_tmp)
-			tmp = ft_lstnew(arg_tmp);
-		ft_lstadd_back(&list, tmp);
-		if (!arg_tmp || !tmp)
+		if (!arg_tmp)
+			break ;
+		tmp = ft_lstnew(arg_tmp);
+		if (!tmp)
 		{
-			ft_lstclear(&list, free);
-			return (NULL);
+			free (arg_tmp);
+			break ;
 		}
+		ft_lstadd_back(args, tmp);
 	}
-	return (list);
+	free(arg_head);
+	if (!arg || !arg_tmp || !tmp)
+		return (false);
+	return (true);
 }
 
 static char	*recursive_expand_quote_and_env(char **arg, char **env, t_quote quote, int len)
