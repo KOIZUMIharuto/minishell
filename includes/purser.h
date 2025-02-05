@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 21:15:37 by hkoizumi          #+#    #+#             */
-/*   Updated: 2024/11/29 15:44:46 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/02/05 16:08:52 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,8 @@ bool	is_del(char c, char *del, t_quote *quote);
 t_rdrct	**check_rdrct(char *line, char *key, int rdrct_cnt);
 
 char	**split_arg(char *line);
+char	*recursive_expand(char **arg, char **env, t_quote quote, int len);
+
 
 void	free_rdrcts(t_rdrct **rdrcts, int i);
 void	free_rdrct(t_rdrct *rdrct);

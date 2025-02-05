@@ -16,6 +16,7 @@ PURSER = purser
 PURSER_SRCS =\
 	purser_args.c\
 	purser_free.c\
+	purser_quote_env.c\
 	purser_redirect.c\
 	purser.c
 PURSER_OBJ_DIR = purser_obj
