@@ -13,6 +13,7 @@ READLINE = -lreadline
 RM = rm -f  # 削除コマンドを変数に定義
 
 PURSER = purser
+PURSER_TEST_MAIN = purser_test_main.c
 PURSER_SRCS =\
 	purser_args.c\
 	purser_free.c\
@@ -52,8 +53,8 @@ fclean: clean
 
 p: $(PURSER)
 
-$(PURSER): $(PURSER_OBJS) $(LIBFT) | $(PURSER_OBJ_DIR)
-	$(CC) $(CFLAGS) $(PURSER_OBJS) $(LIBFT) $(INCLUDES) -o $(PURSER)
+$(PURSER): $(PURSER_TEST_MAIN) $(PURSER_OBJS) $(LIBFT) | $(PURSER_OBJ_DIR)
+	$(CC) $(CFLAGS) $(PURSER_TEST_MAIN) $(PURSER_OBJS) $(LIBFT) $(INCLUDES) -o $(PURSER)
 
 $(PURSER_OBJ_DIR)/%.o: %.c | $(PURSER_OBJ_DIR)
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@

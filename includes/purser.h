@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   purser.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 21:15:37 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/02/05 16:08:52 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/02/07 13:58:34 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,9 +26,9 @@ typedef enum e_quote
 typedef enum s_rdrct_type
 {
 	NONE_rdrct,
-	OVERWRITE_rdrct,
-	APPEND_rdrct,
-	INPUT_rdrct,
+	OVERWRITE_RDRCT,
+	APPEND_RDRCT,
+	INPUT_RDRCT,
 	HEREDOCUMENT
 }	t_rdrct_type;
 
@@ -42,7 +42,7 @@ typedef struct s_rdrct
 typedef struct s_cmd
 {
 	char	**cmd;
-	t_rdrct	**input_rdrct;
+	t_rdrct	**INPUT_RDRCT;
 	t_rdrct	**output_rdrct;
 	int		infile_fd;
 	int		outfile_fd;

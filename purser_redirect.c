@@ -26,7 +26,7 @@ t_rdrct	**check_rdrct(char *line, char *key, int rdrct_cnt)
 		return (NULL);
 	key_pos = line;
 	while (*key_pos && !is_del(*key_pos, key, NULL))
-			key_pos++;
+		key_pos++;
 	if (!*key_pos)
 		rdrcts = (t_rdrct **)ft_calloc(rdrct_cnt + 1, sizeof(t_rdrct *));
 	else
@@ -59,7 +59,7 @@ static t_rdrct	*set_rdrct(char **key_pos, char *key)
 		(*key_pos)++;
 	quote = NONE_QUOTE;
 	i = 0;
-	while ((*key_pos)[i] && !is_del((*key_pos)[i], " \t\n", &quote))
+	while ((*key_pos)[i] && !is_del((*key_pos)[i], " \t\n><", &quote))
 		i++;
 	if (!set_rdrct_file(*key_pos, rdrct, i))
 	{
@@ -81,17 +81,17 @@ static int	set_rdrct_type(char *key_pos, char key, t_rdrct *rdrct)
 			return (2);
 		}
 		else
-			rdrct->type = INPUT_rdrct;
+			rdrct->type = INPUT_RDRCT;
 	}
 	else
 	{
 		if (key_pos[1] == '>')
 		{
-			rdrct->type = APPEND_rdrct;
+			rdrct->type = APPEND_RDRCT;
 			return (2);
 		}
 		else
-			rdrct->type = OVERWRITE_rdrct;
+			rdrct->type = OVERWRITE_RDRCT;
 	}
 	return (1);
 }

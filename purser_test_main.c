@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   purser_test_main.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/29 15:43:58 by hkoizumi          #+#    #+#             */
-/*   Updated: 2024/11/29 15:44:18 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/02/07 13:58:34 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,23 +55,23 @@ static void	print_cmds(t_cmd **cmds)
 				printf(" ");
 			printf("[%s]", cmds[i]->cmd[j]);
 		}
-		printf("\n\tinput_rdrct\n");
-		if (!cmds[i]->input_rdrct[0])
+		printf("\n\tINPUT_RDRCT\n");
+		if (!cmds[i]->INPUT_RDRCT[0])
 			printf("\t\t[0]: \t(null)\n");
-		for (int j = 0; cmds[i]->input_rdrct[j]; j++)
+		for (int j = 0; cmds[i]->INPUT_RDRCT[j]; j++)
 		{
 			printf("\t\t[%d]:", j);
 			printf("\tfile: <");
-			if (!cmds[i]->input_rdrct[j]->file)
+			if (!cmds[i]->INPUT_RDRCT[j]->file)
 				printf("(null)>\n");
 			else
 			{
-				for (int k = 0; cmds[i]->input_rdrct[j]->file[k]; k++)
-					printf("[%s]", cmds[i]->input_rdrct[j]->file[k]);
+				for (int k = 0; cmds[i]->INPUT_RDRCT[j]->file[k]; k++)
+					printf("[%s]", cmds[i]->INPUT_RDRCT[j]->file[k]);
 				printf(">\n");
 			}
-			if (cmds[i]->input_rdrct[j]->type == INPUT_rdrct)
-				printf("\t\t\ttype: INPUT_rdrct\n");
+			if (cmds[i]->INPUT_RDRCT[j]->type == INPUT_RDRCT)
+				printf("\t\t\ttype: INPUT_RDRCT\n");
 			else
 				printf("\t\t\ttype: HEREDOCUMENT\n");
 		}
@@ -90,10 +90,10 @@ static void	print_cmds(t_cmd **cmds)
 					printf("[%s]", cmds[i]->output_rdrct[j]->file[k]);
 				printf(">\n");
 			}
-			if (cmds[i]->output_rdrct[j]->type == OVERWRITE_rdrct)
-				printf("\t\t\ttype: OVERWRITE_rdrct\n");
+			if (cmds[i]->output_rdrct[j]->type == OVERWRITE_RDRCT)
+				printf("\t\t\ttype: OVERWRITE_RDRCT\n");
 			else
-				printf("\t\t\ttype: APPEND_rdrct\n");
+				printf("\t\t\ttype: APPEND_RDRCT\n");
 		}
 	}
 }

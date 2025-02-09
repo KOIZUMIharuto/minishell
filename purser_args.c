@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   purser_args.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 14:21:02 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/02/05 16:08:16 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/02/07 13:50:39 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ static bool	handle_quotes_and_env(t_list **args, char *arg)
 	env = NULL;
 	while (arg && (*arg || (env && *env)))
 	{
-		arg_tmp = recursive_expand_quote_and_env(&arg, &env, NONE_QUOTE, 0);
+		arg_tmp = recursive_expand(&arg, &env, NONE_QUOTE, 0);
 		if (!arg_tmp)
 			break ;
 		tmp = ft_lstnew(arg_tmp);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   purser_free.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 21:13:44 by hkoizumi          #+#    #+#             */
-/*   Updated: 2024/11/29 14:49:13 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/02/07 13:58:11 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ void	free_cmd(t_cmd *cmd)
 	if (!cmd)
 		return ;
 	free_tokens(cmd->cmd);
-	free_rdrcts(cmd->input_rdrct, 0);
+	free_rdrcts(cmd->INPUT_RDRCT, 0);
 	free_rdrcts(cmd->output_rdrct, 0);
 	free(cmd);
 }
