@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   purser_quote_env.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/05 16:05:58 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/02/07 13:09:52 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/02/13 13:44:27 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 static char	*env_remained(char **arg, char **env, t_quote quote, int len);
 static char	*env_not_remained(char **arg, char **env, t_quote quote, int len);
+static void	move_arg_pointer(char **arg, char **env, char *tmp, int i);
 static int	expand_env(char *arg, char **env);
 
 char	*recursive_expand(char **arg, char **env, t_quote quote, int len)
@@ -68,28 +69,27 @@ static char	*env_not_remained(char **arg, char **env, t_quote quote, int len)
 	while (tmp[i] && !is_del(tmp[i], "\"'", &quote)
 		&& !(quote != SINGLE_QUOTE && tmp[i] == '$'))
 		i++;
+	move_arg_pointer(arg, env, tmp, i);
 	if (!tmp[i])
-	{
-		*arg += i;
-		expanded = (char *)malloc(len + i + 1);
-		if (expanded)
-			expanded[len + i] = '\0';
-	}
+		expanded = (char *)ft_calloc(len + i + 1, sizeof(char));
 	else if (tmp[i] == '$')
-	{
-		*arg += expand_env(*arg + i + 1, env) + i + 1;
 		expanded = recursive_expand(arg, env, quote, len + i);
-	}
 	else if (tmp[i] == '\'' || tmp[i] == '"')
-	{
-		*arg += i + 1;
 		expanded = recursive_expand(arg, env, quote, len + i);
-	}
-	if (!expanded)
-		return (NULL);
-	while (i--)
-		expanded[len + i] = tmp[i];
+	if (expanded)
+		while (i--)
+			expanded[len + i] = tmp[i];
 	return (expanded);
+}
+
+static void	move_arg_pointer(char **arg, char **env, char *tmp, int i)
+{
+	if (!tmp[i])
+		*arg += i;
+	else if (tmp[i] == '$')
+		*arg += expand_env(*arg + i + 1, env) + i + 1;
+	else if (tmp[i] == '\'' || tmp[i] == '"')
+		*arg += i + 1;
 }
 
 static int	expand_env(char *arg, char **env)
