@@ -76,7 +76,7 @@ void add_or_update_env(const char *var, const char *value) {
     }
 
     // 既存の環境変数を検索して更新する
-    for (char **env = environ; *env != NULL; env++) {
+    for (char **env = g_data.environ; *env != NULL; env++) {
         if (strncmp(*env, var, var_len) == 0 && ((*env)[var_len] == '=' || (*env)[var_len] == '\0')) {
             free(*env); // 古いエントリを解放
             *env = new_entry; // 新しいエントリを設定
@@ -86,7 +86,7 @@ void add_or_update_env(const char *var, const char *value) {
 
     // 環境変数の数を数える
     size_t env_count = 0;
-    while (environ[env_count] != NULL) {
+    while (g_data.environ[env_count] != NULL) {
         env_count++;
     }
 
@@ -100,11 +100,11 @@ void add_or_update_env(const char *var, const char *value) {
 
     // 既存の環境変数をコピー
     for (size_t i = 0; i < env_count; i++) {
-        new_environ[i] = environ[i];
+        new_environ[i] = g_data.environ[i];
     }
     new_environ[env_count] = new_entry; // 新しいエントリを追加
     new_environ[env_count + 1] = NULL;  // NULL で終了
-    environ = new_environ; // 環境変数を新しい配列に設定
+    g_data.environ = new_environ; // 環境変数を新しい配列に設定
 }
 
 /**
@@ -132,7 +132,7 @@ void print_env_quoted(const char *env) {
 void builtin_export(char **args) {
     // 引数がない場合は環境変数を出力
     if (args[1] == NULL) {
-        for (char **env = environ; *env != NULL; env++) {
+        for (char **env = g_data.environ; *env != NULL; env++) {
             print_env_quoted(*env);
         }
         return;

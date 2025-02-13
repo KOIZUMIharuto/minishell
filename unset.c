@@ -8,7 +8,7 @@
 void remove_env(const char *var) {
 
     size_t var_len = strlen(var);
-    for (char **env = environ; *env != NULL; env++) {
+    for (char **env = g_data.environ; *env != NULL; env++) {
         if (strncmp(*env, var, var_len) == 0 && (*env)[var_len] == '=') {
             free(*env); // 古いエントリを解放
 
