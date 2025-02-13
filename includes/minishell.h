@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell.h                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/02/13 14:13:46 by hkoizumi          #+#    #+#             */
+/*   Updated: 2025/02/13 14:13:59 by hkoizumi         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
@@ -11,32 +23,36 @@
 # include <string.h> // 文字列操作関数（strcpy, strcat, strlen など）を使用するためのヘッダー
 # include <readline/readline.h> // GNU Readline ライブラリを使用して、コマンドライン入力を扱うためのヘッダー
 # include <readline/history.h> // Readline の履歴機能を使用するためのヘッダー
-#include <sys/wait.h>  // waitpid を使用するために必要なヘッダー
-#include <fcntl.h> // open, close, O_RDONLY, O_WRONLY, O_CREAT を使用するために必要なヘッダー
+# include <sys/wait.h>  // waitpid を使用するために必要なヘッダー
+# include <fcntl.h> // open, close, O_RDONLY, O_WRONLY, O_CREAT を使用するために必要なヘッダー
 
-
+typedef struct s_data
+{
+	char	**environ;
+	int		last_exit_status;
+}	t_data;
 
 // 環境変数の定義
-extern char **environ;
+extern t_data	g_data;
 
 // 内部コマンドのプロトタイプ宣言
-void builtin_echo(char **args);
-void builtin_cd(char **args);
-void builtin_pwd();
-void builtin_export(char **args);
-void builtin_unset(char **args);
-void builtin_env();
-void builtin_exit();
+void	builtin_echo(char **args);
+void	builtin_cd(char **args);
+void	builtin_pwd(void);
+void	builtin_export(char **args);
+void	builtin_unset(char **args);
+void	builtin_env(void);
+void	builtin_exit(void);
 
-int execute_builtin(char **command, int index);
-int is_builtin_mark_index(char *cmd);
-void execute_command(char **command);
+int		execute_builtin(char **command, int index);
+int		is_builtin_mark_index(char *cmd);
+void	execute_command(char **command);
 
-int handle_redirection(char **command);
-int handle_heredocument(char **command);
-char *find_command(char *command);
-void signal_handler(int signum);
-int  pipe_command(char **commands);
+int		handle_redirection(char **command);
+int		handle_heredocument(char **command);
+char	*find_command(char *command);
+void	signal_handler(int signum);
+int		pipe_command(char **commands);
 
 
 #endif
