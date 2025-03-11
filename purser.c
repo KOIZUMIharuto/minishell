@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 16:45:21 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/02/07 13:58:11 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/11 16:56:19 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,12 +81,12 @@ static bool	purse_tokens(t_cmd **cmds, char **tokens, int token_cnt)
 		cmds[i] = (t_cmd *)ft_calloc(1, sizeof(t_cmd));
 		if (!cmds[i])
 			return (false);
-		cmds[i]->INPUT_RDRCT = check_rdrct(tokens[i], "<", 0);
+		cmds[i]->input_rdrct = check_rdrct(tokens[i], "<", 0);
 		cmds[i]->output_rdrct = check_rdrct(tokens[i], ">", 0);
 		cmds[i]->cmd = split_arg(tokens[i]);
 		cmds[i]->infile_fd = -1;
 		cmds[i]->outfile_fd = -1;
-		if (!cmds[i]->INPUT_RDRCT
+		if (!cmds[i]->input_rdrct
 			|| !cmds[i]->output_rdrct || !cmds[i]->cmd)
 			return (false);
 	}

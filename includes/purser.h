@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 21:15:37 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/11 12:40:18 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/11 16:55:35 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ typedef struct s_rdrct
 typedef struct s_cmd
 {
 	char	**cmd;
-	t_rdrct	**INPUT_RDRCT;
+	t_rdrct	**input_rdrct;
 	t_rdrct	**output_rdrct;
 	int		infile_fd;
 	int		outfile_fd;
