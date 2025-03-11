@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 21:15:37 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/02/07 13:58:34 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/11 12:40:18 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ typedef enum e_quote
 
 typedef enum s_rdrct_type
 {
-	NONE_rdrct,
+	NONE_RDRCT,
 	OVERWRITE_RDRCT,
 	APPEND_RDRCT,
 	INPUT_RDRCT,
