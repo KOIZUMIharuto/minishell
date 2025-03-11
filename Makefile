@@ -6,7 +6,7 @@ CC = cc
 RM = rm
 FSANITIZE = -fsanitize=address
 CFLAGS = -Wall -Wextra -Werror
-INCLUDES = -I./includes
+INCLUDES = -I ./includes
 READLINE = -lreadline
 
 LIBFT_DIR = libft
@@ -50,10 +50,6 @@ all: $(NAME)
 $(NAME): $(OBJS) $(LIBFT)
 	$(CC) $(CFLAGS) $(OBJS) $(LIBFT) $(READLINE) -o $(NAME)
 
-# libftのビルドルール
-$(LIBFT):
-	$(MAKE) bonus -C $(LIBFT_DIR)
-
 # ソースファイルからオブジェクトファイル生成
 $(OBJ_DIR)/%.o: %.c | $(OBJ_DIR)
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
@@ -72,6 +68,10 @@ $(PURSER_OBJ_DIR)/%.o: %.c | $(PURSER_OBJ_DIR)
 
 $(PURSER_OBJ_DIR):
 	mkdir -p $(PURSER_OBJ_DIR)
+
+# libftのビルドルール
+$(LIBFT):
+	$(MAKE) bonus -C $(LIBFT_DIR)
 
 # クリーンアップ
 clean:

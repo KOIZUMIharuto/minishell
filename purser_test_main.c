@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/29 15:43:58 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/11 16:55:58 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/11 17:57:03 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ int	main(int argc, char **argv, char **env)
 
 	(void)argc;
 	(void)argv;
-	environ = env;
+	g_data.environ = env;
 	while (1)
 	{
 		write(1, "purser$ ", 8);
