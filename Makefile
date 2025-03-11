@@ -1,16 +1,34 @@
 # Makefile for Minishell
 
 NAME = minishell
+
 CC = cc
+RM = rm
 FSANITIZE = -fsanitize=address
 CFLAGS = -Wall -Wextra -Werror
 INCLUDES = -I./includes
-LIBFT = libft/libft.a
-SRCS = main.c echo.c exit.c pwd.c cd.c export.c unset.c env.c execve.c signal.c redirect.c execute_bultin.c pipe.c \
-       heredocument.c
-OBJS = $(SRCS:.c=.o)
 READLINE = -lreadline
-RM = rm -f  # 削除コマンドを変数に定義
+
+LIBFT_DIR = libft
+LIBFT = $(LIBFT_DIR)/libft.a
+
+SRCS = \
+cd.c\
+echo.c\
+env.c\
+execute_bultin.c\
+execve.c\
+exit.c\
+export.c\
+heredocument.c\
+main.c\
+pipe.c\
+pwd.c\
+redirect.c\
+signal.c\
+unset.c
+OBJ_DIR = objs
+OBJS = $(addprefix $(OBJ_DIR)/, $(SRCS:.c=.o))
 
 PURSER = purser
 PURSER_TEST_MAIN = purser_test_main.c
@@ -23,7 +41,7 @@ PURSER_SRCS =\
 PURSER_OBJ_DIR = purser_obj
 PURSER_OBJS = $(addprefix $(PURSER_OBJ_DIR)/, $(PURSER_SRCS:.c=.o))
 
-.PHONY: all clean fclean re
+.PHONY: all p clean fclean re
 
 # デフォルトターゲット
 all: $(NAME)
@@ -34,22 +52,15 @@ $(NAME): $(OBJS) $(LIBFT)
 
 # libftのビルドルール
 $(LIBFT):
-	$(MAKE) -C libft bonus
+	$(MAKE) bonus -C $(LIBFT_DIR)
 
 # ソースファイルからオブジェクトファイル生成
-%.o: %.c
+$(OBJ_DIR)/%.o: %.c | $(OBJ_DIR)
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
-# クリーンアップ
-clean:
-	$(MAKE) clean -C libft
-	$(RM) $(OBJS)
-	$(RM) -frd $(PURSER_OBJ_DIR)
-
-# 全ての生成物を削除
-fclean: clean
-	$(MAKE) fclean -C libft
-	$(RM) $(NAME) $(PURSER)
+# オブジェクトファイル生成ディレクトリ生成
+$(OBJ_DIR):
+	mkdir -p $(OBJ_DIR)
 
 p: $(PURSER)
 
@@ -61,6 +72,16 @@ $(PURSER_OBJ_DIR)/%.o: %.c | $(PURSER_OBJ_DIR)
 
 $(PURSER_OBJ_DIR):
 	mkdir -p $(PURSER_OBJ_DIR)
+
+# クリーンアップ
+clean:
+	$(MAKE) clean -C $(LIBFT_DIR)
+	$(RM) -frd $(OBJ_DIR) $(PURSER_OBJ_DIR)
+
+# 全ての生成物を削除
+fclean: clean
+	$(MAKE) fclean -C $(LIBFT_DIR)
+	$(RM) -f $(NAME) $(PURSER)
 
 # 再ビルド
 re: fclean all

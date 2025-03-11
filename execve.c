@@ -59,7 +59,7 @@ void execute_command(char **command)
 
     if (ft_strchr(command[0], '/') != NULL)
     {
-        if (execve(command[0], command, environ) == -1)
+        if (execve(command[0], command, g_data.environ) == -1)
         {
             perror("execve");
             exit(EXIT_FAILURE);
@@ -73,7 +73,7 @@ void execute_command(char **command)
             fprintf(stderr, "%s: command not found\n", command[0]);
             exit(EXIT_FAILURE);
         }
-        if (execve(command_path, command, environ) == -1)
+        if (execve(command_path, command, g_data.environ) == -1)
         {
             perror("execve");
             free(command_path);

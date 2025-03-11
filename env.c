@@ -5,7 +5,7 @@
  * print_env - 環境変数をすべて出力する関数
  */
 void print_env(void) {
-    for (char **env = environ; *env != NULL; env++) {
+    for (char **env = g_data.environ; *env != NULL; env++) {
         printf("%s\n", *env);
     }
 }
