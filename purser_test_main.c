@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   purser_test_main.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/29 15:43:58 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/11 17:57:03 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/12 17:37:39 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ int	main(int argc, char **argv, char **env)
 
 	(void)argc;
 	(void)argv;
-	g_data.environ = env;
+	environ = env;
 	while (1)
 	{
 		write(1, "purser$ ", 8);

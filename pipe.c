@@ -27,7 +27,7 @@ int pipe_command(char **commands) {
 
         // 組み込みコマンドの判定
         int is_builtin_index = is_builtin_mark_index(command_tokens[0]);
-        if (is_builtin_index) {;
+        if (is_builtin_index >= 0) {;
             // 親プロセス内で組み込みコマンドを実行
             if (prev_fd != -1) {
                 // 前のパイプからの入力を標準入力にリダイレクト
@@ -41,8 +41,21 @@ int pipe_command(char **commands) {
                 close(pipe_fds[1]);
             }
             // 組み込みコマンドを実行
-            execute_builtin(command_tokens, is_builtin_index);
+            int result = execute_builtin(command_tokens, is_builtin_index);
 
+             // exit コマンドが単独で実行された場合（パイプなし）は特別な戻り値を返す
+            if (ft_strcmp(command_tokens[0], "exit") == 0 && num_commands == 1) {
+                if (result == 1) {
+                    continue;  // または適切な処理で次のコマンドへ進む
+                }
+                // command_tokens のメモリを解放
+                for (int j = 0; command_tokens[j]; j++) {
+                    free(command_tokens[j]);
+                }
+                free(command_tokens);
+                g_last_exit_status = result;
+                return -42;  // exit コマンドが実行されたことを示す特別な値
+            }
             // 組み込みコマンドの後は標準出力を元に戻す
             if (i < num_commands - 1) {
                 close(pipe_fds[1]);

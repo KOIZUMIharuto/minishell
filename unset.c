@@ -1,40 +1,55 @@
-// unset.c
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   unset.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/12 18:11:10 by shiori            #+#    #+#             */
+/*   Updated: 2025/03/13 01:54:39 by shiori           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
-/**
- * remove_env - 環境変数を削除します。
- * @var: 削除する変数名
- */
-void remove_env(const char *var) {
+extern char **environ;
 
-    size_t var_len = strlen(var);
-    for (char **env = g_data.environ; *env != NULL; env++) {
-        if (strncmp(*env, var, var_len) == 0 && (*env)[var_len] == '=') {
-            free(*env); // 古いエントリを解放
+void remove_env(char *var) {
+    size_t var_len = ft_strlen(var);
+    char **env = environ;
+    char **target = NULL;
 
-            // 環境変数をシフトして配列を更新
-            for (char **next = env; *next != NULL; next++) {
-                *next = *(next + 1);
-            }
+    while (*env) {
+        if (ft_strncmp(*env, var, var_len) == 0 && (*env)[var_len] == '=') {
+            target = env;
             break;
         }
+        env++;
     }
-}
-
-
-/**
- * builtin_unset - unset コマンドを実装します。
- * @args: コマンドライン引数の配列
- */
-void builtin_unset(char **args) {
-    if (args[1] == NULL) {
-        const char *error_msg = "unset: not enough arguments\n";
-        write(STDERR_FILENO, error_msg, strlen(error_msg));
+    if (!target)
         return;
-    }
 
-    for (int i = 1; args[i] != NULL; i++) {
-        remove_env(args[i]);
+    while (*target) {
+        *target = *(target + 1);
+        target++;
     }
 }
 
+int builtin_unset(char **args) {
+    int i;
+    char *command = "unset";
+    int status;
+
+    i = 1;
+    status = 0;
+    while (args[i]) {
+        if (!is_valid_identifier(args[i])) {
+            handle_invalid_identifier(command, args[i]);
+            status = 1;
+        } else {
+            remove_env(args[i]);
+        }
+        i++;
+    }
+    return (status);
+}
