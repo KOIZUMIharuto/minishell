@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   purser_quote_env.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/05 16:05:58 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/11 17:47:20 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/12 17:37:39 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,12 +101,12 @@ static int	expand_env(char *arg, char **env)
 	while (arg[key_len] && (ft_isalnum(arg[key_len]) || arg[key_len] == '_'))
 		key_len++;
 	i = 0;
-	while (g_data.environ[i])
+	while (environ[i])
 	{
-		if (ft_strncmp(arg, g_data.environ[i], key_len) == 0
-			&& g_data.environ[i][key_len] == '=')
+		if (ft_strncmp(arg, environ[i], key_len) == 0
+			&& environ[i][key_len] == '=')
 		{
-			*env = &(g_data.environ[i][key_len + 1]);
+			*env = &(environ[i][key_len + 1]);
 			break ;
 		}
 		i++;

@@ -26,7 +26,9 @@ pipe.c\
 pwd.c\
 redirect.c\
 signal.c\
-unset.c
+unset.c \
+env_utils.c
+
 OBJ_DIR = objs
 OBJS = $(addprefix $(OBJ_DIR)/, $(SRCS:.c=.o))
 

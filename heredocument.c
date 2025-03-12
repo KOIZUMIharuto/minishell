@@ -3,7 +3,7 @@
 
 int handle_heredocument(char **command) {
     for (int i = 0; command[i] != NULL; i++) {
-        if (strcmp(command[i], "<<") == 0 && command[i + 1] != NULL) {
+        if (ft_strcmp(command[i], "<<") == 0 && command[i + 1] != NULL) {
             char *delimiter = command[i + 1];
             size_t delimiter_len = ft_strlen(delimiter);
             int pipe_fds[2];

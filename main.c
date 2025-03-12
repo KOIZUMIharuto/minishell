@@ -1,22 +1,26 @@
 // main.c
 #include "includes/minishell.h"
   
-void interpret_line(char *line) {
+int interpret_line(char *line) {
     char **tokens = ft_split(line, '|'); // パイプで分割
     if (tokens == NULL || tokens[0] == NULL) {
         free(tokens);
-        return;
+        return (0);
     }
     // 内部コマンドの実行または外部コマンドの実行
+    int status;
     if (tokens[0] != NULL) {
         // 内部コマンドかを判断、内部コマンドの場合はインデックスを渡す
-        pipe_command(tokens);
+        status=pipe_command(tokens);
     }
     for (int i = 0; tokens[i] != NULL; i++) {
         free(tokens[i]);
     }
     free(tokens);
+    return (status);
 }
+
+int g_last_exit_status = 0;
 
 // メイン関数
 int main() {
@@ -48,7 +52,12 @@ int main() {
         }
         if (strlen(line) > 0) {
             add_history(line);
-            interpret_line(line);
+            int status=interpret_line(line);
+            // exit コマンドが実行された場合
+            if (status == -42) {
+                free(line);
+                exit(g_last_exit_status);
+            }
         }
         free(line);
     }

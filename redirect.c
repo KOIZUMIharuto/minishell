@@ -12,19 +12,21 @@ int open_redirect_file(char *filename) {
 }
 
 int handle_redirection(char **command) {
-    int redirect_fd;
+    int redirect_fd; 
+
+    redirect_fd = -1;
     // 標準出力の上書きリダイレクト ">"
     for (int i = 0; command[i] != NULL; i++) {
-        if (((strcmp(command[i], ">") == 0 || strcmp(command[i], ">>") == 0) || strcmp(command[i], "<") == 0) && command[i + 1] != NULL) {
-            if (strcmp(command[i], ">") == 0) 
+        if (((ft_strcmp(command[i], ">") == 0 || ft_strcmp(command[i], ">>") == 0) || ft_strcmp(command[i], "<") == 0) && command[i + 1] != NULL) {
+            if (ft_strcmp(command[i], ">") == 0) 
             {
                 redirect_fd = open(command[i + 1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
             }
-            else if (strcmp(command[i], ">>") == 0)
+            else if (ft_strcmp(command[i], ">>") == 0)
             {
                 redirect_fd = open(command[i + 1], O_WRONLY | O_CREAT | O_APPEND, 0644);
             }
-            else if (strcmp(command[i], "<") == 0)
+            else if (ft_strcmp(command[i], "<") == 0)
             {
                 redirect_fd = open(command[i + 1], O_RDONLY);
             }
@@ -32,7 +34,7 @@ int handle_redirection(char **command) {
                 perror(command[i + 1]); 
                 return -1;
             }
-            if (strcmp(command[i], ">") == 0 || strcmp(command[i], ">>") == 0)
+            if (ft_strcmp(command[i], ">") == 0 || ft_strcmp(command[i], ">>") == 0)
             {   // 標準出力をリダイレクト
                 if (dup2(redirect_fd, STDOUT_FILENO) == -1) {
                     perror("dup2");
@@ -41,7 +43,7 @@ int handle_redirection(char **command) {
                 }
                 close(redirect_fd);
             }
-            else if (strcmp(command[i], "<") == 0)
+            else if (ft_strcmp(command[i], "<") == 0)
             {   // 標準入力をリダイレクト
                 if (dup2(redirect_fd, STDIN_FILENO) == -1) {
                     perror("dup2");

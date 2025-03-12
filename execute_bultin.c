@@ -4,7 +4,7 @@
 // 内部コマンドの一覧
 typedef struct {
     char *name;
-    void (*func)(char **);
+    int (*func)(char **);
 } BuiltinCommand;
 
 // 内部コマンドのテーブル
@@ -25,21 +25,22 @@ int num_builtins() {
 
 int is_builtin_mark_index(char *cmd) {
     for (int i = 0; i < num_builtins(); i++) {
-        if (strcmp(cmd, builtins[i].name) == 0)
+        if (ft_strcmp(cmd, builtins[i].name) == 0)
             return i;
     }
-    return 0;
+    return -1;
 }
 
 int execute_builtin(char **command, int index) {
     int backup_stdout = -1;
     int redirect_fd;
+    int result;
 
     handle_heredocument(command);
 
     // リダイレクトの有無をチェック
     for (int i = 0; command[i] != NULL; i++) {
-        if (strcmp(command[i], ">") == 0 && command[i + 1] != NULL) {
+        if (ft_strcmp(command[i], ">") == 0 && command[i + 1] != NULL) {
         	// 標準出力をバックアップ
             backup_stdout = dup(STDOUT_FILENO);
             if (backup_stdout == -1) {
@@ -59,7 +60,7 @@ int execute_builtin(char **command, int index) {
     }  
 
     // コマンドを実行
-    builtins[index].func(command);
+    result = builtins[index].func(command);
 
 
     // 標準出力を元に戻す
@@ -71,7 +72,7 @@ int execute_builtin(char **command, int index) {
         }
         close(backup_stdout);
     }
-    
-    return 0;
+    g_last_exit_status = result;
+    return result;
 }
 
