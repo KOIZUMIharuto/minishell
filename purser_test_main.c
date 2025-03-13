@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   purser_test_main.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/29 15:43:58 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/12 17:37:39 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/13 17:23:48 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ int	main(int argc, char **argv, char **env)
 		line = get_next_line(0);
 		if (!line)
 			break ;
-		cmds = purser(line);
+		cmds = purser(line, env);
 		if (!cmds)
 		{
 			free(line);

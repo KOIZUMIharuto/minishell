@@ -6,16 +6,16 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 16:45:21 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/11 16:56:19 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/13 17:24:41 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <purser.h>
 
 static char		**recursive_split(char *line, char *del, int word_cnt);
-static bool		purse_tokens(t_cmd **cmds, char **tokens, int token_cnt);
+static bool		purse_tokens(t_cmd **cmds, char **tokens, char **environ);
 
-t_cmd	**purser(char *line)
+t_cmd	**purser(char *line, char **environ)
 {
 	t_cmd	**cmds;
 	char	**tokens;
@@ -32,7 +32,7 @@ t_cmd	**purser(char *line)
 	cmds = (t_cmd **)ft_calloc(token_cnt + 1, sizeof(t_cmd *));
 	if (!cmds)
 		return (NULL);
-	if (!purse_tokens(cmds, tokens, token_cnt))
+	if (!purse_tokens(cmds, tokens, environ))
 	{
 		free_tokens(tokens);
 		free_cmds(cmds, 0);
@@ -71,19 +71,19 @@ static char	**recursive_split(char *line, char *del, int word_cnt)
 	return (tokens);
 }
 
-static bool	purse_tokens(t_cmd **cmds, char **tokens, int token_cnt)
+static bool	purse_tokens(t_cmd **cmds, char **tokens, char **environ)
 {
 	int		i;
 
 	i = -1;
-	while (++i < token_cnt)
+	while (tokens[++i])
 	{
 		cmds[i] = (t_cmd *)ft_calloc(1, sizeof(t_cmd));
 		if (!cmds[i])
 			return (false);
-		cmds[i]->input_rdrct = check_rdrct(tokens[i], "<", 0);
-		cmds[i]->output_rdrct = check_rdrct(tokens[i], ">", 0);
-		cmds[i]->cmd = split_arg(tokens[i]);
+		cmds[i]->input_rdrct = check_rdrct(tokens[i], "<", 0, environ);
+		cmds[i]->output_rdrct = check_rdrct(tokens[i], ">", 0, environ);
+		cmds[i]->cmd = split_arg(tokens[i], environ);
 		cmds[i]->infile_fd = -1;
 		cmds[i]->outfile_fd = -1;
 		if (!cmds[i]->input_rdrct
