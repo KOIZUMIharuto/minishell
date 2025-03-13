@@ -6,16 +6,16 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 16:45:21 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/13 17:24:41 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/13 17:47:15 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <purser.h>
 
 static char		**recursive_split(char *line, char *del, int word_cnt);
-static bool		purse_tokens(t_cmd **cmds, char **tokens, char **environ);
+static bool		purse_tokens(t_cmd **cmds, char **tokens, char **env);
 
-t_cmd	**purser(char *line, char **environ)
+t_cmd	**purser(char *line, char **env)
 {
 	t_cmd	**cmds;
 	char	**tokens;
@@ -32,7 +32,7 @@ t_cmd	**purser(char *line, char **environ)
 	cmds = (t_cmd **)ft_calloc(token_cnt + 1, sizeof(t_cmd *));
 	if (!cmds)
 		return (NULL);
-	if (!purse_tokens(cmds, tokens, environ))
+	if (!purse_tokens(cmds, tokens, env))
 	{
 		free_tokens(tokens);
 		free_cmds(cmds, 0);
@@ -55,7 +55,7 @@ static char	**recursive_split(char *line, char *del, int word_cnt)
 		tokens = (char **)ft_calloc(word_cnt + 1, sizeof(char *));
 	else
 	{
-		quote = NONE_QUOTE;
+		quote = NONE_Q;
 		i = 0;
 		while (line[i] && !is_del(line[i], del, &quote))
 			i++;
@@ -71,7 +71,7 @@ static char	**recursive_split(char *line, char *del, int word_cnt)
 	return (tokens);
 }
 
-static bool	purse_tokens(t_cmd **cmds, char **tokens, char **environ)
+static bool	purse_tokens(t_cmd **cmds, char **tokens, char **env)
 {
 	int		i;
 
@@ -81,9 +81,9 @@ static bool	purse_tokens(t_cmd **cmds, char **tokens, char **environ)
 		cmds[i] = (t_cmd *)ft_calloc(1, sizeof(t_cmd));
 		if (!cmds[i])
 			return (false);
-		cmds[i]->input_rdrct = check_rdrct(tokens[i], "<", 0, environ);
-		cmds[i]->output_rdrct = check_rdrct(tokens[i], ">", 0, environ);
-		cmds[i]->cmd = split_arg(tokens[i], environ);
+		cmds[i]->input_rdrct = check_rdrct(tokens[i], "<", 0, env);
+		cmds[i]->output_rdrct = check_rdrct(tokens[i], ">", 0, env);
+		cmds[i]->cmd = split_arg(tokens[i], env);
 		cmds[i]->infile_fd = -1;
 		cmds[i]->outfile_fd = -1;
 		if (!cmds[i]->input_rdrct
@@ -100,18 +100,18 @@ bool	is_del(char c, char *del, t_quote *quote)
 	del_quote = (ft_strchr(del, '"') && ft_strchr(del, '\''));
 	if (quote)
 	{
-		if (c == '"' && *quote == DOUBLE_QUOTE)
-			*quote = NONE_QUOTE;
-		else if (c == '"' && *quote == NONE_QUOTE)
-			*quote = DOUBLE_QUOTE;
-		else if (c == '\'' && *quote == SINGLE_QUOTE)
-			*quote = NONE_QUOTE;
-		else if (c == '\'' && *quote == NONE_QUOTE)
-			*quote = SINGLE_QUOTE;
-		if (!del_quote && *quote != NONE_QUOTE)
+		if (c == '"' && *quote == DOUBLE_Q)
+			*quote = NONE_Q;
+		else if (c == '"' && *quote == NONE_Q)
+			*quote = DOUBLE_Q;
+		else if (c == '\'' && *quote == SINGLE_Q)
+			*quote = NONE_Q;
+		else if (c == '\'' && *quote == NONE_Q)
+			*quote = SINGLE_Q;
+		if (!del_quote && *quote != NONE_Q)
 			return (false);
-		if ((*quote == SINGLE_QUOTE && c == '"')
-			|| (*quote == DOUBLE_QUOTE && c == '\''))
+		if ((*quote == SINGLE_Q && c == '"')
+			|| (*quote == DOUBLE_Q && c == '\''))
 			return (false);
 	}
 	return (ft_strchr(del, c) != NULL);

@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 21:15:37 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/13 17:32:57 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/13 17:51:05 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,9 @@
 
 typedef enum e_quote
 {
-	NONE_QUOTE,
-	SINGLE_QUOTE,
-	DOUBLE_QUOTE
+	NONE_Q,
+	SINGLE_Q,
+	DOUBLE_Q
 }	t_quote;
 
 typedef enum s_rdrct_type
@@ -52,15 +52,15 @@ typedef struct s_env
 {
 	char	**src;
 	char	*tmp;
-}	t_env;
+}	t_envs;
 
-t_cmd	**purser(char *line, char **environ);
+t_cmd	**purser(char *line, char **env);
 bool	is_del(char c, char *del, t_quote *quote);
 
-t_rdrct	**check_rdrct(char *line, char *key, int rdrct_cnt, char **environ);
+t_rdrct	**check_rdrct(char *line, char *key, int rdrct_cnt, char **env);
 
-char	**split_arg(char *line, char **environ);
-char	*recursive_expand(char **arg, t_env *env, t_quote quote, int len);
+char	**split_arg(char *line, char **env);
+char	*recursive_expand(char **arg, t_envs *envs, t_quote quote, int len);
 
 
 void	free_rdrcts(t_rdrct **rdrcts, int i);

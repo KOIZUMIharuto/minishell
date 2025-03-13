@@ -12,11 +12,11 @@
 
 #include <purser.h>
 
-static t_rdrct	*set_rdrct(char **key_pos, char *key, char **environ);
+static t_rdrct	*set_rdrct(char **key_pos, char *key, char **env);
 static int		set_rdrct_type(char *key_pos, char key, t_rdrct *rdrct);
-static bool		set_rdrct_file(char *key_pos, t_rdrct *rdrct, int file_len, char **environ);
+static bool		set_file(char *key_pos, t_rdrct *rdrct, int len, char **env);
 
-t_rdrct	**check_rdrct(char *line, char *key, int rdrct_cnt, char **environ)
+t_rdrct	**check_rdrct(char *line, char *key, int rdrct_cnt, char **env)
 {
 	t_rdrct	**rdrcts;
 	t_rdrct	*rdrct;
@@ -31,10 +31,10 @@ t_rdrct	**check_rdrct(char *line, char *key, int rdrct_cnt, char **environ)
 		rdrcts = (t_rdrct **)ft_calloc(rdrct_cnt + 1, sizeof(t_rdrct *));
 	else
 	{
-		rdrct = set_rdrct(&key_pos, key, environ);
+		rdrct = set_rdrct(&key_pos, key, env);
 		if (!rdrct)
 			return (NULL);
-		rdrcts = check_rdrct(line, key, rdrct_cnt + 1, environ);
+		rdrcts = check_rdrct(line, key, rdrct_cnt + 1, env);
 		if (!rdrcts)
 			free_rdrct(rdrct);
 		else
@@ -43,7 +43,7 @@ t_rdrct	**check_rdrct(char *line, char *key, int rdrct_cnt, char **environ)
 	return (rdrcts);
 }
 
-static t_rdrct	*set_rdrct(char **key_pos, char *key, char **environ)
+static t_rdrct	*set_rdrct(char **key_pos, char *key, char **env)
 {
 	t_rdrct	*rdrct;
 	t_quote	quote;
@@ -57,11 +57,11 @@ static t_rdrct	*set_rdrct(char **key_pos, char *key, char **environ)
 	*key_pos += set_rdrct_type(*key_pos, key[0], rdrct);
 	while (**key_pos && is_del(**key_pos, " \t\n", NULL))
 		(*key_pos)++;
-	quote = NONE_QUOTE;
+	quote = NONE_Q;
 	i = 0;
 	while ((*key_pos)[i] && !is_del((*key_pos)[i], " \t\n><", &quote))
 		i++;
-	if (!set_rdrct_file(*key_pos, rdrct, i, environ))
+	if (!set_file(*key_pos, rdrct, i, env))
 	{
 		free_rdrct (rdrct);
 		return (NULL);
@@ -96,7 +96,7 @@ static int	set_rdrct_type(char *key_pos, char key, t_rdrct *rdrct)
 	return (1);
 }
 
-static bool	set_rdrct_file(char *key_pos, t_rdrct *rdrct, int file_len, char **environ)
+static bool	set_file(char *key_pos, t_rdrct *rdrct, int len, char **env)
 {
 	char	*file_name_tmp;
 
@@ -106,14 +106,14 @@ static bool	set_rdrct_file(char *key_pos, t_rdrct *rdrct, int file_len, char **e
 		{
 			rdrct->file = (char **)ft_calloc(2, sizeof(char *));
 			if (rdrct->file)
-				rdrct->file[0] = ft_substr(key_pos, 0, file_len);
+				rdrct->file[0] = ft_substr(key_pos, 0, len);
 		}
 		else
 		{
-			file_name_tmp = ft_substr(key_pos, 0, file_len);
+			file_name_tmp = ft_substr(key_pos, 0, len);
 			if (!file_name_tmp)
 				return (false);
-			rdrct->file = split_arg(file_name_tmp, environ);
+			rdrct->file = split_arg(file_name_tmp, env);
 			free(file_name_tmp);
 		}
 		if (!rdrct->file || !rdrct->file[0])
