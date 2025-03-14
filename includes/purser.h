@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 21:15:37 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/11 16:55:35 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/14 15:09:17 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,9 @@
 
 typedef enum e_quote
 {
-	NONE_QUOTE,
-	SINGLE_QUOTE,
-	DOUBLE_QUOTE
+	NONE_Q,
+	SINGLE_Q,
+	DOUBLE_Q
 }	t_quote;
 
 typedef enum s_rdrct_type
@@ -48,13 +48,20 @@ typedef struct s_cmd
 	int		outfile_fd;
 }	t_cmd;
 
-t_cmd	**purser(char *line);
+typedef struct s_data
+{
+	char	exit_status[4];
+	char	**env;
+	char	*tmp;
+}	t_data;
+
+t_cmd	**purser(char *line, int exit_status, char **env);
 bool	is_del(char c, char *del, t_quote *quote);
 
-t_rdrct	**check_rdrct(char *line, char *key, int rdrct_cnt);
+t_rdrct	**check_rdrct(char *line, char *key, int rdrct_cnt, t_data *data);
 
-char	**split_arg(char *line);
-char	*recursive_expand(char **arg, char **env, t_quote quote, int len);
+char	**split_arg(char *line, t_data *data);
+char	*recursive_expand(char **arg, t_data *data, t_quote quote, int len);
 
 
 void	free_rdrcts(t_rdrct **rdrcts, int i);

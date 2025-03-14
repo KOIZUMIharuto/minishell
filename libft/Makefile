@@ -19,7 +19,7 @@ ft_lstdelone_bonus.c ft_lstadd_back_bonus.c ft_lstlast_bonus.c \
 ft_lstsize_bonus.c ft_lstadd_front_bonus.c ft_lstmap_bonus.c \
 
 ifdef WITH_BONUS
-OBJS+=$(SRCS_BONUS:.c=.o)
+SRCS+=$(SRCS_BONUS)
 endif
 
 OBJ_DIR = objs
