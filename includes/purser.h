@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 21:15:37 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/14 15:09:17 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/15 00:36:14 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 # define PURSER_H
 
 # include "minishell.h"
-# include <stdbool.h>
 
 typedef enum e_quote
 {
