@@ -5,7 +5,7 @@ NAME = minishell
 CC = cc
 RM = rm
 FSANITIZE = -fsanitize=address
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror 
 INCLUDES = -I ./includes
 READLINE = -lreadline
 
@@ -26,8 +26,9 @@ pipe.c\
 pwd.c\
 redirect.c\
 signal.c\
-unset.c \
-env_utils.c
+unset.c\
+env_utils.c\
+utils.c\
 
 OBJ_DIR = objs
 OBJS = $(addprefix $(OBJ_DIR)/, $(SRCS:.c=.o))
