@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 21:15:37 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/14 13:58:14 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/14 15:09:17 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ typedef struct s_cmd
 
 typedef struct s_data
 {
-	int		exit_status;
+	char	exit_status[4];
 	char	**env;
 	char	*tmp;
 }	t_data;

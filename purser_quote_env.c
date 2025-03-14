@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/05 16:05:58 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/14 13:08:13 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/14 15:18:57 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,6 +97,11 @@ static int	expand_env(char *arg, t_data *data)
 	int		key_len;
 	int		i;
 
+	if (arg[0] == '?')
+	{
+		data->tmp = data->exit_status;
+		return (1);
+	}
 	key_len = 0;
 	while (arg[key_len] && (ft_isalnum(arg[key_len]) || arg[key_len] == '_'))
 		key_len++;

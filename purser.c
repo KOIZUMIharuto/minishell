@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 16:45:21 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/14 13:59:35 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/14 15:23:53 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,27 @@ t_cmd	**purser(char *line, int exit_status, char **env)
 
 static void	init_data(t_data *data, int exit_status, char **env)
 {
-	data->exit_status = exit_status;
+	int	i;
+	int	tmp;
+	int	div;
+
+	exit_status %= 256;
+	i = 0;
+	div = 100;
+	while (div)
+	{
+		tmp = exit_status / div;
+		if (tmp == 0 && i == 0 && div != 1)
+		{
+			div /= 10;
+			continue ;
+		}
+		data->exit_status[i++] = tmp + '0';
+		exit_status %= div;
+		div /= 10;
+	}
+	while (i <= 3)
+		data->exit_status[i++] = '\0';
 	data->env = env;
 	data->tmp = NULL;
 }

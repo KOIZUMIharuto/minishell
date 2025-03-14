@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/29 15:43:58 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/14 14:00:42 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/14 15:22:11 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,9 +20,11 @@ int	main(int argc, char **argv, char **env)
 	t_cmd	**cmds;
 	int		g_last_exit_status;
 
-	(void)argc;
-	(void)argv;
+	// (void)argc;
+	// (void)argv;
 	g_last_exit_status = 0;
+	if (argc > 1)
+		g_last_exit_status = ft_atoi(argv[1]);
 	while (1)
 	{
 		write(1, "purser$ ", 8);
