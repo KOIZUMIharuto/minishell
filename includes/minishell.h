@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 14:13:46 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/13 02:12:25 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/15 00:47:26 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,18 +26,23 @@
 # include <sys/wait.h>  // waitpid を使用するために必要なヘッダー
 # include <fcntl.h> // open, close, O_RDONLY, O_WRONLY, O_CREAT を使用するために必要なヘッダー
 # include <errno.h>
+# include <stdbool.h>
 
 extern char **environ;
 extern int g_last_exit_status;
 
-// typedef struct s_data
-// {
-	// char	**environ;
-	// int		last_exit_status;
-// }	t_data;
+typedef struct s_env
+{
+	char	*key;
+	char	*value;
+}	t_env;
 
-// 環境変数の定義
-// t_data	g_data;
+
+t_list	*env_convert(char **env);
+void	env_delete(t_list **env_list, char *key);
+void	env_free(void *content);
+t_env	*env_get(t_list *env_list, char *key);
+bool	env_update(t_list **env_list, char *env);
 
 // 内部コマンドのプロトタイプ宣言
 int	builtin_echo(char **args);
