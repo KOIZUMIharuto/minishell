@@ -3,17 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   pwd.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 14:37:41 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/13 01:51:55 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/15 03:00:50 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include <minishell.h>
 
-int builtin_pwd(char **args) {
-    (void)args;
+int builtin_pwd(char **cmd, t_list *env) {
+    (void)cmd;
+	(void)env;
     char *buffer;
     size_t size = 1024;
 

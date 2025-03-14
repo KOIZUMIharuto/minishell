@@ -6,8 +6,9 @@ CC = cc
 RM = rm
 FSANITIZE = -fsanitize=address
 CFLAGS = -Wall -Wextra -Werror 
-INCLUDES = -I ./includes
-READLINE = -lreadline
+INCLUDES = -I./includes -I/usr/local/opt/readline/include
+# READLINE = -I/usr/local/Cellar/readline/8.2.13/include -D_DARWIN_C_SOURCE -L/usr/local/Cellar/readline/8.2.13/lib -lreadline
+READLINE = -lreadline -L/usr/local/opt/readline/lib
 
 LIBFT_DIR = libft
 LIBFT = $(LIBFT_DIR)/libft.a
@@ -30,6 +31,14 @@ unset.c\
 env_utils.c\
 utils.c\
 
+ENV_SRCS =\
+env_convert.c\
+env_delete.c\
+env_free.c\
+env_get.c\
+env_update.c\
+env_utils.c
+
 OBJ_DIR = objs
 OBJS = $(addprefix $(OBJ_DIR)/, $(SRCS:.c=.o))
 
@@ -40,7 +49,8 @@ PURSER_SRCS =\
 	purser_free.c\
 	purser_quote_env.c\
 	purser_redirect.c\
-	purser.c
+	purser.c\
+	$(ENV_SRCS)
 PURSER_OBJ_DIR = purser_obj
 PURSER_OBJS = $(addprefix $(PURSER_OBJ_DIR)/, $(PURSER_SRCS:.c=.o))
 
@@ -51,7 +61,7 @@ all: $(NAME)
 
 # バイナリ生成ルール
 $(NAME): $(OBJS) $(LIBFT)
-	$(CC) $(CFLAGS) $(OBJS) $(LIBFT) $(READLINE) -o $(NAME)
+	$(CC) $(CFLAGS) $(READLINE) $(OBJS) $(LIBFT) -o $(NAME)
 
 # ソースファイルからオブジェクトファイル生成
 $(OBJ_DIR)/%.o: %.c | $(OBJ_DIR)

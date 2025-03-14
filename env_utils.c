@@ -3,31 +3,36 @@
 /*                                                        :::      ::::::::   */
 /*   env_utils.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 23:50:11 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/13 00:31:22 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/15 03:27:42 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include <minishell.h>
 
-int is_valid_identifier(char *name) {
-    int i;
+bool	is_valid_key(char *key)
+{
+	int	i;
 
-    if (!name || !*name || (!ft_isalpha(name[0]) && name[0] != '_'))
-        return (0);
-    i = 1;
-    while (name[i]) {
-        if (!ft_isalnum(name[i]) && name[i] != '_')
-            return (0);
-        i++;
-    }
-    return (1);
+	if (!key || !*key || (!ft_isalpha(key[0]) && key[0] != '_'))
+		return (false);
+	i = 1;
+	while (key[i])
+	{
+		if (!ft_isalnum(key[i]) && key[i] != '_')
+			return (false);
+		i++;
+	}
+	return (true);
 }
 
-void handle_invalid_identifier(char *command,char *name) {
-    write(STDERR_FILENO, command, ft_strlen(command));
-    write(STDERR_FILENO, name, ft_strlen(name));
-    write(STDERR_FILENO, "': not a valid identifier\n", 26);
+void	handle_invalid_key(char *command, char *key)
+{
+	ft_putstr_fd("minishell: ", STDERR_FILENO);
+	ft_putstr_fd(command, STDERR_FILENO);
+	ft_putstr_fd(": `", STDERR_FILENO);
+	ft_putstr_fd(key, STDERR_FILENO);
+	ft_putstr_fd("': not a valid identifier\n", STDERR_FILENO);
 }

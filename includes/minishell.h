@@ -6,12 +6,14 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 14:13:46 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/15 00:47:26 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/15 03:39:38 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
+
+# define _GNU_SOURCE
 
 # include "../libft/libft.h" // 自作ライブラリの関数群を使用するためのヘッダー
 # include <limits.h> // システムの限界値（INT_MAX、PATH_MAX など）を定義するためのヘッダー
@@ -42,16 +44,18 @@ t_list	*env_convert(char **env);
 void	env_delete(t_list **env_list, char *key);
 void	env_free(void *content);
 t_env	*env_get(t_list *env_list, char *key);
-bool	env_update(t_list **env_list, char *env);
+char	*env_update(t_list **env_list, char *env);
+bool	is_valid_key(char *key);
+void	handle_invalid_key(char *command, char *key);
 
 // 内部コマンドのプロトタイプ宣言
-int	builtin_echo(char **args);
-int	builtin_cd(char **args);
-int	builtin_pwd(char **args);
-int	builtin_export(char **args);
-int	builtin_unset(char **args);
-int	builtin_env(char **args);
-int	builtin_exit(char **args);
+int	builtin_echo(char **args, t_list *env);
+int	builtin_cd(char **args, t_list *env);
+int	builtin_pwd(char **args, t_list *env);
+int	builtin_export(char **args, t_list *env);
+int	builtin_unset(char **args, t_list *env);
+int	builtin_env(char **args, t_list *env);
+int	builtin_exit(char **args, t_list *env);
 
 int		execute_builtin(char **command, int index);
 int		is_builtin_mark_index(char *cmd);
@@ -63,8 +67,6 @@ char	*find_command(char *command);
 void	signal_handler(int signum);
 int		pipe_command(char **commands);
 
-int is_valid_identifier(char *name);
-void handle_invalid_identifier(char *command,char *name);
 
 void free_double_pointor(char **array);
 

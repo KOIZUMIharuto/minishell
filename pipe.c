@@ -1,5 +1,5 @@
 // pipe.c
-#include "minishell.h"
+#include <minishell.h>
 
 // パイプ処理を行う関数
 // ls | grep .c | wc -l の様なパイプ処理を行う

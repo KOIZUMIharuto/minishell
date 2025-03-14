@@ -1,5 +1,5 @@
 // builin.c
-# include "minishell.h"
+# include <minishell.h>
 
 // 内部コマンドの一覧
 typedef struct {

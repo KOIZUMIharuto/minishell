@@ -6,17 +6,17 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 16:45:21 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/14 15:23:53 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/15 02:38:14 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <purser.h>
 
-static void	init_data(t_data *data, int exit_status, char **env);
+static void	init_data(t_data *data, int exit_status, t_list *env);
 static char	**recursive_split(char *line, char *del, int word_cnt);
 static bool	purse_tokens(t_cmd **cmds, char **tokens, t_data *data);
 
-t_cmd	**purser(char *line, int exit_status, char **env)
+t_cmd	**purser(char *line, int exit_status, t_list *env)
 {
 	t_cmd	**cmds;
 	char	**tokens;
@@ -45,7 +45,7 @@ t_cmd	**purser(char *line, int exit_status, char **env)
 	return (cmds);
 }
 
-static void	init_data(t_data *data, int exit_status, char **env)
+static void	init_data(t_data *data, int exit_status, t_list *env)
 {
 	int	i;
 	int	tmp;

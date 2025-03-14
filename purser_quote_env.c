@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/05 16:05:58 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/14 15:18:57 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/15 02:44:08 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 static char	*env_remained(char **arg, t_data *data, t_quote quote, int len);
 static char	*env_not_remained(char **arg, t_data *data, t_quote quote, int len);
 static void	move_arg_pointer(char **arg, t_data *data, char *tmp, int i);
-static int	expand_env(char *arg, t_data *data);
+static void	expand_env(char *arg, int key_len, t_data *data);
 
 char	*recursive_expand(char **arg, t_data *data, t_quote quote, int len)
 {
@@ -84,37 +84,47 @@ static char	*env_not_remained(char **arg, t_data *data, t_quote quote, int len)
 
 static void	move_arg_pointer(char **arg, t_data *data, char *tmp, int i)
 {
+	int		key_len;
+	char	*key_tmp;
+
 	if (!tmp[i])
 		*arg += i;
 	else if (tmp[i] == '$')
-		*arg += expand_env(*arg + i + 1, data) + i + 1;
+	{
+		key_len = 0;
+		key_tmp = tmp + i + 1;
+		if (key_tmp[key_len] == '?')
+			key_len++;
+		else if (ft_isalpha(key_tmp[key_len]) || key_tmp[key_len] == '_')
+			while (ft_isalnum(key_tmp[key_len]) || key_tmp[key_len] == '_')
+				key_len++;
+		expand_env(*arg + i + 1, key_len, data);
+		*arg += key_len + i + 1;
+	}
 	else if (tmp[i] == '\'' || tmp[i] == '"')
 		*arg += i + 1;
 }
 
-static int	expand_env(char *arg, t_data *data)
+static void	expand_env(char *arg, int key_len, t_data *data)
 {
-	int		key_len;
-	int		i;
+	t_list	*list_tmp;
+	t_env	*env;
 
 	if (arg[0] == '?')
 	{
 		data->tmp = data->exit_status;
-		return (1);
+		return ;
 	}
-	key_len = 0;
-	while (arg[key_len] && (ft_isalnum(arg[key_len]) || arg[key_len] == '_'))
-		key_len++;
-	i = 0;
-	while (data->env[i])
+	list_tmp = data->env;
+	data->tmp = NULL;
+	while (list_tmp)
 	{
-		if (ft_strncmp(arg, data->env[i], key_len) == 0
-			&& data->env[i][key_len] == '=')
+		env = (t_env *)list_tmp->content;
+		if (ft_strncmp(env->key, arg, key_len) == 0 && !env->key[key_len])
 		{
-			data->tmp = &(data->env[i][key_len + 1]);
-			break ;
+			data->tmp = env->value;
+			return ;
 		}
-		i++;
+		list_tmp = list_tmp->next;
 	}
-	return (key_len);
 }

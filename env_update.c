@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 00:25:18 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/15 00:46:40 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/15 03:39:44 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,22 +17,26 @@ static bool		add_env(t_list **env_list, char *key, char *value);
 static t_list	*create_new_env(char *key, char *value);
 
 //成功: true, 失敗: false
-bool	env_update(t_list **env_list, char *env)
+char	*env_update(t_list **env_list, char *env)
 {
 	char	*key;
 	char	*value;
 	t_env	*env_content;
 
 	if (!split_env(env, &key, &value))
-		return (false);
+		return (key);
 	env_content = env_get(*env_list, key);
 	if (!env_content)
-		return (add_env(env_list, key, value));
+	{
+		if (!add_env(env_list, key, value))
+			key = NULL;
+		return (key);
+	}
 	if (!value)
-		return (true);
+		return (key);
 	free(env_content->value);
 	env_content->value = value;
-	return (true);
+	return (key);
 }
 
 //成功: true, 失敗: false
@@ -44,6 +48,8 @@ static bool	split_env(char *env, char **key, char **value)
 	while (env[key_len] && env[key_len] != '=')
 		key_len++;
 	*key = ft_substr(env, 0, key_len);
+	if (*key && !is_valid_key(*key))
+		return (false);
 	if (env[key_len])
 		*value = ft_strdup(env + key_len + 1);
 	else
@@ -51,6 +57,7 @@ static bool	split_env(char *env, char **key, char **value)
 	if (!*key || (env[key_len] && !*value))
 	{
 		free(*key);
+		*key = NULL;
 		free(*value);
 		return (false);
 	}

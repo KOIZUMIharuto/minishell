@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/29 15:43:58 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/14 15:22:11 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/15 02:45:49 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ int	main(int argc, char **argv, char **env)
 {
 	char	*line;
 	t_cmd	**cmds;
+	t_list	*env_list;
 	int		g_last_exit_status;
 
 	// (void)argc;
@@ -25,19 +26,21 @@ int	main(int argc, char **argv, char **env)
 	g_last_exit_status = 0;
 	if (argc > 1)
 		g_last_exit_status = ft_atoi(argv[1]);
+	env_list = env_convert(env);
 	while (1)
 	{
 		write(1, "purser$ ", 8);
 		line = get_next_line(0);
 		if (!line)
 			break ;
-		cmds = purser(line, g_last_exit_status, env);
+		cmds = purser(line, g_last_exit_status, env_list);
 		free(line);
 		if (!cmds)
 			break ;
 		print_cmds(cmds);
 		free_cmds(cmds, 0);
 	}
+	ft_lstclear(&env_list, env_free);
 	return (0);
 }
 

@@ -1,5 +1,5 @@
 // redirect.c
-#include "minishell.h"
+#include <minishell.h>
 
 // リダイレクト用のファイルをオープンする関数
 int open_redirect_file(char *filename) {

@@ -6,14 +6,14 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 21:15:37 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/15 00:36:14 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/15 02:38:26 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PURSER_H
 # define PURSER_H
 
-# include "minishell.h"
+# include <minishell.h>
 
 typedef enum e_quote
 {
@@ -50,11 +50,11 @@ typedef struct s_cmd
 typedef struct s_data
 {
 	char	exit_status[4];
-	char	**env;
+	t_list	*env;
 	char	*tmp;
 }	t_data;
 
-t_cmd	**purser(char *line, int exit_status, char **env);
+t_cmd	**purser(char *line, int exit_status, t_list *env);
 bool	is_del(char c, char *del, t_quote *quote);
 
 t_rdrct	**check_rdrct(char *line, char *key, int rdrct_cnt, t_data *data);

@@ -3,26 +3,35 @@
 /*                                                        :::      ::::::::   */
 /*   env.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 00:48:52 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/13 01:55:46 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/15 03:02:18 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include <minishell.h>
 
-void print_env(void) {
-    char **env;
-    env = environ;
-    while (*env) {
-        printf("%s\n", *env);
-        env++;
-    }
+static int	print_env(t_list *env_list);
+
+int	builtin_env(char **cmd, t_list *env)
+{
+	(void)cmd;
+	return (print_env(env));
 }
 
-int builtin_env(char **args) {
-    (void)args;
-    print_env();
-    return (0);
+static int	print_env(t_list *env_list)
+{
+	t_list	*env_list_tmp;
+	t_env	*env_content;
+
+	env_list_tmp = env_list;
+	while (env_list_tmp)
+	{
+		env_content = (t_env *)env_list_tmp->content;
+		if (printf("%s=%s\n", env_content->key, env_content->value) < 0)
+			return (1);
+		env_list_tmp = env_list_tmp->next;
+	}
+	return (0);
 }
