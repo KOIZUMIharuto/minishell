@@ -1,4 +1,15 @@
-// main.c
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/13 21:59:46 by shiori            #+#    #+#             */
+/*   Updated: 2025/03/14 00:09:03 by shiori           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "includes/minishell.h"
   
 int interpret_line(char *line) {
@@ -17,43 +28,32 @@ int interpret_line(char *line) {
         free(tokens[i]);
     }
     free(tokens);
+
+    if (WIFEXITED(status)) {
+        g_last_exit_status = WEXITSTATUS(status);
+    } else if (WIFSIGNALED(status)) {
+        g_last_exit_status = 128 + WTERMSIG(status);
+    }
+
     return (status);
 }
 
 int g_last_exit_status = 0;
 
-// メイン関数
 int main() {
     char *line;
 
-    struct sigaction sa;
-    sa.sa_handler = signal_handler; // ハンドラ関数を指定
-    sigemptyset(&sa.sa_mask);       //  ブロックするシグナルを空に設定
-    sa.sa_flags = SA_RESTART;       // 中断されたシステムコールを再開
-
-    // SIGINT (Ctrl+C) の設定
-    if (sigaction(SIGINT, &sa, NULL) == -1) {
-        perror("Error setting up sigaction for SIGINT");
-        return 1;
-    }
-
-    // SIGQUIT (Ctrl+\) の動作を無視するように設定
-    sa.sa_handler = SIG_IGN; // 無視する設定
-    if (sigaction(SIGQUIT, &sa, NULL) == -1) {
-        perror("Error setting up sigaction for SIGQUIT");
-        return 1;
-    }
+    setup_signal_handlers();
 
     while (1) {
         line = readline("$ ");
-        if (line == NULL) {  // EOF (Ctrl+D)
-            printf("\n");
+        if (!line) {
+            write(1, "exit\n", 5);
             break;
         }
-        if (strlen(line) > 0) {
+        if (ft_strlen(line) > 0) {
             add_history(line);
             int status=interpret_line(line);
-            // exit コマンドが実行された場合
             if (status == -42) {
                 free(line);
                 exit(g_last_exit_status);
@@ -61,7 +61,6 @@ int main() {
         }
         free(line);
     }
-
-    return 0;
+    return (0);
 }
 

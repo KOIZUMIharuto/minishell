@@ -66,7 +66,9 @@ int		pipe_command(char **commands);
 int is_valid_identifier(char *name);
 void handle_invalid_identifier(char *command,char *name);
 
+void free_double_pointor(char **array);
 
+void setup_signal_handlers(void);
 
 
 #endif
