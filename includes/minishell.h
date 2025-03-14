@@ -6,7 +6,7 @@
 /*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 14:13:46 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/13 02:12:25 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/13 22:37:44 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,9 @@ int		pipe_command(char **commands);
 int is_valid_identifier(char *name);
 void handle_invalid_identifier(char *command,char *name);
 
+void free_double_pointor(char **array);
 
+void setup_signal_handlers(void);
 
 
 #endif

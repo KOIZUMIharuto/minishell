@@ -1,13 +1,34 @@
-// signal.c
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   signal.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/13 22:01:52 by shiori            #+#    #+#             */
+/*   Updated: 2025/03/14 00:02:52 by shiori           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 # include "minishell.h"
 
-// グローバル変数 (シグナルの番号を示す)
-volatile sig_atomic_t g_signal_received = 0;
-
-// シグナルハンドラ関数
 void signal_handler(int signum) {
     if (signum == SIGINT) {
-        g_signal_received = signum; // シグナル番号を設定
-        write(1, "$\n", 2); // 新しい行にプロンプトを再表示
+        write(1, "\n", 1);
+        rl_on_new_line();
+        rl_replace_line("", 0);
+        rl_redisplay();
     }
+}
+
+void setup_signal_handlers(void) {
+    struct sigaction sa;
+
+    sa.sa_handler = signal_handler;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = SA_RESTART;
+    sigaction(SIGINT, &sa, NULL);
+
+    sa.sa_handler = SIG_IGN;
+    sigaction(SIGQUIT, &sa, NULL);
 }
