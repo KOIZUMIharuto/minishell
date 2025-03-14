@@ -6,20 +6,22 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 16:45:21 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/13 17:47:15 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/14 13:59:35 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <purser.h>
 
-static char		**recursive_split(char *line, char *del, int word_cnt);
-static bool		purse_tokens(t_cmd **cmds, char **tokens, char **env);
+static void	init_data(t_data *data, int exit_status, char **env);
+static char	**recursive_split(char *line, char *del, int word_cnt);
+static bool	purse_tokens(t_cmd **cmds, char **tokens, t_data *data);
 
-t_cmd	**purser(char *line, char **env)
+t_cmd	**purser(char *line, int exit_status, char **env)
 {
 	t_cmd	**cmds;
 	char	**tokens;
 	int		token_cnt;
+	t_data	data;
 
 	if (!line)
 		return (NULL);
@@ -32,7 +34,8 @@ t_cmd	**purser(char *line, char **env)
 	cmds = (t_cmd **)ft_calloc(token_cnt + 1, sizeof(t_cmd *));
 	if (!cmds)
 		return (NULL);
-	if (!purse_tokens(cmds, tokens, env))
+	init_data(&data, exit_status, env);
+	if (!purse_tokens(cmds, tokens, &data))
 	{
 		free_tokens(tokens);
 		free_cmds(cmds, 0);
@@ -40,6 +43,13 @@ t_cmd	**purser(char *line, char **env)
 	}
 	free_tokens(tokens);
 	return (cmds);
+}
+
+static void	init_data(t_data *data, int exit_status, char **env)
+{
+	data->exit_status = exit_status;
+	data->env = env;
+	data->tmp = NULL;
 }
 
 static char	**recursive_split(char *line, char *del, int word_cnt)
@@ -71,7 +81,7 @@ static char	**recursive_split(char *line, char *del, int word_cnt)
 	return (tokens);
 }
 
-static bool	purse_tokens(t_cmd **cmds, char **tokens, char **env)
+static bool	purse_tokens(t_cmd **cmds, char **tokens, t_data *data)
 {
 	int		i;
 
@@ -81,9 +91,9 @@ static bool	purse_tokens(t_cmd **cmds, char **tokens, char **env)
 		cmds[i] = (t_cmd *)ft_calloc(1, sizeof(t_cmd));
 		if (!cmds[i])
 			return (false);
-		cmds[i]->input_rdrct = check_rdrct(tokens[i], "<", 0, env);
-		cmds[i]->output_rdrct = check_rdrct(tokens[i], ">", 0, env);
-		cmds[i]->cmd = split_arg(tokens[i], env);
+		cmds[i]->input_rdrct = check_rdrct(tokens[i], "<", 0, data);
+		cmds[i]->output_rdrct = check_rdrct(tokens[i], ">", 0, data);
+		cmds[i]->cmd = split_arg(tokens[i], data);
 		cmds[i]->infile_fd = -1;
 		cmds[i]->outfile_fd = -1;
 		if (!cmds[i]->input_rdrct

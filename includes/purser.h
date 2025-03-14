@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 21:15:37 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/13 17:51:05 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/14 13:58:14 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,19 +48,20 @@ typedef struct s_cmd
 	int		outfile_fd;
 }	t_cmd;
 
-typedef struct s_env
+typedef struct s_data
 {
-	char	**src;
+	int		exit_status;
+	char	**env;
 	char	*tmp;
-}	t_envs;
+}	t_data;
 
-t_cmd	**purser(char *line, char **env);
+t_cmd	**purser(char *line, int exit_status, char **env);
 bool	is_del(char c, char *del, t_quote *quote);
 
-t_rdrct	**check_rdrct(char *line, char *key, int rdrct_cnt, char **env);
+t_rdrct	**check_rdrct(char *line, char *key, int rdrct_cnt, t_data *data);
 
-char	**split_arg(char *line, char **env);
-char	*recursive_expand(char **arg, t_envs *envs, t_quote quote, int len);
+char	**split_arg(char *line, t_data *data);
+char	*recursive_expand(char **arg, t_data *data, t_quote quote, int len);
 
 
 void	free_rdrcts(t_rdrct **rdrcts, int i);
