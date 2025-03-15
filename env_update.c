@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 00:25:18 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/15 03:39:44 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/16 00:26:58 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ static bool	split_env(char *env, char **key, char **value)
 		free(*key);
 		*key = NULL;
 		free(*value);
-		return (false);
+		return (perror_bool("malloc", ENOMEM));
 	}
 	return (true);
 }
@@ -103,7 +103,7 @@ static t_list	*create_new_env(char *key, char *value)
 	{
 		free(key);
 		free(value);
-		return (false);
+		return ((t_list *)perror_ptr("malloc", ENOMEM));
 	}
 	env_content->key = key;
 	env_content->value = value;
@@ -111,7 +111,7 @@ static t_list	*create_new_env(char *key, char *value)
 	if (!new_env)
 	{
 		env_free((void *)env_content);
-		return (false);
+		return ((t_list *)perror_ptr("malloc", ENOMEM));
 	}
 	return (new_env);
 }

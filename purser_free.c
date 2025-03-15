@@ -6,11 +6,11 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/20 21:13:44 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/11 16:55:46 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/15 22:47:43 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <purser.h>
+#include <minishell.h>
 
 void	free_cmds(t_cmd **cmds, int i)
 {

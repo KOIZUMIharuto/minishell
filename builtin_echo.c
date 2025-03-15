@@ -1,35 +1,38 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pwd.c                                              :+:      :+:    :+:   */
+/*   builtin_echo.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/12 14:37:41 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/15 03:00:50 by hkoizumi         ###   ########.fr       */
+/*   Created: 2025/03/12 14:37:28 by shiori            #+#    #+#             */
+/*   Updated: 2025/03/16 01:07:42 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
 
-int builtin_pwd(char **cmd, t_list *env) {
-    (void)cmd;
+int	builtin_echo(char **cmd, t_list *env)
+{
+	int		i;
+	bool	newline;
+
 	(void)env;
-    char *buffer;
-    size_t size = 1024;
-
-    buffer = (char *)malloc(size);
-    if (!buffer) {
-        perror("malloc");
-        return (1);
-    }
-    if (getcwd(buffer, size) == NULL) {
-        perror("getcwd");
-        free(buffer);
-        return (1);
-    }
-    printf("%s\n", buffer);
-    free(buffer);
-    return (0);
+	i = 1;
+	newline = true;
+	while (cmd[i] && ft_strcmp(cmd[i], "-n") == 0)
+	{
+		newline = false;
+		i++;
+	}
+	while (cmd[i])
+	{
+		ft_putstr_fd(cmd[i], STDOUT_FILENO);
+		if (cmd[i + 1])
+			ft_putchar_fd(' ', STDOUT_FILENO);
+		i++;
+	}
+	if (newline)
+		ft_putchar_fd('\n', STDOUT_FILENO);
+	return (0);
 }
-

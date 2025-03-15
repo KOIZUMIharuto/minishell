@@ -1,38 +1,52 @@
-// builin.c
-# include <minishell.h>
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   execute_bultin.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/15 22:31:10 by hkoizumi          #+#    #+#             */
+/*   Updated: 2025/03/16 01:52:32 by hkoizumi         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-// 内部コマンドの一覧
-typedef struct {
-    char *name;
-    int (*func)(char **);
-} BuiltinCommand;
+#include <minishell.h>
+
+// extern int g_last_exit_status;
+
+// // 内部コマンドの一覧
+// typedef struct {
+//     char *name;
+//     int (*func)(char **);
+// } BuiltinCommand;
 
 // 内部コマンドのテーブル
-BuiltinCommand builtins[] = {
-    {"echo", builtin_echo},
-    {"cd", builtin_cd},
-    {"pwd", builtin_pwd},
-    {"exit", builtin_exit},
-    {"export", builtin_export},
-    {"unset", builtin_unset},
-    {"env", builtin_env},
-};
+// BuiltinCommand builtins[] = {
+//     {"echo", builtin_echo},
+//     {"cd", builtin_cd},
+//     {"pwd", builtin_pwd},
+//     {"exit", builtin_exit},
+//     {"export", builtin_export},
+//     {"unset", builtin_unset},
+//     {"env", builtin_env},
+// };
 
 // 内部コマンドの数を返す関数
-int num_builtins() {
-    return sizeof(builtins) / sizeof(BuiltinCommand);
-}
+// int num_builtins() {
+//     return sizeof(builtins) / sizeof(BuiltinCommand);
+// }
 
-int is_builtin_mark_index(char *cmd) {
-    for (int i = 0; i < num_builtins(); i++) {
-        if (ft_strcmp(cmd, builtins[i].name) == 0)
-            return i;
-    }
-    return -1;
-}
+// int is_builtin_mark_index(char *cmd) {
+//     for (int i = 0; i < num_builtins(); i++) {
+//         if (ft_strcmp(cmd, builtins[i].name) == 0)
+//             return i;
+//     }
+//     return -1;
+// }
 
-int execute_builtin(char **command, int index) {
-    int backup_stdout = -1;
+int	execute_builtin(char **command, int (*func)(char **, t_list *), t_list *env)
+{
+    int backup_stdout;
     int redirect_fd;
     int result;
 
@@ -60,7 +74,7 @@ int execute_builtin(char **command, int index) {
     }  
 
     // コマンドを実行
-    result = builtins[index].func(command);
+    result = func(command, env);
 
 
     // 標準出力を元に戻す

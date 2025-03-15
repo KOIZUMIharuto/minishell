@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   unset.c                                            :+:      :+:    :+:   */
+/*   builtin_unset.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 18:11:10 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/15 03:07:45 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/16 01:24:34 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ int	builtin_unset(char **cmd, t_list *env)
 	{
 		if (!is_valid_key(cmd[i]))
 		{
-			handle_invalid_key(cmd[0], cmd[i]);
+			print_invalid_key(cmd[0], cmd[i]);
 			status = 1;
 		}
 		else

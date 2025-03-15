@@ -6,22 +6,22 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 16:45:21 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/15 02:38:14 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/16 00:19:49 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <purser.h>
+#include <minishell.h>
 
-static void	init_data(t_data *data, int exit_status, t_list *env);
+static void	init_data(t_purser *data, int exit_status, t_list *env);
 static char	**recursive_split(char *line, char *del, int word_cnt);
-static bool	purse_tokens(t_cmd **cmds, char **tokens, t_data *data);
+static bool	purse_tokens(t_cmd **cmds, char **tokens, t_purser *data);
 
 t_cmd	**purser(char *line, int exit_status, t_list *env)
 {
-	t_cmd	**cmds;
-	char	**tokens;
-	int		token_cnt;
-	t_data	data;
+	t_cmd		**cmds;
+	char		**tokens;
+	int			token_cnt;
+	t_purser	data;
 
 	if (!line)
 		return (NULL);
@@ -45,7 +45,7 @@ t_cmd	**purser(char *line, int exit_status, t_list *env)
 	return (cmds);
 }
 
-static void	init_data(t_data *data, int exit_status, t_list *env)
+static void	init_data(t_purser *data, int exit_status, t_list *env)
 {
 	int	i;
 	int	tmp;
@@ -101,7 +101,7 @@ static char	**recursive_split(char *line, char *del, int word_cnt)
 	return (tokens);
 }
 
-static bool	purse_tokens(t_cmd **cmds, char **tokens, t_data *data)
+static bool	purse_tokens(t_cmd **cmds, char **tokens, t_purser *data)
 {
 	int		i;
 

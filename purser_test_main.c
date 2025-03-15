@@ -6,11 +6,13 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/29 15:43:58 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/15 02:45:49 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/16 02:02:56 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <purser.h>
+#include <minishell.h>
+
+int g_last_exit_status = 0;
 
 static void	print_cmds(t_cmd **cmds);
 
@@ -19,24 +21,21 @@ int	main(int argc, char **argv, char **env)
 	char	*line;
 	t_cmd	**cmds;
 	t_list	*env_list;
-	int		g_last_exit_status;
 
-	// (void)argc;
-	// (void)argv;
-	g_last_exit_status = 0;
 	if (argc > 1)
 		g_last_exit_status = ft_atoi(argv[1]);
 	env_list = env_convert(env);
+	if (!env_list)
+		return (1);
 	while (1)
 	{
-		write(1, "purser$ ", 8);
-		line = get_next_line(0);
+		line = readline("purser$ ");
 		if (!line)
 			break ;
 		cmds = purser(line, g_last_exit_status, env_list);
 		free(line);
 		if (!cmds)
-			break ;
+			return (perror_int("malloc", errno));
 		print_cmds(cmds);
 		free_cmds(cmds, 0);
 	}

@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   exit.c                                             :+:      :+:    :+:   */
+/*   builtin_exit.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 00:54:17 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/15 03:01:05 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/16 01:52:28 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
 
-extern int g_last_exit_status;
+// extern int g_last_exit_status;
 
 int is_numeric(const char *str) {
     int i = 0;

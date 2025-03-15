@@ -1,9 +1,12 @@
 // pipe.c
 #include <minishell.h>
 
+// extern int g_last_exit_status;
+
 // パイプ処理を行う関数
-// ls | grep .c | wc -l の様なパイプ処理を行う
-int pipe_command(char **commands) {
+// hkoizumi: (t_cmd **, t_builtin *, t_list *)を受け取るようにしたい
+int pipe_command(char **commands, t_builtin *builtins, t_list *env)
+{
     int num_commands = 0;
     while (commands[num_commands] != NULL) {
         num_commands++;
@@ -23,11 +26,12 @@ int pipe_command(char **commands) {
             }
         }
         
-        char **command_tokens = ft_split(commands[i], ' ');
+        char **command_tokens = ft_split(commands[i], ' ');	// hkoizumi: t_cmdの時点で解析済みなので不要
 
+		// hkoizumi: 此処から先はt_cmdでの引き渡しに合わせて修正が必要
         // 組み込みコマンドの判定
-        int is_builtin_index = is_builtin_mark_index(command_tokens[0]);
-        if (is_builtin_index >= 0) {;
+        int builtin_index = get_builtin_index(builtins, command_tokens[0]);
+        if (builtin_index >= 0) {;
             // 親プロセス内で組み込みコマンドを実行
             if (prev_fd != -1) {
                 // 前のパイプからの入力を標準入力にリダイレクト
@@ -41,7 +45,7 @@ int pipe_command(char **commands) {
                 close(pipe_fds[1]);
             }
             // 組み込みコマンドを実行
-            int result = execute_builtin(command_tokens, is_builtin_index);
+            int result = execute_builtin(command_tokens, builtins[builtin_index].func, env);
 
              // exit コマンドが単独で実行された場合（パイプなし）は特別な戻り値を返す
             if (ft_strcmp(command_tokens[0], "exit") == 0 && num_commands == 1) {

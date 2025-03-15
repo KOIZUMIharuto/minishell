@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 23:50:11 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/15 03:27:42 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/16 01:24:34 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ bool	is_valid_key(char *key)
 	return (true);
 }
 
-void	handle_invalid_key(char *command, char *key)
+void	print_invalid_key(char *command, char *key)
 {
 	ft_putstr_fd("minishell: ", STDERR_FILENO);
 	ft_putstr_fd(command, STDERR_FILENO);

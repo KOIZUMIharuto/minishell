@@ -6,16 +6,16 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/26 14:21:02 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/14 13:07:30 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/15 22:47:45 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <purser.h>
+#include <minishell.h>
 
-static t_list	*purse_to_list(char *line, t_data *data);
-static bool		handle_quotes_and_env(t_list **args, char *arg, t_data *data);
+static t_list	*purse_to_list(char *line, t_purser *data);
+static bool		handle_quotes_and_env(t_list **args, char *arg, t_purser *data);
 
-char	**split_arg(char *line, t_data *data)
+char	**split_arg(char *line, t_purser *data)
 {
 	t_list	*args;
 	t_list	*tmp;
@@ -44,7 +44,7 @@ char	**split_arg(char *line, t_data *data)
 	return (cmd);
 }
 
-static t_list	*purse_to_list(char *line, t_data *data)
+static t_list	*purse_to_list(char *line, t_purser *data)
 {
 	t_list	*args;
 	t_quote	quote;
@@ -73,7 +73,7 @@ static t_list	*purse_to_list(char *line, t_data *data)
 	return (args);
 }
 
-static bool	handle_quotes_and_env(t_list **args, char *arg, t_data *data)
+static bool	handle_quotes_and_env(t_list **args, char *arg, t_purser *data)
 {
 	char	*arg_head;
 	t_list	*tmp;

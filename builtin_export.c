@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   export.c                                           :+:      :+:    :+:   */
+/*   builtin_export.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 14:44:22 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/15 03:44:58 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/16 01:24:34 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,18 +22,19 @@ int	builtin_export(char **cmd, t_list *env)
 
 	if (!cmd[1])
 		return (export_env(env));
-	i = 1;
+	i = 0;
 	status = 0;
-	while (cmd[i])
+	while (cmd[++i])
 	{
 		key = env_update(&env, cmd[i]);
+		if (!key)
+			return (1);
 		if (!is_valid_key(key))
 		{
-			handle_invalid_key(cmd[0], key);
+			print_invalid_key(cmd[0], key);
 			free(key);
 			status = 1;
 		}
-		i++;
 	}
 	return (status);
 }
@@ -80,7 +81,8 @@ static int	export_env(t_list *env_list)
 //     char **env = environ;
 
 //     while (*env) {
-//         if (ft_strncmp(*env, new_entry, var_len) == 0 && ((*env)[var_len] == '=' || (*env)[var_len] == '\0')) {
+//			if (ft_strncmp(*env, new_entry, var_len) == 0 && ((*env)[var_len] == '='
+//			|| (*env)[var_len] == '\0')) {
 //             *env = new_entry;
 //             return (1);
 //         }
@@ -118,7 +120,7 @@ static int	export_env(t_list *env_list)
 
 //     if (!is_valid_key(var)) {
 //         command="export";
-//         handle_invalid_key(command,var);
+//         print_invalid_key(command,var);
 //         return (1);
 //     }
 //     var_len = ft_strlen(var);
