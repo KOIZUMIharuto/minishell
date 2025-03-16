@@ -15,7 +15,6 @@ LIBFT = $(LIBFT_DIR)/libft.a
 # src
 SRCS =\
 error.c\
-execute_builtin.c\
 execve.c\
 heredocument.c\
 pipe.c\
