@@ -6,7 +6,7 @@
 /*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 01:16:07 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/16 20:47:38 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/16 22:20:41 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,40 +98,10 @@ int execute_pipeline(t_cmd **cmds,t_builtin *builtins,t_list *env)
                     }
                 }
 
-                // 入力リダイレクト処理（ヒアドキュメント以外）
-                for (int j = 0; cmds[i]->input_rdrct[j]; j++)
-                {
-                    if (cmds[i]->input_rdrct[j]->type == INPUT_RDRCT)
-                    {
-                        cmds[i]->infile_fd = open(cmds[i]->input_rdrct[j]->file[0], O_RDONLY);
-                        if (cmds[i]->infile_fd == -1)
-                        {
-                            perror("open");
-                            exit(EXIT_FAILURE);
-                        }
-                        dup2(cmds[i]->infile_fd, STDIN_FILENO);
-                        close(cmds[i]->infile_fd);
-                    }
-                }
+                if (handle_redirection(cmds[i]) == -1)
+                    return EXIT_FAILURE;
 
-                // 出力リダイレクト処理
-                for (int j = 0; cmds[i]->output_rdrct[j]; j++)
-                {
-                    int flags = O_WRONLY | O_CREAT;
-                    if (cmds[i]->output_rdrct[j]->type == APPEND_RDRCT)
-                        flags |= O_APPEND;
-                    else  // OVERWRITE_RDRCT
-                        flags |= O_TRUNC;
-
-                    cmds[i]->outfile_fd = open(cmds[i]->output_rdrct[j]->file[0], flags, 0644);
-                    if (cmds[i]->outfile_fd == -1)
-                    {
-                        perror("open");
-                        exit(EXIT_FAILURE);
-                    }
-                    dup2(cmds[i]->outfile_fd, STDOUT_FILENO);
-                    close(cmds[i]->outfile_fd);
-                }
+                // コマンドを実行
 
                 // パイプの設定（リダイレクトの後に行う）
                 if (prev_fd != -1)
