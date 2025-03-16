@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execve.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 03:20:59 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/15 01:52:19 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/16 12:12:31 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ char *find_command_path(char *command) {
     return NULL;
 }
 
-void execute_command(char **command)
+void execute_command(char **command, char **env)
 {
     char *command_path;
 
@@ -68,7 +68,7 @@ void execute_command(char **command)
         write(STDERR_FILENO, ": command not found\n", 20);  
         exit(EXIT_FAILURE);
     }
-    if (execve(command_path, command, environ) == -1)
+    if (execve(command_path, command, env) == -1)
     {
         perror("execve");
         if (command_path != command[0])

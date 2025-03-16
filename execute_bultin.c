@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_bultin.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 22:31:10 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/16 01:52:32 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/16 12:12:13 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,8 +49,6 @@ int	execute_builtin(char **command, int (*func)(char **, t_list *), t_list *env)
     int backup_stdout;
     int redirect_fd;
     int result;
-
-    handle_heredocument(command);
 
     // リダイレクトの有無をチェック
     for (int i = 0; command[i] != NULL; i++) {

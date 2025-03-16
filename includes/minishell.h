@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 14:13:46 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/16 01:55:01 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/16 12:11:57 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,7 +125,7 @@ int		execute_builtin(char **command, int (*func)(char **, t_list *), t_list *env
 void	execute_command(char **command);
 
 int		handle_redirection(char **command);
-int		handle_heredocument(char **command);
+int handle_heredocument_with_delimiter(char *delimiter);
 char	*find_command(char *command);
 void	signal_handler(int signum);
 int		pipe_command(char **commands, t_builtin *builtins, t_list *env);
@@ -137,7 +137,10 @@ void	*perror_ptr(char *msg, int errnum);
 
 void free_double_pointor(char **array);
 
-void setup_signal_handlers(void);
+void setup_interactive_signals(void);
+void setup_builtin_signals(void);
+void setup_exec_signals(void);
+void setup_child_signals(void);
 
 
 #endif

@@ -1,0 +1,1 @@
+handle_heredocument_with_delimiter(command[0]);  // コマンドの最初の要素を渡す
