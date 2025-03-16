@@ -6,7 +6,7 @@
 /*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 01:16:07 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/16 14:44:12 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/16 20:47:38 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ int execute_pipeline(t_cmd **cmds,t_builtin *builtins,t_list *env)
             }
 
             // ビルトインコマンド実行
-            int result = execute_builtin(cmds[i]->cmd, builtins[is_builtin_index].func, env);
+            int result = execute_builtin(cmds[i], builtins[is_builtin_index].func, env);
             
             // exit コマンドの特別処理
             if (ft_strcmp(cmds[i]->cmd[0], "exit") == 0 && !cmds[i + 1])
@@ -93,7 +93,7 @@ int execute_pipeline(t_cmd **cmds,t_builtin *builtins,t_list *env)
                 {
                     if (cmds[i]->input_rdrct[j]->type == HEREDOCUMENT)
                     {
-                        if (handle_heredocument_with_delimiter(cmds[i]->input_rdrct[j]->file[0]) == -1)
+                        if (handle_heredocument(cmds[i]->input_rdrct[j]->file[0], false) == -1)
                             exit(EXIT_FAILURE);
                     }
                 }
@@ -146,7 +146,7 @@ int execute_pipeline(t_cmd **cmds,t_builtin *builtins,t_list *env)
                     close(pipe_fds[0]);
                 }
 
-                execute_command(cmds[i]->cmd, env);
+                execute_cmd(cmds[i]->cmd, env);
             }
             else
             {

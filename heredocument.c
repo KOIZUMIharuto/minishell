@@ -1,17 +1,31 @@
 # include <minishell.h>
 # include "../libft/get_next_line.h"
 
-int handle_heredocument_with_delimiter(char *delimiter) {
+int handle_heredocument(char *delimiter, t_cmd *cmd) {
     size_t delimiter_len = ft_strlen(delimiter);
     int pipe_fds[2];
+    
     if (pipe(pipe_fds) == -1) {
         perror("pipe");
+        return -1;
+    }
+
+    cmd->backup_stdin = dup(STDIN_FILENO);
+    if (cmd->backup_stdin == -1)
+    {
+        perror("dup");
+        close(pipe_fds[0]);
+        close(pipe_fds[1]);
         return -1;
     }
 
     pid_t pid = fork();
     if (pid == -1) {
         perror("fork");
+        close(cmd->backup_stdin);
+        cmd->backup_stdin = -1;
+        close(pipe_fds[0]);
+        close(pipe_fds[1]);
         return -1;
     }
 
@@ -42,10 +56,13 @@ int handle_heredocument_with_delimiter(char *delimiter) {
 
     if (dup2(pipe_fds[0], STDIN_FILENO) == -1) {
         perror("dup2");
+        close(cmd->backup_stdin);
+        cmd->backup_stdin = -1;
         close(pipe_fds[0]);
         return -1;
     }
     close(pipe_fds[0]);
+
     return 0;
 }
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   purser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 16:45:21 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/16 00:19:49 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/16 20:30:35 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,6 +116,8 @@ static bool	purse_tokens(t_cmd **cmds, char **tokens, t_purser *data)
 		cmds[i]->cmd = split_arg(tokens[i], data);
 		cmds[i]->infile_fd = -1;
 		cmds[i]->outfile_fd = -1;
+		cmds[i]->backup_stdin = -1;
+		cmds[i]->backup_stdout = -1;
 		if (!cmds[i]->input_rdrct
 			|| !cmds[i]->output_rdrct || !cmds[i]->cmd)
 			return (false);

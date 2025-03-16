@@ -1,64 +1,69 @@
-// redirect.c
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   redirect.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/16 20:05:03 by shiori            #+#    #+#             */
+/*   Updated: 2025/03/16 20:39:15 by shiori           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include <minishell.h>
 
-// リダイレクト用のファイルをオープンする関数
-int open_redirect_file(char *filename) {
-    int fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-    if (fd == -1) {
-        perror(filename); 
-        return -1;
-    }
-    return fd;
-}
-
-int handle_redirection(char **command) {
-    int redirect_fd; 
-
-    redirect_fd = -1;
-    // 標準出力の上書きリダイレクト ">"
-    for (int i = 0; command[i] != NULL; i++) {
-        if (((ft_strcmp(command[i], ">") == 0 || ft_strcmp(command[i], ">>") == 0) || ft_strcmp(command[i], "<") == 0) && command[i + 1] != NULL) {
-            if (ft_strcmp(command[i], ">") == 0) 
+int handle_redirection(t_cmd *cmd)
+{
+    // 入力リダイレクト処理
+    for (int j = 0; cmd->input_rdrct[j]; j++)
+    {
+        if (cmd->input_rdrct[j]->type == INPUT_RDRCT)
+        {
+            cmd->backup_stdin = dup(STDIN_FILENO);  // 毎回バックアップを取る
+            if (cmd->backup_stdin == -1)
             {
-                redirect_fd = open(command[i + 1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
-            }
-            else if (ft_strcmp(command[i], ">>") == 0)
-            {
-                redirect_fd = open(command[i + 1], O_WRONLY | O_CREAT | O_APPEND, 0644);
-            }
-            else if (ft_strcmp(command[i], "<") == 0)
-            {
-                redirect_fd = open(command[i + 1], O_RDONLY);
-            }
-            if (redirect_fd == -1) {
-                perror(command[i + 1]); 
+                perror("dup");
                 return -1;
             }
-            if (ft_strcmp(command[i], ">") == 0 || ft_strcmp(command[i], ">>") == 0)
-            {   // 標準出力をリダイレクト
-                if (dup2(redirect_fd, STDOUT_FILENO) == -1) {
-                    perror("dup2");
-                    close(redirect_fd);
-                    return -1;
-                }
-                close(redirect_fd);
+
+            cmd->infile_fd = open(cmd->input_rdrct[j]->file[0], O_RDONLY);
+            if (cmd->infile_fd == -1)
+            {
+                perror("open");
+                return -1;
             }
-            else if (ft_strcmp(command[i], "<") == 0)
-            {   // 標準入力をリダイレクト
-                if (dup2(redirect_fd, STDIN_FILENO) == -1) {
-                    perror("dup2");
-                    close(redirect_fd);
-                    return -1;
-                }
-                close(redirect_fd);
-            }
-            // リダイレクト演算子とファイル名をコマンドから削除
-            free(command[i]);
-            free(command[i + 1]);
-            command[i] = NULL;
-            command[i + 1] = NULL;
-            break;
+            dup2(cmd->infile_fd, STDIN_FILENO);
+            close(cmd->infile_fd);
         }
     }
-    return 0; // 正常終了
+
+    // 出力リダイレクト処理
+    for (int j = 0; cmd->output_rdrct[j]; j++)
+    {
+        cmd->backup_stdout = dup(STDOUT_FILENO);  // 毎回バックアップを取る
+        if (cmd->backup_stdout == -1)
+        {
+            perror("dup");
+            return -1;
+        }
+
+        int flags = O_WRONLY | O_CREAT;
+        if (cmd->output_rdrct[j]->type == APPEND_RDRCT)
+            flags |= O_APPEND;
+        else  // OVERWRITE_RDRCT
+            flags |= O_TRUNC;
+
+        cmd->outfile_fd = open(cmd->output_rdrct[j]->file[0], flags, 0644);
+        if (cmd->outfile_fd == -1)
+        {
+            perror("open");
+            return -1;
+        }
+        dup2(cmd->outfile_fd, STDOUT_FILENO);
+        close(cmd->outfile_fd);
+    }
+
+    return 0;
 }
+
+

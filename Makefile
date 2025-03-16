@@ -15,13 +15,14 @@ LIBFT = $(LIBFT_DIR)/libft.a
 # src
 SRCS =\
 error.c\
-execute_bultin.c\
+execute_builtin.c\
 execve.c\
 heredocument.c\
 pipe.c\
 redirect.c\
 signal.c\
-utils.c
+free.c \
+stdio_fd_utils.c \
 
 # builtin
 BUILTIN_SRCS =\
@@ -37,7 +38,7 @@ builtin.c
 # env
 ENV_SRCS =\
 env_convert.c\
-convert_env_list_to_array.c \
+env_convert_to_array.c \
 env_delete.c\
 env_free.c\
 env_get.c\

@@ -6,7 +6,7 @@
 /*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 14:13:46 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/16 14:24:38 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/16 20:47:16 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,8 @@ typedef struct s_cmd
 	t_rdrct	**output_rdrct;
 	int		infile_fd;
 	int		outfile_fd;
+    int     backup_stdin;   // 標準入力のバックアップfd用
+    int     backup_stdout;  // 標準出力のバックアップfd用
 }	t_cmd;
 
 typedef struct s_purser
@@ -94,7 +96,9 @@ void	env_free(void *content);
 t_env	*env_get(t_list *env_list, char *key);
 char	*env_update(t_list **env_list, char *env);
 bool	is_valid_key(char *key);
+//はるとへ　ここだけcommandなのでcmdに統一したい
 void	print_invalid_key(char *command, char *key);
+
 
 // puerser
 t_cmd	**purser(char *line, int exit_status, t_list *env);
@@ -120,17 +124,16 @@ int		builtin_unset(char **cmd, t_list *env);
 int		builtin_env(char **cmd, t_list *env);
 int		builtin_exit(char **cmd, t_list *env);
 
-int		execute_builtin(char **command, int (*func)(char **, t_list *), t_list *env);
-// int		is_builtin_mark_index(char *cmd);
-void execute_command(char **command, t_list *env);
+int execute_builtin(t_cmd *cmd, int (*func)(char **, t_list *), t_list *env);
 char **convert_env_list_to_array(t_list *env);
 
-int		handle_redirection(char **command);
-int handle_heredocument_with_delimiter(char *delimiter);
+int handle_redirection(t_cmd *cmd);
+int handle_heredocument(char *delimiter, t_cmd *cmd);
+int restore_redirection(t_cmd *cmd);
 
 int execute_pipeline(t_cmd **cmds,t_builtin *builtins,t_list *env);
+void execute_cmd(char **cmd, t_list *env);
 
-int		error_msg(char *command, char *msg);
 int		perror_int(char *msg, int errnum);
 bool	perror_bool(char *msg, int errnum);
 void	*perror_ptr(char *msg, int errnum);
