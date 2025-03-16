@@ -6,7 +6,7 @@
 /*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 03:20:59 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/16 12:12:31 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/16 12:59:13 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,9 +57,10 @@ char *find_command_path(char *command) {
     return NULL;
 }
 
-void execute_command(char **command, char **env)
+void execute_command(char **command, t_list *env)
 {
     char *command_path;
+    char **env_array;
 
     command_path = (ft_strchr(command[0], '/') != NULL) ? command[0] : find_command_path(command[0]);
     if (!command_path)
@@ -68,14 +69,29 @@ void execute_command(char **command, char **env)
         write(STDERR_FILENO, ": command not found\n", 20);  
         exit(EXIT_FAILURE);
     }
-    if (execve(command_path, command, env) == -1)
+
+    env_array = convert_env_list_to_array(env);
+    if (!env_array)
+    {
+        if (command_path != command[0])
+            free(command_path);
+        perror("malloc");
+        exit(EXIT_FAILURE);
+    }
+
+    if (execve(command_path, command, env_array) == -1)
     {
         perror("execve");
         if (command_path != command[0])
             free(command_path);
+        // env_arrayのクリーンアップは不要（execve成功時はプロセスが置き換わり、
+        // 失敗時はexit()で終了するため）
         exit(EXIT_FAILURE);
     }
 }
+
+
+
 
 
 

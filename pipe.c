@@ -6,13 +6,13 @@
 /*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 01:16:07 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/16 12:10:43 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/16 14:44:12 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include <minishell.h>
 
-int execute_pipeline(t_cmd **cmds, char **env)
+int execute_pipeline(t_cmd **cmds,t_builtin *builtins,t_list *env)
 {
     int pipe_fds[2];
     int prev_fd = -1;
@@ -32,7 +32,7 @@ int execute_pipeline(t_cmd **cmds, char **env)
         }
 
         // ビルトインコマンドのチェック
-        int is_builtin_index = is_builtin_mark_index(cmds[i]->cmd[0]);
+        int is_builtin_index = get_builtin_index(builtins, cmds[i]->cmd[0]);
         if (is_builtin_index >= 0)
         {
             setup_builtin_signals();
@@ -50,7 +50,7 @@ int execute_pipeline(t_cmd **cmds, char **env)
             }
 
             // ビルトインコマンド実行
-            int result = execute_builtin(cmds[i]->cmd, is_builtin_index);
+            int result = execute_builtin(cmds[i]->cmd, builtins[is_builtin_index].func, env);
             
             // exit コマンドの特別処理
             if (ft_strcmp(cmds[i]->cmd[0], "exit") == 0 && !cmds[i + 1])
@@ -60,16 +60,13 @@ int execute_pipeline(t_cmd **cmds, char **env)
             }
 
             // パイプのクリーンアップと次のコマンドへの受け渡し
-            if (cmds[i + 1])
-            {
-                close(pipe_fds[1]);
-            }
             if (prev_fd != -1)
             {
                 close(prev_fd);
             }
             if (cmds[i + 1])
             {
+                close(pipe_fds[1]);
                 prev_fd = pipe_fds[0];
             }
 

@@ -1,25 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strcmp.c                                        :+:      :+:    :+:   */
+/*   ft_strjoin3.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/12 14:39:26 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/16 14:26:58 by shiori           ###   ########.fr       */
+/*   Created: 2025/03/16 12:58:47 by shiori            #+#    #+#             */
+/*   Updated: 2025/03/16 14:25:56 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-int ft_strcmp(char *s1, char *s2)
+char *ft_strjoin3(char *s1, char *s2, char *s3)
 {
-	while (*s1 && (*s1 == *s2))
-	{
-		s1++;
-		s2++;
-	}
-	return ((unsigned char)*s1 - (unsigned char)*s2);
+    size_t len1 = ft_strlen(s1);
+    size_t len2 = ft_strlen(s2);
+    size_t len3 = ft_strlen(s3);
+    char *result = malloc(len1 + len2 + len3 + 1);
+    
+    if (!result)
+        return NULL;
+    
+    ft_strlcpy(result, s1, len1 + 1);
+    ft_strlcat(result, s2, len1 + len2 + 1);
+    ft_strlcat(result, s3, len1 + len2 + len3 + 1);
+    
+    return result;
 }
-
-

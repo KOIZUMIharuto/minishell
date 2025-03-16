@@ -6,7 +6,7 @@
 /*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 14:13:46 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/16 12:11:57 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/16 14:24:38 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,13 +122,13 @@ int		builtin_exit(char **cmd, t_list *env);
 
 int		execute_builtin(char **command, int (*func)(char **, t_list *), t_list *env);
 // int		is_builtin_mark_index(char *cmd);
-void	execute_command(char **command);
+void execute_command(char **command, t_list *env);
+char **convert_env_list_to_array(t_list *env);
 
 int		handle_redirection(char **command);
 int handle_heredocument_with_delimiter(char *delimiter);
-char	*find_command(char *command);
-void	signal_handler(int signum);
-int		pipe_command(char **commands, t_builtin *builtins, t_list *env);
+
+int execute_pipeline(t_cmd **cmds,t_builtin *builtins,t_list *env);
 
 int		error_msg(char *command, char *msg);
 int		perror_int(char *msg, int errnum);
