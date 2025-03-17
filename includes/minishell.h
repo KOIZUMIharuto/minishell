@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 14:13:46 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/17 14:32:54 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/17 22:29:33 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,6 +143,7 @@ int restore_redirection(t_cmd *cmd);
 int execute_pipeline(t_cmd **cmds,t_builtin *builtins,t_list *env);
 void execute_cmd(char **cmd, t_list *env);
 
+int		error_msg(char *cmd, char *msg);
 int		perror_int(char *msg, int errnum);
 bool	perror_bool(char *msg, int errnum);
 void	*perror_ptr(char *msg, int errnum);
