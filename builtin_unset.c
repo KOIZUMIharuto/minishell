@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 18:11:10 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/17 14:33:38 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/17 15:07:16 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int	builtin_unset(char **cmd, t_list *env)
 	while (cmd[i])
 	{
 		if (!is_valid_key(cmd[i]) || !env_delete(&env, cmd[i]))
-				status = 1;
+			status = 1;
 		i++;
 	}
 	return (status);
