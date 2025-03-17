@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/29 15:43:58 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/16 02:02:56 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/17 13:27:35 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ int	main(int argc, char **argv, char **env)
 
 	if (argc > 1)
 		g_last_exit_status = ft_atoi(argv[1]);
-	env_list = env_convert(env);
+	env_list = env_init(env);
 	if (!env_list)
 		return (1);
 	while (1)
