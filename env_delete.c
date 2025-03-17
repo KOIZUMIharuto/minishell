@@ -6,13 +6,13 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 00:32:55 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/17 14:32:29 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/17 21:23:12 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
 
-static bool	delete_pwd(t_env *env_content);
+static bool	hide_pwd(t_env *env_content);
 
 bool	env_delete(t_list **env_list, char *key)
 {
@@ -28,7 +28,7 @@ bool	env_delete(t_list **env_list, char *key)
 		if (ft_strcmp(env_content->key, key) == 0)
 		{
 			if (ft_strcmp(key, "PWD") == 0)
-				return (delete_pwd(env_content));
+				return (hide_pwd(env_content));
 			if (prev)
 				prev->next = env_list_tmp->next;
 			else
@@ -42,7 +42,7 @@ bool	env_delete(t_list **env_list, char *key)
 	return (true);
 }
 
-static bool	delete_pwd(t_env *env_content)
+static bool	hide_pwd(t_env *env_content)
 {
 	if (ft_strcmp(env_content->key, "PWD") != 0)
 		return (true);
