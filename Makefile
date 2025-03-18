@@ -45,11 +45,10 @@ env_update.c\
 env_utils.c
 
 PARSER_SRCS =\
-parser_args.c\
-parser_free.c\
-parser_quote_env.c\
-parser_redirect.c\
-parser.c
+parser_split_tokens.c\
+parser_syntax.c\
+parser_tokenize.c
+# parser.c
 
 SRCS += $(BUILTIN_SRCS)	$(ENV_SRCS) $(PARSER_SRCS)
 
@@ -60,7 +59,7 @@ MAIN = $(OBJ_DIR)/main.o
 
 # parser
 PARSER = parser
-PARSER_TEST_MAIN = $(OBJ_DIR)/parser_test_main.o
+PARSER_TEST_MAIN = $(OBJ_DIR)/parser_main.o
 
 .PHONY: all p clean fclean re
 

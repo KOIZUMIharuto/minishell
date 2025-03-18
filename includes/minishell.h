@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 14:13:46 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/18 15:55:32 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/19 02:42:07 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,16 +110,9 @@ bool	print_invalid_key(char *cmd, char *key);
 
 // puerser
 t_cmd	**parser(char *line, int exit_status, t_list *env);
-bool	is_del(char c, char *del, t_quote *quote);
-t_rdrct	**check_rdrct(char *line, char *key, int rdrct_cnt, t_parser *data);
-char	**split_arg(char *line, t_parser *data);
-char	*recursive_expand(char **arg, t_parser *data, t_quote quote, int len);
-
-void	free_rdrcts(t_rdrct **rdrcts, int i);
-void	free_rdrct(t_rdrct *rdrct);
-void	free_cmds(t_cmd **cmds, int i);
-void	free_cmd(t_cmd *cmd);
-void	free_tokens(char **tokens);
+t_list	*tokenize(char *line);
+bool	check_syntax(t_list *tokens);
+t_list	**split_tokens(t_list *tokens);
 
 // builtin
 void	init_builtins(t_builtin *builtins);
