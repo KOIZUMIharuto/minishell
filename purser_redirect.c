@@ -18,14 +18,16 @@ static bool		set_file(char *key_p, t_rdrct *rdrct, int len, t_purser *data);
 
 t_rdrct	**check_rdrct(char *line, char *key, int rdrct_cnt, t_purser *data)
 {
+	t_quote	quote;
 	t_rdrct	**rdrcts;
 	t_rdrct	*rdrct;
 	char	*key_p;
 
 	if (!line)
 		return (NULL);
+	quote = NONE_Q;
 	key_p = line;
-	while (*key_p && !is_del(*key_p, key, NULL))
+	while (*key_p && !is_del(*key_p, key, &quote))
 		key_p++;
 	if (!*key_p)
 		rdrcts = (t_rdrct **)ft_calloc(rdrct_cnt + 1, sizeof(t_rdrct *));
