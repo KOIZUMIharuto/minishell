@@ -36,7 +36,7 @@ builtin.c
 
 # env
 ENV_SRCS =\
-env_convert.c\
+env_init.c\
 env_convert_to_array.c \
 env_delete.c\
 env_free.c\

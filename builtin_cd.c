@@ -6,12 +6,13 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 14:37:35 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/16 01:28:33 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/17 13:54:29 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
 
+static bool	update_pwd(t_list *env_list);
 static int	perror_cd(char *command, char *arg, int errnum);
 
 int	builtin_cd(char **cmd, t_list *env)
@@ -22,7 +23,7 @@ int	builtin_cd(char **cmd, t_list *env)
 
 	if (cmd[1] == NULL)
 	{
-		home_dir = env_get(env, "HOME");
+		home_dir = env_get(env, "HOME", false);
 		if (!home_dir)
 		{
 			ft_putstr_fd("minishell: cd: HOME not set\n", STDERR_FILENO);
@@ -38,7 +39,29 @@ int	builtin_cd(char **cmd, t_list *env)
 		return (perror_cd("cd", directory, ENOTDIR));
 	if (chdir(directory) != 0)
 		return (perror_cd("cd", directory, errno));
+	if (!update_pwd(env))
+		return (1);
 	return (0);
+}
+
+static bool	update_pwd(t_list *env_list)
+{
+	t_env	*env_pwd;
+	t_env	*env_oldpwd;
+	char	*new_pwd;
+
+	env_pwd = env_get(env_list, "PWD", true);
+	env_oldpwd = env_get(env_list, "OLDPWD", false);
+	new_pwd = get_pwd();
+	if (!new_pwd)
+		return (false);
+	if (env_oldpwd)
+	{
+		free(env_oldpwd->value);
+		env_oldpwd->value = env_pwd->value;
+	}
+	env_pwd->value = new_pwd;
+	return (true);
 }
 
 static int	perror_cd(char *command, char *arg, int errnum)

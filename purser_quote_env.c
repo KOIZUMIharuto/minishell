@@ -6,14 +6,14 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/05 16:05:58 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/15 22:47:43 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/17 15:05:04 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
 
-static char	*env_remained(char **arg, t_purser *data, t_quote quote, int len);
-static char	*env_not_remained(char **arg, t_purser *data, t_quote quote, int len);
+static char	*env_remain(char **arg, t_purser *data, t_quote quote, int len);
+static char	*env_not_remain(char **arg, t_purser *data, t_quote quote, int len);
 static void	move_arg_pointer(char **arg, t_purser *data, char *tmp, int i);
 static void	expand_env(char *arg, int key_len, t_purser *data);
 
@@ -23,13 +23,13 @@ char	*recursive_expand(char **arg, t_purser *data, t_quote quote, int len)
 
 	expanded = NULL;
 	if (data->tmp && *(data->tmp))
-		expanded = env_remained(arg, data, quote, len);
+		expanded = env_remain(arg, data, quote, len);
 	else
-		expanded = env_not_remained(arg, data, quote, len);
+		expanded = env_not_remain(arg, data, quote, len);
 	return (expanded);
 }
 
-static char	*env_remained(char **arg, t_purser *data, t_quote quote, int len)
+static char	*env_remain(char **arg, t_purser *data, t_quote quote, int len)
 {
 	char	*expanded;
 	char	*tmp;
@@ -57,7 +57,7 @@ static char	*env_remained(char **arg, t_purser *data, t_quote quote, int len)
 	return (expanded);
 }
 
-static char	*env_not_remained(char **arg, t_purser *data, t_quote quote, int len)
+static char	*env_not_remain(char **arg, t_purser *data, t_quote quote, int len)
 {
 	char	*expanded;
 	char	*tmp;

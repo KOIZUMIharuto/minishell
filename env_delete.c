@@ -6,13 +6,15 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 00:32:55 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/15 00:46:40 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/17 21:23:12 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
 
-void	env_delete(t_list **env_list, char *key)
+static bool	hide_pwd(t_env *env_content);
+
+bool	env_delete(t_list **env_list, char *key)
 {
 	t_list	*env_list_tmp;
 	t_list	*prev;
@@ -25,14 +27,29 @@ void	env_delete(t_list **env_list, char *key)
 		env_content = (t_env *)env_list_tmp->content;
 		if (ft_strcmp(env_content->key, key) == 0)
 		{
+			if (ft_strcmp(key, "PWD") == 0)
+				return (hide_pwd(env_content));
 			if (prev)
 				prev->next = env_list_tmp->next;
 			else
 				*env_list = env_list_tmp->next;
 			ft_lstdelone(env_list_tmp, env_free);
-			return ;
+			return (true);
 		}
 		prev = env_list_tmp;
 		env_list_tmp = env_list_tmp->next;
 	}
+	return (true);
+}
+
+static bool	hide_pwd(t_env *env_content)
+{
+	if (ft_strcmp(env_content->key, "PWD") != 0)
+		return (true);
+	env_content->is_shell_var = true;
+	free(env_content->value);
+	env_content->value = ft_strdup("");
+	if (!env_content->value)
+		return (perror_bool("malloc", errno));
+	return (true);
 }
