@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 14:44:22 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/17 14:18:13 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/18 12:19:49 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,10 +52,10 @@ static int	export_env(t_list *env_list)
 		env_list = env_list->next;
 		if (env->is_shell_var || ft_strcmp(env->key, "_") == 0)
 			continue ;
-		if (ft_printf("declare -x %s", env->key) < 0
-			|| (env->value && ft_printf("=\"%s\"", env->value) < 0)
-			|| ft_printf("\n") < 0)
-			return (perror_int("ft_printf", errno));
+		if (printf("declare -x %s", env->key) < 0
+			|| (env->value && printf("=\"%s\"", env->value) < 0)
+			|| printf("\n") < 0)
+			return (perror_int("printf", errno));
 	}
 	return (0);
 }
