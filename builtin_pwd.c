@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 14:37:41 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/17 14:04:04 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/18 12:19:49 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ int	builtin_pwd(char **cmd, t_list *env)
 	pwd = get_pwd();
 	if (!pwd)
 		return (1);
-	ft_printf("%s\n", pwd);
+	printf("%s\n", pwd);
 	free(pwd);
 	return (0);
 }

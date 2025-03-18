@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/25 20:00:19 by syonekur          #+#    #+#             */
-/*   Updated: 2025/03/17 13:58:18 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/18 12:20:00 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,9 +76,4 @@ t_list	*ft_lstnew(void *content);
 int		ft_lstsize(t_list *lst);
 void	ft_lstiter(t_list *lst, void (*f)(void *));
 
-int		ft_printf(const	char *str, ...);
-char	*c_to_str(va_list *arg, char sign);
-char	*arg_to_str(va_list *arg);
-char	*arg_to_hex(va_list *arg, char sign);
-char	*ft_uitoa(unsigned int ui);
 #endif
