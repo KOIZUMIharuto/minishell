@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 14:13:46 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/18 15:55:32 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/19 04:45:33 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@
 # include <fcntl.h> // open, close, O_RDONLY, O_WRONLY, O_CREAT を使用するために必要なヘッダー
 # include <errno.h>
 # include <stdbool.h>
+#include <sys/ioctl.h>
 
 # define BUILTIN_NUM 7
 # define PROMPT "minishell$ "
@@ -97,6 +98,13 @@ typedef struct s_builtin
 	int		(*func)(char **, t_list *);
 }	t_builtin;
 
+typedef struct s_pipe_info
+{
+    int prev_fd;
+    int pipe_fds[2];
+    bool has_next;
+} t_pipe_info;
+
 // env
 t_list	*env_init(char **env);
 t_valid	env_split(char *env, char **key, char **value);
@@ -140,7 +148,6 @@ int handle_redirection(t_cmd *cmd);
 int handle_heredocument(char *delimiter, t_cmd *cmd);
 int restore_redirection(t_cmd *cmd);
 
-int execute_pipeline(t_cmd **cmds,t_builtin *builtins,t_list *env);
 void execute_cmd(char **cmd, t_list *env);
 
 int		error_msg(char *cmd, char *msg);
@@ -156,5 +163,13 @@ void setup_builtin_signals(void);
 void setup_exec_signals(void);
 void setup_child_signals(void);
 
+int execute_pipeline(t_cmd **cmds, t_builtin *builtins, t_list *env);
+int execute_single_builtin(t_cmd *cmd, t_builtin *builtins, int builtin_index, t_list *env);
+int execute_commands(t_cmd **cmds, t_builtin *builtins, t_list *env, pid_t *pids, t_pipe_info *pipe_info);
+int process_heredocs(t_cmd *cmd);
+int setup_pipe(t_pipe_info *pipe_info, bool has_next);
+void manage_parent_pipes(t_pipe_info *pipe_info);
+void execute_command_in_child(t_cmd *cmd, int (*builtin_func)(char **, t_list *), t_list *env, t_pipe_info *pipe_info);
+int wait_for_children(pid_t *pids, int cmd_count);
 
 #endif

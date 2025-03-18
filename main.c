@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 21:59:46 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/18 15:55:32 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/19 04:49:30 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,8 +65,9 @@ int	main(int argc, char **argv, char **envp)
 		line = readline(PROMPT);
 		if (!line)
 		{
-			write(1, "exit\n", 5);
-			break ;
+			// EOF(Ctrl+D)の場合、余分な行を入れずに"exit"だけ表示
+			ft_putstr_fd("exit", STDOUT_FILENO);
+			break;
 		}
 		if (ft_strlen(line) > 0)
 		{
