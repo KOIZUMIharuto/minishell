@@ -1,7 +1,7 @@
 // /* ************************************************************************** */
 // /*                                                                            */
 // /*                                                        :::      ::::::::   */
-// /*   purser.h                                           :+:      :+:    :+:   */
+// /*   parser.h                                           :+:      :+:    :+:   */
 // /*                                                    +:+ +:+         +:+     */
 // /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 // /*                                                +#+#+#+#+#+   +#+           */
@@ -10,8 +10,8 @@
 // /*                                                                            */
 // /* ************************************************************************** */
 
-// #ifndef PURSER_H
-// # define PURSER_H
+// #ifndef PARSER_H
+// # define PARSER_H
 
 // # include <minishell.h>
 
@@ -52,15 +52,15 @@
 // 	char	exit_status[4];
 // 	t_list	*env;
 // 	char	*tmp;
-// }	t_purser;
+// }	t_parser;
 
-// t_cmd	**purser(char *line, int exit_status, t_list *env);
+// t_cmd	**parser(char *line, int exit_status, t_list *env);
 // bool	is_del(char c, char *del, t_quote *quote);
 
-// t_rdrct	**check_rdrct(char *line, char *key, int rdrct_cnt, t_purser *data);
+// t_rdrct	**check_rdrct(char *line, char *key, int rdrct_cnt, t_parser *data);
 
-// char	**split_arg(char *line, t_purser *data);
-// char	*recursive_expand(char **arg, t_purser *data, t_quote quote, int len);
+// char	**split_arg(char *line, t_parser *data);
+// char	*recursive_expand(char **arg, t_parser *data, t_quote quote, int len);
 
 
 // void	free_rdrcts(t_rdrct **rdrcts, int i);

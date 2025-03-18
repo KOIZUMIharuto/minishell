@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/29 15:43:58 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/17 13:27:35 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/18 15:55:32 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,10 +29,10 @@ int	main(int argc, char **argv, char **env)
 		return (1);
 	while (1)
 	{
-		line = readline("purser$ ");
+		line = readline("parser$ ");
 		if (!line)
 			break ;
-		cmds = purser(line, g_last_exit_status, env_list);
+		cmds = parser(line, g_last_exit_status, env_list);
 		free(line);
 		if (!cmds)
 			return (perror_int("malloc", errno));
@@ -102,5 +102,5 @@ static void	print_cmds(t_cmd **cmds)
 
 // __attribute__((destructor))
 // static void destructor() {
-// 	system("leaks -q purser");
+// 	system("leaks -q parser");
 // }

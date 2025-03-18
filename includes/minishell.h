@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 14:13:46 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/17 22:29:33 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/18 15:55:32 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,12 +84,12 @@ typedef struct s_cmd
     int     backup_stdout;  // 標準出力のバックアップfd用
 }	t_cmd;
 
-typedef struct s_purser
+typedef struct s_parser
 {
 	char	exit_status[4];
 	t_list	*env;
 	char	*tmp;
-}	t_purser;
+}	t_parser;
 
 typedef struct s_builtin
 {
@@ -109,11 +109,11 @@ bool	print_invalid_key(char *cmd, char *key);
 
 
 // puerser
-t_cmd	**purser(char *line, int exit_status, t_list *env);
+t_cmd	**parser(char *line, int exit_status, t_list *env);
 bool	is_del(char c, char *del, t_quote *quote);
-t_rdrct	**check_rdrct(char *line, char *key, int rdrct_cnt, t_purser *data);
-char	**split_arg(char *line, t_purser *data);
-char	*recursive_expand(char **arg, t_purser *data, t_quote quote, int len);
+t_rdrct	**check_rdrct(char *line, char *key, int rdrct_cnt, t_parser *data);
+char	**split_arg(char *line, t_parser *data);
+char	*recursive_expand(char **arg, t_parser *data, t_quote quote, int len);
 
 void	free_rdrcts(t_rdrct **rdrcts, int i);
 void	free_rdrct(t_rdrct *rdrct);

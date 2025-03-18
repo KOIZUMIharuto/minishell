@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   purser_rdrct.c                                  :+:      :+:    :+:   */
+/*   parser_rdrct.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -12,11 +12,11 @@
 
 #include <minishell.h>
 
-static t_rdrct	*set_rdrct(char **key_p, char *key, t_purser *data);
+static t_rdrct	*set_rdrct(char **key_p, char *key, t_parser *data);
 static int		set_rdrct_type(char *key_p, char key, t_rdrct *rdrct);
-static bool		set_file(char *key_p, t_rdrct *rdrct, int len, t_purser *data);
+static bool		set_file(char *key_p, t_rdrct *rdrct, int len, t_parser *data);
 
-t_rdrct	**check_rdrct(char *line, char *key, int rdrct_cnt, t_purser *data)
+t_rdrct	**check_rdrct(char *line, char *key, int rdrct_cnt, t_parser *data)
 {
 	t_quote	quote;
 	t_rdrct	**rdrcts;
@@ -45,7 +45,7 @@ t_rdrct	**check_rdrct(char *line, char *key, int rdrct_cnt, t_purser *data)
 	return (rdrcts);
 }
 
-static t_rdrct	*set_rdrct(char **key_p, char *key, t_purser *data)
+static t_rdrct	*set_rdrct(char **key_p, char *key, t_parser *data)
 {
 	t_rdrct	*rdrct;
 	t_quote	quote;
@@ -98,7 +98,7 @@ static int	set_rdrct_type(char *key_p, char key, t_rdrct *rdrct)
 	return (1);
 }
 
-static bool	set_file(char *key_p, t_rdrct *rdrct, int len, t_purser *data)
+static bool	set_file(char *key_p, t_rdrct *rdrct, int len, t_parser *data)
 {
 	char	*file_name_tmp;
 

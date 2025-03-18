@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 21:59:46 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/17 14:14:06 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/18 15:55:32 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ int	main(int argc, char **argv, char **envp)
 		if (ft_strlen(line) > 0)
 		{
 			add_history(line);
-			cmds = purser(line, g_last_exit_status, env);
+			cmds = parser(line, g_last_exit_status, env);
 			status = execute_pipeline(cmds, builtins, env);	// hkoizumi: ここで(cmds, builtins, env)を渡すようにしたい
 			if (status == -42)
 			{

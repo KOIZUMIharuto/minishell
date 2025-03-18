@@ -44,23 +44,23 @@ env_get.c\
 env_update.c\
 env_utils.c
 
-PURSER_SRCS =\
-purser_args.c\
-purser_free.c\
-purser_quote_env.c\
-purser_redirect.c\
-purser.c
+PARSER_SRCS =\
+parser_args.c\
+parser_free.c\
+parser_quote_env.c\
+parser_redirect.c\
+parser.c
 
-SRCS += $(BUILTIN_SRCS)	$(ENV_SRCS) $(PURSER_SRCS)
+SRCS += $(BUILTIN_SRCS)	$(ENV_SRCS) $(PARSER_SRCS)
 
 OBJ_DIR = objs
 OBJS = $(addprefix $(OBJ_DIR)/, $(SRCS:.c=.o))
 
 MAIN = $(OBJ_DIR)/main.o
 
-# purser
-PURSER = purser
-PURSER_TEST_MAIN = $(OBJ_DIR)/purser_test_main.o
+# parser
+PARSER = parser
+PARSER_TEST_MAIN = $(OBJ_DIR)/parser_test_main.o
 
 .PHONY: all p clean fclean re
 
@@ -71,10 +71,10 @@ all: $(NAME)
 $(NAME): $(MAIN) $(OBJS) $(LIBFT)
 	$(CC) $(CFLAGS) $(READLINE) $(INCLUDES) $(MAIN) $(OBJS) $(LIBFT) -o $(NAME)
 
-p: $(PURSER)
+p: $(PARSER)
 
-$(PURSER): $(PURSER_TEST_MAIN) $(OBJS) $(LIBFT)
-	$(CC) $(CFLAGS) $(READLINE) $(INCLUDES) $(PURSER_TEST_MAIN) $(OBJS) $(LIBFT)  -o $(PURSER)
+$(PARSER): $(PARSER_TEST_MAIN) $(OBJS) $(LIBFT)
+	$(CC) $(CFLAGS) $(READLINE) $(INCLUDES) $(PARSER_TEST_MAIN) $(OBJS) $(LIBFT)  -o $(PARSER)
 
 # ソースファイルからオブジェクトファイル生成
 $(OBJ_DIR)/%.o: %.c | $(OBJ_DIR)
@@ -96,7 +96,7 @@ clean:
 # 全ての生成物を削除
 fclean: clean
 	$(MAKE) fclean -C $(LIBFT_DIR)
-	$(RM) -f $(NAME) $(PURSER)
+	$(RM) -f $(NAME) $(PARSER)
 
 # 再ビルド
 re: fclean all

@@ -3,25 +3,25 @@
 /*                                                        :::      ::::::::   */
 /*   purser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 16:45:21 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/16 20:30:35 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/18 15:55:32 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
 
-static void	init_data(t_purser *data, int exit_status, t_list *env);
+static void	init_data(t_parser *data, int exit_status, t_list *env);
 static char	**recursive_split(char *line, char *del, int word_cnt);
-static bool	purse_tokens(t_cmd **cmds, char **tokens, t_purser *data);
+static bool	purse_tokens(t_cmd **cmds, char **tokens, t_parser *data);
 
-t_cmd	**purser(char *line, int exit_status, t_list *env)
+t_cmd	**parser(char *line, int exit_status, t_list *env)
 {
 	t_cmd		**cmds;
 	char		**tokens;
 	int			token_cnt;
-	t_purser	data;
+	t_parser	data;
 
 	if (!line)
 		return (NULL);
@@ -45,7 +45,7 @@ t_cmd	**purser(char *line, int exit_status, t_list *env)
 	return (cmds);
 }
 
-static void	init_data(t_purser *data, int exit_status, t_list *env)
+static void	init_data(t_parser *data, int exit_status, t_list *env)
 {
 	int	i;
 	int	tmp;
@@ -101,7 +101,7 @@ static char	**recursive_split(char *line, char *del, int word_cnt)
 	return (tokens);
 }
 
-static bool	purse_tokens(t_cmd **cmds, char **tokens, t_purser *data)
+static bool	purse_tokens(t_cmd **cmds, char **tokens, t_parser *data)
 {
 	int		i;
 
