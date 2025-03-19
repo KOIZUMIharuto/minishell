@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execve.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 03:20:59 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/17 22:32:03 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/19 16:15:08 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,10 +82,8 @@ void execute_cmd(char **cmd, t_list *env)
     {
         (void)error_msg(cmd_path, strerror(errno));
         if (cmd_path != cmd[0])
-            free(cmd_path);	// cmd_pathをfreeするならenv_arrayもfreeして良いのでは
+            free(cmd_path);
 		free_double_pointor(env_array);
-        // env_arrayのクリーンアップは不要（execve成功時はプロセスが置き換わり、
-        // 失敗時はexit()で終了するため）<- ?
         exit(EXIT_FAILURE);
     }
 }
