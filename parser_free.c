@@ -1,69 +1,59 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   purser_free.c                                      :+:      :+:    :+:   */
+/*   parser_free.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/20 21:13:44 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/18 15:55:32 by hkoizumi         ###   ########.fr       */
+/*   Created: 2025/03/19 12:08:45 by hkoizumi          #+#    #+#             */
+/*   Updated: 2025/03/19 23:11:28 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
 
-void	free_cmds(t_cmd **cmds, int i)
+void	free_cmds(t_cmd **cmds)
 {
-	if (!cmds)
-		return ;
+	int	i;
+
+	i = 0;
 	while (cmds[i])
-		free_cmd(cmds[i++]);
+		free_cmd((void *)cmds[i++]);
 	free(cmds);
 }
 
-void	free_cmd(t_cmd *cmd)
+void	free_cmd(void *content)
 {
-	if (!cmd)
-		return ;
-	free_tokens(cmd->cmd);
-	free_rdrcts(cmd->input_rdrct, 0);
-	free_rdrcts(cmd->output_rdrct, 0);
+	t_cmd	*cmd;
+
+	cmd = (t_cmd *)content;
+	if (cmd->cmd)
+		free_double_pointor(cmd->cmd);
+	if (cmd->input_rdrct)
+		free_rdrcts((void *)cmd->input_rdrct);
+	if (cmd->output_rdrct)
+		free_rdrcts((void *)cmd->output_rdrct);
 	free(cmd);
 }
 
-void	free_tokens(char **tokens)
+void	free_rdrcts(void *content)
 {
-	int	i;
+	t_rdrct	**rdrcts;
+	int		i;
 
-	if (!tokens)
-		return ;
+	rdrcts = (t_rdrct **)content;
 	i = 0;
-	while (tokens[i])
-		free(tokens[i++]);
-	free(tokens);
-}
-
-void	free_rdrcts(t_rdrct **rdrcts, int i)
-{
-	if (!rdrcts)
-		return ;
 	while (rdrcts[i])
-		free_rdrct(rdrcts[i++]);
+		free_rdrct((void *)rdrcts[i++]);
 	free(rdrcts);
 }
 
-void	free_rdrct(t_rdrct *rdrct)
+void	free_rdrct(void *content)
 {
-	int	i;
+	t_rdrct	*rdrct;
 
-	if (!rdrct)
-		return ;
-	if (rdrct->file)
-	{
-		i = 0;
-		while (rdrct->file[i])
-			free(rdrct->file[i++]);
-		free(rdrct->file);
-	}
+	rdrct = (t_rdrct *)content;
+	free(rdrct->token);
+	free_double_pointor(rdrct->file);
 	free(rdrct);
 }

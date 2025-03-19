@@ -1,35 +1,37 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   purser_quote_env.c                                 :+:      :+:    :+:   */
+/*   parser_expand_env_quote_utils.c                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/05 16:05:58 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/18 15:55:32 by hkoizumi         ###   ########.fr       */
+/*   Created: 2025/03/19 21:43:48 by hkoizumi          #+#    #+#             */
+/*   Updated: 2025/03/19 23:06:56 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
 
-static char	*env_remain(char **arg, t_parser *data, t_quote quote, int len);
-static char	*env_not_remain(char **arg, t_parser *data, t_quote quote, int len);
-static void	move_arg_pointer(char **arg, t_parser *data, char *tmp, int i);
-static void	expand_env(char *arg, int key_len, t_parser *data);
+static char	*env_remain(char **token, t_parser *data, t_quote quote, int len);
+static char	*noenv_remain(char **token, t_parser *data, t_quote quote, int len);
+static void	move_arg_pointer(char **token, t_parser *data, char *tmp, int i);
+static void	expand_env(char *token, int key_len, t_parser *data);
 
-char	*recursive_expand(char **arg, t_parser *data, t_quote quote, int len)
+char	*recursive_expand(char **token, t_parser *data, t_quote quote, int len)
 {
 	char	*expanded;
 
 	expanded = NULL;
 	if (data->tmp && *(data->tmp))
-		expanded = env_remain(arg, data, quote, len);
+		expanded = env_remain(token, data, quote, len);
 	else
-		expanded = env_not_remain(arg, data, quote, len);
+		expanded = noenv_remain(token, data, quote, len);
+	if (!expanded)
+		return ((char *)perror_ptr("malloc", errno));
 	return (expanded);
 }
 
-static char	*env_remain(char **arg, t_parser *data, t_quote quote, int len)
+static char	*env_remain(char **token, t_parser *data, t_quote quote, int len)
 {
 	char	*expanded;
 	char	*tmp;
@@ -43,7 +45,7 @@ static char	*env_remain(char **arg, t_parser *data, t_quote quote, int len)
 		i++;
 	data->tmp += i;
 	if (!tmp[i])
-		expanded = recursive_expand(arg, data, quote, len + i);
+		expanded = recursive_expand(token, data, quote, len + i);
 	else
 	{
 		expanded = (char *)malloc(len + i + 1);
@@ -57,38 +59,40 @@ static char	*env_remain(char **arg, t_parser *data, t_quote quote, int len)
 	return (expanded);
 }
 
-static char	*env_not_remain(char **arg, t_parser *data, t_quote quote, int len)
+static char	*noenv_remain(char **token, t_parser *data, t_quote quote, int len)
 {
 	char	*expanded;
 	char	*tmp;
 	int		i;
 
 	expanded = NULL;
-	tmp = *arg;
+	tmp = *token;
 	i = 0;
-	while (tmp[i] && !is_del(tmp[i], "\"'", &quote)
-		&& !(quote != SINGLE_Q && tmp[i] == '$'))
+	while (tmp[i] && !is_effective_quote(tmp[i], &quote) && !(quote != SINGLE_Q
+			&& tmp[i] == '$' && (ft_isalnum(tmp[i + 1]) || tmp[i + 1] == '_')))
 		i++;
-	move_arg_pointer(arg, data, tmp, i);
+	move_arg_pointer(token, data, tmp, i);
 	if (!tmp[i])
 		expanded = (char *)ft_calloc(len + i + 1, sizeof(char));
 	else if (tmp[i] == '$')
-		expanded = recursive_expand(arg, data, quote, len + i);
+		expanded = recursive_expand(token, data, quote, len + i);
 	else if (tmp[i] == '\'' || tmp[i] == '"')
-		expanded = recursive_expand(arg, data, quote, len + i);
+		expanded = recursive_expand(token, data, quote, len + i);
 	if (expanded)
 		while (i--)
 			expanded[len + i] = tmp[i];
+	if (!expanded)
+		return (NULL);
 	return (expanded);
 }
 
-static void	move_arg_pointer(char **arg, t_parser *data, char *tmp, int i)
+static void	move_arg_pointer(char **token, t_parser *data, char *tmp, int i)
 {
 	int		key_len;
 	char	*key_tmp;
 
 	if (!tmp[i])
-		*arg += i;
+		*token += i;
 	else if (tmp[i] == '$')
 	{
 		key_len = 0;
@@ -98,19 +102,19 @@ static void	move_arg_pointer(char **arg, t_parser *data, char *tmp, int i)
 		else if (ft_isalpha(key_tmp[key_len]) || key_tmp[key_len] == '_')
 			while (ft_isalnum(key_tmp[key_len]) || key_tmp[key_len] == '_')
 				key_len++;
-		expand_env(*arg + i + 1, key_len, data);
-		*arg += key_len + i + 1;
+		expand_env(*token + i + 1, key_len, data);
+		*token += key_len + i + 1;
 	}
 	else if (tmp[i] == '\'' || tmp[i] == '"')
-		*arg += i + 1;
+		*token += i + 1;
 }
 
-static void	expand_env(char *arg, int key_len, t_parser *data)
+static void	expand_env(char *token, int key_len, t_parser *data)
 {
 	t_list	*list_tmp;
 	t_env	*env;
 
-	if (arg[0] == '?')
+	if (token[0] == '?')
 	{
 		data->tmp = data->exit_status;
 		return ;
@@ -120,11 +124,13 @@ static void	expand_env(char *arg, int key_len, t_parser *data)
 	while (list_tmp)
 	{
 		env = (t_env *)list_tmp->content;
-		if (ft_strncmp(env->key, arg, key_len) == 0 && !env->key[key_len])
+		list_tmp = list_tmp->next;
+		if (env->is_shell_var)
+			continue ;
+		if (ft_strncmp(env->key, token, key_len) == 0 && !env->key[key_len])
 		{
 			data->tmp = env->value;
 			return ;
 		}
-		list_tmp = list_tmp->next;
 	}
 }

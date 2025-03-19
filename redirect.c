@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirect.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 20:05:03 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/19 21:56:11 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/19 23:34:00 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,10 +31,10 @@ int	backup_io(t_cmd *cmd)
 	return (0);
 }
 
-static int	handle_input_redirect(t_cmd *cmd, t_rdrct *rdrct)
+static int	handle_input_rdrct(t_cmd *cmd, t_rdrct *rdrct)
 {
 	if (rdrct->file[1] != NULL)
-		return (handle_ambiguous_redirect(rdrct));
+		return (handle_ambiguous_rdrct(rdrct));
 	
 	cmd->infile_fd = open(rdrct->file[0], O_RDONLY);
 	if (cmd->infile_fd == -1)
@@ -49,12 +49,12 @@ static int	handle_input_redirect(t_cmd *cmd, t_rdrct *rdrct)
 	return (0);
 }
 
-static int	handle_output_redirect(t_cmd *cmd, t_rdrct *rdrct)
+static int	handle_output_rdrct(t_cmd *cmd, t_rdrct *rdrct)
 {
 	int	flags;
 
 	if (rdrct->file[1] != NULL)
-		return (handle_ambiguous_redirect(rdrct));
+		return (handle_ambiguous_rdrct(rdrct));
 	
 	flags = O_WRONLY | O_CREAT;
 	if (rdrct->type == OVERWRITE_RDRCT)
@@ -86,7 +86,7 @@ int	handle_redirection(t_cmd *cmd)
 	{
 		if (cmd->input_rdrct[j]->type == INPUT_RDRCT)
 		{
-			if (handle_input_redirect(cmd, cmd->input_rdrct[j]) == -1)
+			if (handle_input_rdrct(cmd, cmd->input_rdrct[j]) == -1)
 				return (-1);
 		}
 		j++;
@@ -97,7 +97,7 @@ int	handle_redirection(t_cmd *cmd)
 		if (cmd->output_rdrct[j]->type == OVERWRITE_RDRCT
 			|| cmd->output_rdrct[j]->type == APPEND_RDRCT)
 		{
-			if (handle_output_redirect(cmd, cmd->output_rdrct[j]) == -1)
+			if (handle_output_rdrct(cmd, cmd->output_rdrct[j]) == -1)
 				return (-1);
 		}
 		j++;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 21:59:46 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/19 17:27:49 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/19 23:44:08 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,22 +38,23 @@ int	main(int argc, char **argv, char **envp)
 		if (!line)
 		{
 			ft_putstr_fd("exit", STDOUT_FILENO);
-			break;
+			break ;
 		}
 		if (ft_strlen(line) > 0)
 		{
 			add_history(line);
 			cmds = parser(line, g_last_exit_status, env);
+			if (!cmds)
+				continue ;
 			status = execute_pipeline(cmds, builtins, env);
 			if (status == -42)
 			{
 				free(line);
-				free_cmds(cmds, 0);
+				free_cmds(cmds);
 				exit(g_last_exit_status);
 			}
 		}
 		free(line);
-		free_cmds(cmds, 0);
 	}
 	ft_lstclear(&env, env_free);
 	return (0);

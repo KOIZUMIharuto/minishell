@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 14:13:46 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/19 22:40:07 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/19 23:33:38 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,6 @@
 # define BUILTIN_NUM 7
 # define PROMPT "minishell$ "
 
-char **environ;
 extern int g_last_exit_status;
 
 typedef struct s_env
@@ -67,6 +66,7 @@ typedef enum s_rdrct_type
 typedef struct s_rdrct
 {
 	t_rdrct_type	type;
+	char			*token;
 	char			**file;
 	int				fd;
 }	t_rdrct;
@@ -120,7 +120,7 @@ void	handle_pipe_io(t_pipe_info *pipe_info);
 //redirect and heredoc
 int handle_heredocument(char *delimiter, t_cmd *cmd);
 int handle_redirection(t_cmd *cmd);
-int	handle_ambiguous_redirect(t_rdrct *rdrct);
+int	handle_ambiguous_rdrct(t_rdrct *rdrct);
 int restore_redirection(t_cmd *cmd);
 
 // builtin
@@ -144,20 +144,25 @@ t_env	*env_get(t_list *env_list, char *key, bool even_if_shell_var);
 bool	env_update(t_list **env_list, char *key, char *value);
 bool	is_valid_key(char *key);
 bool	print_invalid_key(char *cmd, char *key);
-char **convert_env_list_to_array(t_list *env);
+char	**convert_env_list_to_array(t_list *env);
 
 // puerser
 t_cmd	**parser(char *line, int exit_status, t_list *env);
-bool	is_del(char c, char *del, t_quote *quote);
-t_rdrct	**check_rdrct(char *line, char *key, int rdrct_cnt, t_parser *data);
-char	**split_arg(char *line, t_parser *data);
-char	*recursive_expand(char **arg, t_parser *data, t_quote quote, int len);
+t_list	*tokenize(char *line);
+bool	check_syntax(t_list *tokens);
+bool	split_tokens(t_list ***splited_tokens, t_list *tokens);
+t_list	*splited_tokens_to_cmd_list(t_list **splited_tokens, t_parser data);
+bool	get_rdrcts(t_rdrct ***rdrcts, t_list **tokens, char key, t_parser data);
+bool	get_rdrct_list(t_list **rdrct_list, t_list **tokens, char key);
+t_list	*expand_env_quote(char *token, t_parser data);
+char	*recursive_expand(char **token, t_parser *data, t_quote quote, int len);
+bool	is_in_quote(char c, t_quote *quote, bool is_include_quote);
+bool	is_effective_quote(char c, t_quote *quote);
 
-void	free_rdrcts(t_rdrct **rdrcts, int i);
-void	free_rdrct(t_rdrct *rdrct);
-void	free_cmds(t_cmd **cmds, int i);
-void	free_cmd(t_cmd *cmd);
-void	free_tokens(char **tokens);
+void	free_cmds(t_cmd **cmds);
+void	free_cmd(void *content);
+void	free_rdrcts(void *content);
+void	free_rdrct(void *content);
 
 int		error_msg(char *cmd, char *msg);
 int		perror_int(char *msg, int errnum);
@@ -165,6 +170,6 @@ bool	perror_bool(char *msg, int errnum);
 void	*perror_ptr(char *msg, int errnum);
 void	my_perror(char *msg, int errnum);
 
-void free_double_pointor(char **array);
+void	free_double_pointor(char **array);
 
 #endif

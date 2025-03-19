@@ -1,57 +1,56 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   purser.c                                           :+:      :+:    :+:   */
+/*   data.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/18 16:45:21 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/18 15:55:32 by hkoizumi         ###   ########.fr       */
+/*   Created: 2025/03/18 23:54:16 by hkoizumi          #+#    #+#             */
+/*   Updated: 2025/03/19 17:30:34 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
 
-static void	init_data(t_parser *data, int exit_status, t_list *env);
-static char	**recursive_split(char *line, char *del, int word_cnt);
-static bool	purse_tokens(t_cmd **cmds, char **tokens, t_parser *data);
+static void		init_parser(t_parser *data, int exit_status, t_list *env);
+static t_cmd	**list_to_cmds(t_list *cmd_list);
+static void		free_splited_tokens(t_list ***splited_tokens);
 
 t_cmd	**parser(char *line, int exit_status, t_list *env)
 {
-	t_cmd		**cmds;
-	char		**tokens;
-	int			token_cnt;
 	t_parser	data;
+	t_list		*tokens;
+	t_list		**splited_tokens;
+	t_list		*cmd_list;
+	t_cmd		**cmds;
 
-	if (!line)
-		return (NULL);
-	tokens = recursive_split(line, "|", 0);
+	init_parser(&data, exit_status, env);
+	tokens = tokenize(line);
 	if (!tokens)
 		return (NULL);
-	token_cnt = 0;
-	while (tokens[token_cnt])
-		token_cnt++;
-	cmds = (t_cmd **)ft_calloc(token_cnt + 1, sizeof(t_cmd *));
-	if (!cmds)
-		return (NULL);
-	init_data(&data, exit_status, env);
-	if (!purse_tokens(cmds, tokens, &data))
+	if (!check_syntax(tokens) || !split_tokens(&splited_tokens, tokens))
 	{
-		free_tokens(tokens);
-		free_cmds(cmds, 0);
+		ft_lstclear(&tokens, free);
 		return (NULL);
 	}
-	free_tokens(tokens);
+	cmd_list = splited_tokens_to_cmd_list(splited_tokens, data);
+	if (cmd_list)
+		cmds = list_to_cmds(cmd_list);
+	if (!cmd_list || !cmds)
+	{
+		free_splited_tokens(&splited_tokens);
+		return (NULL);
+	}
 	return (cmds);
 }
 
-static void	init_data(t_parser *data, int exit_status, t_list *env)
+static void	init_parser(t_parser *data, int exit_status, t_list *env)
 {
 	int	i;
 	int	tmp;
 	int	div;
 
-	exit_status %= 256;
+	exit_status = (exit_status % 256 + 256) % 256;
 	i = 0;
 	div = 100;
 	while (div)
@@ -72,79 +71,36 @@ static void	init_data(t_parser *data, int exit_status, t_list *env)
 	data->tmp = NULL;
 }
 
-static char	**recursive_split(char *line, char *del, int word_cnt)
+static t_cmd	**list_to_cmds(t_list *cmd_list)
 {
-	char	**tokens;
-	char	*token;
-	t_quote	quote;
-	int		i;
+	t_cmd	**cmds;
+	t_list	*tmp;
+	int		cmd_count;
 
-	while (*line && is_del(*line, del, NULL))
-		line++;
-	if (!*line)
-		tokens = (char **)ft_calloc(word_cnt + 1, sizeof(char *));
-	else
+	cmd_count = ft_lstsize(cmd_list);
+	cmds = (t_cmd **)ft_calloc(cmd_count + 1, sizeof(t_cmd *));
+	if (!cmds)
 	{
-		quote = NONE_Q;
-		i = 0;
-		while (line[i] && !is_del(line[i], del, &quote))
-			i++;
-		token = ft_substr(line, 0, i);
-		if (!token)
-			return (NULL);
-		tokens = recursive_split(line + i, del, word_cnt + 1);
-		if (!tokens)
-			free(token);
-		else
-			tokens[word_cnt] = token;
+		ft_lstclear(&cmd_list, free_cmd);
+		return ((t_cmd **)perror_ptr("malloc", errno));
 	}
-	return (tokens);
+	cmd_count = -1;
+	while (cmd_list)
+	{
+		cmds[++cmd_count] = (t_cmd *)cmd_list->content;
+		tmp = cmd_list;
+		cmd_list = cmd_list->next;
+		free(tmp);
+	}
+	return (cmds);
 }
 
-static bool	purse_tokens(t_cmd **cmds, char **tokens, t_parser *data)
+static void	free_splited_tokens(t_list ***splited_tokens)
 {
-	int		i;
+	int	i;
 
-	i = -1;
-	while (tokens[++i])
-	{
-		cmds[i] = (t_cmd *)ft_calloc(1, sizeof(t_cmd));
-		if (!cmds[i])
-			return (false);
-		cmds[i]->input_rdrct = check_rdrct(tokens[i], "<", 0, data);
-		cmds[i]->output_rdrct = check_rdrct(tokens[i], ">", 0, data);
-		cmds[i]->cmd = split_arg(tokens[i], data);
-		cmds[i]->infile_fd = -1;
-		cmds[i]->outfile_fd = -1;
-		cmds[i]->backup_stdin = -1;
-		cmds[i]->backup_stdout = -1;
-		if (!cmds[i]->input_rdrct
-			|| !cmds[i]->output_rdrct || !cmds[i]->cmd)
-			return (false);
-	}
-	return (true);
-}
-
-bool	is_del(char c, char *del, t_quote *quote)
-{
-	bool	del_quote;
-
-	del_quote = (ft_strchr(del, '"') && ft_strchr(del, '\''));
-	if (quote)
-	{
-		if (c == '"' && *quote == DOUBLE_Q)
-			*quote = NONE_Q;
-		else if (c == '"' && *quote == NONE_Q)
-			*quote = DOUBLE_Q;
-		else if (c == '\'' && *quote == SINGLE_Q)
-			*quote = NONE_Q;
-		else if (c == '\'' && *quote == NONE_Q)
-			*quote = SINGLE_Q;
-		if (!del_quote && *quote != NONE_Q)
-			return (false);
-		if ((*quote == SINGLE_Q && c == '"')
-			|| (*quote == DOUBLE_Q && c == '\''))
-			return (false);
-	}
-	return (ft_strchr(del, c) != NULL);
+	i = 0;
+	while ((*splited_tokens)[i])
+		ft_lstclear(&(*splited_tokens)[i++], free);
+	free(*splited_tokens);
 }

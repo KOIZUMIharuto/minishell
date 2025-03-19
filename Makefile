@@ -53,10 +53,16 @@ env_update.c\
 env_utils.c
 
 PARSER_SRCS =\
-parser_args.c\
+parser_expand_env_quote_utils.c\
+parser_expand_env_quote.c\
 parser_free.c\
-parser_quote_env.c\
+parser_redirect_utils.c\
 parser_redirect.c\
+parser_split_tokens.c\
+parser_syntax.c\
+parser_tokenize.c\
+parser_tokens_to_cmd.c\
+parser_utils.c\
 parser.c
 
 SRCS += $(PIPE_SRCS) $(REDIRECT_HEREDOC_SRCS) $(BUILTIN_SRCS) $(ENV_SRCS) $(PARSER_SRCS)
@@ -66,11 +72,7 @@ OBJS = $(addprefix $(OBJ_DIR)/, $(SRCS:.c=.o))
 
 MAIN = $(OBJ_DIR)/main.o
 
-# parser
-PARSER = parser
-PARSER_TEST_MAIN = $(OBJ_DIR)/parser_test_main.o
-
-.PHONY: all p clean fclean re
+.PHONY: all clean fclean re
 
 # デフォルトターゲット
 all: $(NAME)
@@ -78,11 +80,6 @@ all: $(NAME)
 # バイナリ生成ルール
 $(NAME): $(MAIN) $(OBJS) $(LIBFT)
 	$(CC) $(CFLAGS) $(READLINE) $(INCLUDES) $(MAIN) $(OBJS) $(LIBFT) -o $(NAME)
-
-p: $(PARSER)
-
-$(PARSER): $(PARSER_TEST_MAIN) $(OBJS) $(LIBFT)
-	$(CC) $(CFLAGS) $(READLINE) $(INCLUDES) $(PARSER_TEST_MAIN) $(OBJS) $(LIBFT)  -o $(PARSER)
 
 # ソースファイルからオブジェクトファイル生成
 $(OBJ_DIR)/%.o: %.c | $(OBJ_DIR)
@@ -104,7 +101,7 @@ clean:
 # 全ての生成物を削除
 fclean: clean
 	$(MAKE) fclean -C $(LIBFT_DIR)
-	$(RM) -f $(NAME) $(PARSER)
+	$(RM) -f $(NAME)
 
 # 再ビルド
 re: fclean all

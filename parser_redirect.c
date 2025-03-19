@@ -3,125 +3,135 @@
 /*                                                        :::      ::::::::   */
 /*   parser_rdrct.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/26 14:15:15 by hkoizumi          #+#    #+#             */
-/*   Updated: 2024/11/29 14:48:11 by hkoizumi         ###   ########.fr       */
+/*   Created: 2025/03/19 11:02:47 by hkoizumi          #+#    #+#             */
+/*   Updated: 2025/03/19 21:49:55 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
 
-static t_rdrct	*set_rdrct(char **key_p, char *key, t_parser *data);
-static int		set_rdrct_type(char *key_p, char key, t_rdrct *rdrct);
-static bool		set_file(char *key_p, t_rdrct *rdrct, int len, t_parser *data);
+static bool		token_to_file(t_rdrct **rdrcts, t_parser data);
+static char		**set_heredocument(char *token);
+static char		**set_file_name(char *token, t_parser data);
+static t_rdrct	**list_to_rdrcts(t_list *rdrct_list);
 
-t_rdrct	**check_rdrct(char *line, char *key, int rdrct_cnt, t_parser *data)
+bool	get_rdrcts(t_rdrct ***rdrcts, t_list **tokens, char key, t_parser data)
 {
-	t_quote	quote;
-	t_rdrct	**rdrcts;
-	t_rdrct	*rdrct;
-	char	*key_p;
+	t_list	*rdrct_list;
 
-	if (!line)
-		return (NULL);
-	quote = NONE_Q;
-	key_p = line;
-	while (*key_p && !is_del(*key_p, key, &quote))
-		key_p++;
-	if (!*key_p)
-		rdrcts = (t_rdrct **)ft_calloc(rdrct_cnt + 1, sizeof(t_rdrct *));
-	else
+	rdrct_list = NULL;
+	if (!get_rdrct_list(&rdrct_list, tokens, key))
+		return (false);
+	*rdrcts = list_to_rdrcts(rdrct_list);
+	if (!*rdrcts)
+		return (false);
+	if (!token_to_file(*rdrcts, data))
 	{
-		rdrct = set_rdrct(&key_p, key, data);
-		if (!rdrct)
-			return (NULL);
-		rdrcts = check_rdrct(line, key, rdrct_cnt + 1, data);
-		if (!rdrcts)
-			free_rdrct(rdrct);
-		else
-			rdrcts[rdrct_cnt] = rdrct;
+		free_rdrcts(*rdrcts);
+		*rdrcts = NULL;
+		return (false);
 	}
-	return (rdrcts);
+	return (true);
 }
 
-static t_rdrct	*set_rdrct(char **key_p, char *key, t_parser *data)
+static bool	token_to_file(t_rdrct **rdrcts, t_parser data)
 {
-	t_rdrct	*rdrct;
-	t_quote	quote;
-	char	*key_pos_tmp;
 	int		i;
 
-	rdrct = (t_rdrct *)ft_calloc(1, sizeof(t_rdrct));
-	if (!rdrct)
-		return (NULL);
-	key_pos_tmp = *key_p;
-	*key_p += set_rdrct_type(*key_p, key[0], rdrct);
-	while (**key_p && is_del(**key_p, " \t\n", NULL))
-		(*key_p)++;
-	quote = NONE_Q;
 	i = 0;
-	while ((*key_p)[i] && !is_del((*key_p)[i], " \t\n><", &quote))
-		i++;
-	if (!set_file(*key_p, rdrct, i, data))
+	while (rdrcts[i])
 	{
-		free_rdrct (rdrct);
-		return (NULL);
-	}
-	rdrct->fd = -1;
-	(void)ft_strlcpy(key_pos_tmp, *key_p + i, ft_strlen(key_pos_tmp) + 1);
-	return (rdrct);
-}
-
-static int	set_rdrct_type(char *key_p, char key, t_rdrct *rdrct)
-{
-	if (key == '<')
-	{
-		if (key_p[1] == '<')
-		{
-			rdrct->type = HEREDOCUMENT;
-			return (2);
-		}
+		if (rdrcts[i]->type == HEREDOCUMENT)
+			rdrcts[i]->file = set_heredocument(rdrcts[i]->token);
 		else
-			rdrct->type = INPUT_RDRCT;
-	}
-	else
-	{
-		if (key_p[1] == '>')
-		{
-			rdrct->type = APPEND_RDRCT;
-			return (2);
-		}
-		else
-			rdrct->type = OVERWRITE_RDRCT;
-	}
-	return (1);
-}
-
-static bool	set_file(char *key_p, t_rdrct *rdrct, int len, t_parser *data)
-{
-	char	*file_name_tmp;
-
-	if (key_p[0])
-	{
-		if (rdrct->type == HEREDOCUMENT)
-		{
-			rdrct->file = (char **)ft_calloc(2, sizeof(char *));
-			if (rdrct->file)
-				rdrct->file[0] = ft_substr(key_p, 0, len);
-		}
-		else
-		{
-			file_name_tmp = ft_substr(key_p, 0, len);
-			if (!file_name_tmp)
-				return (false);
-			rdrct->file = split_arg(file_name_tmp, data);
-			free(file_name_tmp);
-		}
-		if (!rdrct->file || !rdrct->file[0])
+			rdrcts[i]->file = set_file_name(rdrcts[i]->token, data);
+		if (!rdrcts[i]->file)
 			return (false);
+		i++;
 	}
-	else
-		rdrct->file = NULL;
 	return (true);
+}
+
+static char	**set_heredocument(char *token)
+{
+	t_quote	quote;
+	int		i;
+	int		heredoc_i;
+	char	**heredoc;
+
+	quote = NONE_Q;
+	i = -1;
+	heredoc_i = 0;
+	while (token[++i])
+		if (is_in_quote(token[i], &quote, false) || !ft_strchr("'\"", token[i]))
+			heredoc_i++;
+	heredoc = (char **)ft_calloc(2, sizeof(char *));
+	if (heredoc)
+		heredoc[0] = (char *)ft_calloc(heredoc_i + 1, sizeof(char));
+	if (!heredoc || !heredoc[0])
+	{
+		free(heredoc);
+		return (perror_ptr("malloc", errno));
+	}
+	i = -1;
+	heredoc_i = 0;
+	while (token[++i])
+		if (is_in_quote(token[i], &quote, false) || !ft_strchr("'\"", token[i]))
+			heredoc[0][heredoc_i++] = token[i];
+	return (heredoc);
+}
+
+static char	**set_file_name(char *token, t_parser data)
+{
+	t_list	*expanded_list;
+	t_list	*tmp;
+	int		file_count;
+	char	**files;
+
+	expanded_list = expand_env_quote(token, data);
+	if (!expanded_list)
+		return (NULL);
+	file_count = ft_lstsize(expanded_list);
+	files = (char **)ft_calloc(file_count + 1, sizeof(char *));
+	if (!files)
+	{
+		ft_lstclear(&expanded_list, free);
+		return ((char **)perror_ptr("malloc", errno));
+	}
+	file_count = -1;
+	while (expanded_list)
+	{
+		files[++file_count] = (char *)expanded_list->content;
+		tmp = expanded_list;
+		expanded_list = expanded_list->next;
+		free(tmp);
+	}
+	return (files);
+}
+
+static t_rdrct	**list_to_rdrcts(t_list *rdrct_list)
+{
+	t_rdrct	**rdrcts;
+	t_list	*tmp;
+	int		rdrct_count;
+
+	rdrct_count = ft_lstsize(rdrct_list);
+	rdrcts = (t_rdrct **)ft_calloc(rdrct_count + 1, sizeof(t_rdrct *));
+	if (!rdrcts)
+	{
+		ft_lstclear(&rdrct_list, free_rdrct);
+		return ((t_rdrct **)perror_ptr("malloc", errno));
+	}
+	rdrct_count = 0;
+	while (rdrct_list)
+	{
+		rdrcts[rdrct_count] = (t_rdrct *)rdrct_list->content;
+		tmp = rdrct_list;
+		rdrct_list = rdrct_list->next;
+		free(tmp);
+		rdrct_count++;
+	}
+	return (rdrcts);
 }
