@@ -6,12 +6,28 @@
 /*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 12:30:41 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/19 21:59:33 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/19 22:56:55 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
 
+int	process_heredocs(t_cmd *cmd)
+{
+	int	j;
+
+	j = 0;
+	while (cmd->input_rdrct[j])
+	{
+		if (cmd->input_rdrct[j]->type == HEREDOCUMENT)
+		{
+			if (handle_heredocument(cmd->input_rdrct[j]->file[0], cmd) == -1)
+				return (-1);
+		}
+		j++;
+	}
+	return (0);
+}
 int execute_single_builtin(t_cmd *cmd, t_builtin *builtins, 
                            int builtin_index, t_list *env)
 {
@@ -48,29 +64,12 @@ int execute_single_builtin(t_cmd *cmd, t_builtin *builtins,
     setup_interactive_signals();
     return result;
 }
-int	process_heredocs(t_cmd *cmd)
-{
-	int	j;
-
-	j = 0;
-	while (cmd->input_rdrct[j])
-	{
-		if (cmd->input_rdrct[j]->type == HEREDOCUMENT)
-		{
-			if (handle_heredocument(cmd->input_rdrct[j]->file[0], cmd) == -1)
-				return (-1);
-		}
-		j++;
-	}
-	return (0);
-}
 
 void execute_command_in_child(t_cmd *cmd, int (*builtin_func)(char **, t_list *), 
                              t_list *env, t_pipe_info *pipe_info)
 {
     int result;
     
-    setup_child_signals();
     if (process_heredocs(cmd) == -1)
         exit (EXIT_FAILURE);
     if (handle_redirection(cmd) == -1)
@@ -78,11 +77,13 @@ void execute_command_in_child(t_cmd *cmd, int (*builtin_func)(char **, t_list *)
     handle_pipe_io(pipe_info);
     if (builtin_func)
     {
+        setup_builtin_signals();
         result = builtin_func(cmd->cmd, env);
         exit (result);  
     }
     else
     {
+        setup_child_signals(); 
         execute_cmd(cmd->cmd, env);
     }
 }
@@ -134,3 +135,4 @@ int execute_commands(t_cmd **cmds, t_builtin *builtins, t_list *env,
     
     return i;
 }
+

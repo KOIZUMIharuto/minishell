@@ -6,7 +6,7 @@
 /*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 22:01:52 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/19 16:12:21 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/19 22:55:46 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,9 +32,18 @@ void sig_ctrl_c_exec(int signal)
 void setup_interactive_signals(void)
 {
     struct sigaction sa;
-
+    struct termios term;
+    
+    // 現在の端末設定を取得
+    tcgetattr(STDIN_FILENO, &term);
+    
+    // ECHOCTL フラグをオフにして、^C などの制御文字が表示されないようにする
+    term.c_lflag &= ~(ECHOCTL);
+    tcsetattr(STDIN_FILENO, TCSANOW, &term);
+    
     sa.sa_handler = sig_ctrl_c;
     sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0; // SA_RESTART フラグがないことを確認
     sigaction(SIGINT, &sa, NULL);
 
     sa.sa_handler = SIG_IGN;
