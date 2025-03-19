@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 21:59:46 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/19 23:44:08 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/20 04:11:16 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,10 @@ int	main(int argc, char **argv, char **envp)
 			add_history(line);
 			cmds = parser(line, g_last_exit_status, env);
 			if (!cmds)
+			{
+				free(line);
 				continue ;
+			}
 			status = execute_pipeline(cmds, builtins, env);
 			if (status == -42)
 			{

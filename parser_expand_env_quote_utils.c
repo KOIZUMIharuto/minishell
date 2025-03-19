@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 21:43:48 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/19 23:06:56 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/20 03:22:04 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,8 +68,9 @@ static char	*noenv_remain(char **token, t_parser *data, t_quote quote, int len)
 	expanded = NULL;
 	tmp = *token;
 	i = 0;
-	while (tmp[i] && !is_effective_quote(tmp[i], &quote) && !(quote != SINGLE_Q
-			&& tmp[i] == '$' && (ft_isalnum(tmp[i + 1]) || tmp[i + 1] == '_')))
+	while (tmp[i] && !is_effective_quote(tmp[i], &quote)
+		&& !(quote != SINGLE_Q && tmp[i] == '$' && (tmp[i + 1]
+				&& (ft_isalnum(tmp[i + 1]) || ft_strchr("_?", tmp[i + 1])))))
 		i++;
 	move_arg_pointer(token, data, tmp, i);
 	if (!tmp[i])

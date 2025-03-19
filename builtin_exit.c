@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_exit.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 00:54:17 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/19 04:37:17 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/20 03:33:11 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,9 @@ int builtin_exit(char **cmd, t_list *env) {
             write(STDERR_FILENO, cmd[1], ft_strlen(cmd[1]));
             write(STDERR_FILENO, ": numeric argument required\n", 28);
             g_last_exit_status = 255;
+			return (0);
         }
-        if (cmd[2] != NULL) {
+        else if (cmd[2] != NULL) {
             write(STDERR_FILENO, "exit: too many arguments\n", 26);
             g_last_exit_status = 1;
             return (-1);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execve.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 03:20:59 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/19 16:15:08 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/20 04:09:48 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,7 @@ void execute_cmd(char **cmd, t_list *env)
 {
     char *cmd_path;
     char **env_array;
+	struct stat path_stat;
 
     cmd_path = (ft_strchr(cmd[0], '/') != NULL) ? cmd[0] : find_cmd_path(cmd[0], env);
     if (!cmd_path)
@@ -77,7 +78,22 @@ void execute_cmd(char **cmd, t_list *env)
             free(cmd_path);
         exit(EXIT_FAILURE);
     }
-
+	if (stat(cmd_path, &path_stat) == -1)
+	{
+		(void)error_msg(cmd_path, strerror(errno));
+		if (cmd_path != cmd[0])
+			free(cmd_path);
+		free_double_pointor(env_array);
+		exit(EXIT_FAILURE);
+	}
+	if (S_ISDIR(path_stat.st_mode))
+	{
+		(void)error_msg(cmd_path, "is a directory");
+		if (cmd_path != cmd[0])
+			free(cmd_path);
+		free_double_pointor(env_array);
+		exit(EXIT_FAILURE);
+	}
     if (execve(cmd_path, cmd, env_array) == -1)
     {
         (void)error_msg(cmd_path, strerror(errno));

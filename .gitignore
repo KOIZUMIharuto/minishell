@@ -3,3 +3,4 @@ pyminish
 .devcontainer/
 .vscode/
 test.sh
+minishell_tester/

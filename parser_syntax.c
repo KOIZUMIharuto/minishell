@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 23:24:37 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/19 21:50:11 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/20 04:15:56 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,6 +74,7 @@ static bool	print_syntax_error(char *token)
 {
 	ft_putstr_fd("minishell: syntax error near unexpected token `", 2);
 	ft_putstr_fd(token, 2);
-	ft_putstr_fd("`\n", 2);
+	ft_putstr_fd("'\n", 2);
+	g_last_exit_status = 258;
 	return (false);
 }
