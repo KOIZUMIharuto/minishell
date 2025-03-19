@@ -7,7 +7,7 @@ RM = rm
 FSANITIZE = -fsanitize=address
 CFLAGS = -Wall -Wextra -Werror 
 INCLUDES = -I./includes -I/usr/local/opt/readline/include
-READLINE = -lreadline -L/usr/local/opt/readline/lib
+READLINE = -lreadline -L/usr/local/opt/readline/lib 
 
 LIBFT_DIR = libft
 LIBFT = $(LIBFT_DIR)/libft.a
@@ -16,12 +16,20 @@ LIBFT = $(LIBFT_DIR)/libft.a
 SRCS =\
 error.c\
 execve.c\
-heredocument.c\
-pipe.c\
-redirect.c\
 signal.c\
 free.c \
-stdio_fd_utils.c \
+
+# pipe
+PIPE_SRCS =\
+pipe.c \
+pipe_command.c \
+pipe_utils.c \
+
+# redirect and heredocument
+REDIRECT_HEREDOC_SRCS =\
+redirect.c \
+redirect_utils.c \
+heredocument.c\
 
 # builtin
 BUILTIN_SRCS =\
@@ -51,7 +59,7 @@ parser_quote_env.c\
 parser_redirect.c\
 parser.c
 
-SRCS += $(BUILTIN_SRCS)	$(ENV_SRCS) $(PARSER_SRCS)
+SRCS += $(PIPE_SRCS) $(REDIRECT_HEREDOC_SRCS) $(BUILTIN_SRCS) $(ENV_SRCS) $(PARSER_SRCS)
 
 OBJ_DIR = objs
 OBJS = $(addprefix $(OBJ_DIR)/, $(SRCS:.c=.o))
