@@ -6,13 +6,13 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 12:08:45 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/19 22:47:15 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/19 23:11:28 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
 
-void	frr_cmds(t_cmd **cmds)
+void	free_cmds(t_cmd **cmds)
 {
 	int	i;
 

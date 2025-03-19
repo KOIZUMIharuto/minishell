@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/18 16:45:21 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/19 22:48:05 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/19 23:11:56 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,9 +43,7 @@ int	main(int argc, char **argv, char **envp)
 		if (!cmds)
 			continue ;
 		print_cmds(cmds);
-		for (int i = 0; cmds[i]; i++)
-			free_cmd((void *)cmds[i]);
-		free(cmds);
+		free_cmds(cmds);
 	}
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 14:13:46 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/19 23:01:35 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/19 23:14:22 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,7 +122,7 @@ char	*recursive_expand(char **token, t_parser *data, t_quote quote, int len);
 bool	is_in_quote(char c, t_quote *quote, bool is_include_quote);
 bool	is_effective_quote(char c, t_quote *quote);
 
-void	free_cmd(void *content);
+void	free_cmds(t_cmd **cmds);
 void	free_cmd(void *content);
 void	free_rdrcts(void *content);
 void	free_rdrct(void *content);
