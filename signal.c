@@ -6,20 +6,20 @@
 /*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 22:01:52 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/16 12:13:08 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/19 16:12:21 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 # include "minishell.h"
 
-
 void sig_ctrl_c(int signal)
 {
-    (void)signal; 
-    write(1, "\n", 1);
+    (void)signal;
+    write(STDOUT_FILENO, "\n", 1);
     rl_on_new_line();
-    // rl_replace_line("", 0);
+    rl_replace_line("", 0);
     rl_redisplay();
+    g_last_exit_status = 1;
 }
 
 void sig_ctrl_c_exec(int signal)

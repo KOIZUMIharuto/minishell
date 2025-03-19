@@ -6,30 +6,26 @@
 /*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 14:13:46 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/19 04:45:33 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/19 21:52:32 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
-// # define _GNU_SOURCE
-
-# include "../libft/libft.h" // 自作ライブラリの関数群を使用するためのヘッダー
-# include <limits.h> // システムの限界値（INT_MAX、PATH_MAX など）を定義するためのヘッダー
-# include <stdlib.h> // 標準ライブラリ。メモリ管理関数（malloc, free）や乱数生成、環境変数操作（getenv）などを提供
-# include <unistd.h> // POSIX標準の関数（write, read, fork, execve など）を使用するためのヘッダー
-# include <sys/stat.h> // ファイルの情報を取得するための `stat` 構造体や関数を使用するためのヘッダー
-# include <stdio.h> // 標準入出力関数（printf, perror など）を使用するためのヘッダー
-# include <signal.h> // シグナル処理のためのヘッダー
-# include <string.h> // 文字列操作関数（strcpy, strcat, strlen など）を使用するためのヘッダー
-# include <readline/readline.h> // GNU Readline ライブラリを使用して、コマンドライン入力を扱うためのヘッダー
-# include <readline/history.h> // Readline の履歴機能を使用するためのヘッダー
-# include <sys/wait.h>  // waitpid を使用するために必要なヘッダー
-# include <fcntl.h> // open, close, O_RDONLY, O_WRONLY, O_CREAT を使用するために必要なヘッダー
+# include "../libft/libft.h"
+# include <limits.h>
+# include <stdlib.h>
+# include <unistd.h>
+# include <sys/stat.h>
+# include <stdio.h>
+# include <signal.h>
+# include <readline/readline.h>
+# include <readline/history.h>
+# include <sys/wait.h>
+# include <fcntl.h>
 # include <errno.h>
 # include <stdbool.h>
-#include <sys/ioctl.h>
 
 # define BUILTIN_NUM 7
 # define PROMPT "minishell$ "
@@ -81,8 +77,8 @@ typedef struct s_cmd
 	t_rdrct	**output_rdrct;
 	int		infile_fd;
 	int		outfile_fd;
-    int     backup_stdin;   // 標準入力のバックアップfd用
-    int     backup_stdout;  // 標準出力のバックアップfd用
+    int     backup_stdin;
+    int     backup_stdout;
 }	t_cmd;
 
 typedef struct s_parser
@@ -166,10 +162,15 @@ void setup_child_signals(void);
 int execute_pipeline(t_cmd **cmds, t_builtin *builtins, t_list *env);
 int execute_single_builtin(t_cmd *cmd, t_builtin *builtins, int builtin_index, t_list *env);
 int execute_commands(t_cmd **cmds, t_builtin *builtins, t_list *env, pid_t *pids, t_pipe_info *pipe_info);
-int process_heredocs(t_cmd *cmd);
 int setup_pipe(t_pipe_info *pipe_info, bool has_next);
-void manage_parent_pipes(t_pipe_info *pipe_info);
+void manage_pipes(t_pipe_info *pipe_info);
 void execute_command_in_child(t_cmd *cmd, int (*builtin_func)(char **, t_list *), t_list *env, t_pipe_info *pipe_info);
 int wait_for_children(pid_t *pids, int cmd_count);
+int	handle_ambiguous_redirect(t_rdrct *rdrct);
+void	handle_pipe_io(t_pipe_info *pipe_info);
+int	process_heredocs(t_cmd *cmd);
+    
+
+
 
 #endif

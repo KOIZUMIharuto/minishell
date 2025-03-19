@@ -6,28 +6,11 @@
 /*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 12:30:41 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/19 02:59:56 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/19 21:34:51 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
-
-int process_heredocs(t_cmd *cmd)
-{
-    int j;
-    
-    j = 0;
-    while (cmd->input_rdrct[j])
-    {
-        if (cmd->input_rdrct[j]->type == HEREDOCUMENT)
-        {
-            if (handle_heredocument(cmd->input_rdrct[j]->file[0], cmd) == -1)
-                return -1;
-        }
-        j++;
-    }
-    return 0;
-}
 
 int setup_pipe(t_pipe_info *pipe_info, bool has_next)
 {
@@ -44,7 +27,7 @@ int setup_pipe(t_pipe_info *pipe_info, bool has_next)
     return 0;
 }
 
-void manage_parent_pipes(t_pipe_info *pipe_info)
+void manage_pipes(t_pipe_info *pipe_info)
 {
     if (pipe_info->prev_fd != -1)
         close(pipe_info->prev_fd);
@@ -56,3 +39,17 @@ void manage_parent_pipes(t_pipe_info *pipe_info)
     }
 }
 
+void	handle_pipe_io(t_pipe_info *pipe_info)
+{
+	if (pipe_info->prev_fd != -1)
+	{
+		dup2(pipe_info->prev_fd, STDIN_FILENO);
+		close(pipe_info->prev_fd);
+	}
+	if (pipe_info->has_next)
+	{
+		dup2(pipe_info->pipe_fds[1], STDOUT_FILENO);
+		close(pipe_info->pipe_fds[1]);
+		close(pipe_info->pipe_fds[0]);
+	}
+}

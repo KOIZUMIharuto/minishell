@@ -6,7 +6,7 @@
 /*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 12:30:41 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/19 04:37:51 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/19 21:59:33 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,14 +16,19 @@ int execute_single_builtin(t_cmd *cmd, t_builtin *builtins,
                            int builtin_index, t_list *env)
 {
     int result;
+    int redirect_status;
     
     setup_builtin_signals();
-    
     if (process_heredocs(cmd) == -1)
-        return EXIT_FAILURE;
-    
-    if (handle_redirection(cmd) == -1)
-        return EXIT_FAILURE;
+        return (1);
+
+    redirect_status = handle_redirection(cmd);
+    if (redirect_status == -1)
+    {
+        restore_redirection(cmd);
+        g_last_exit_status = 1;
+        return (1);
+    }
     
     result = builtins[builtin_index].func(cmd->cmd, env);
     if (ft_strcmp(cmd->cmd[0], "exit") != 0)
@@ -43,34 +48,38 @@ int execute_single_builtin(t_cmd *cmd, t_builtin *builtins,
     setup_interactive_signals();
     return result;
 }
+int	process_heredocs(t_cmd *cmd)
+{
+	int	j;
+
+	j = 0;
+	while (cmd->input_rdrct[j])
+	{
+		if (cmd->input_rdrct[j]->type == HEREDOCUMENT)
+		{
+			if (handle_heredocument(cmd->input_rdrct[j]->file[0], cmd) == -1)
+				return (-1);
+		}
+		j++;
+	}
+	return (0);
+}
 
 void execute_command_in_child(t_cmd *cmd, int (*builtin_func)(char **, t_list *), 
                              t_list *env, t_pipe_info *pipe_info)
 {
-    setup_child_signals();
+    int result;
     
+    setup_child_signals();
     if (process_heredocs(cmd) == -1)
-        exit(EXIT_FAILURE);
-
+        exit (EXIT_FAILURE);
     if (handle_redirection(cmd) == -1)
-        exit(EXIT_FAILURE);
-
-    if (pipe_info->prev_fd != -1)
-    {
-        dup2(pipe_info->prev_fd, STDIN_FILENO);
-        close(pipe_info->prev_fd);
-    }
-    if (pipe_info->has_next)
-    {
-        dup2(pipe_info->pipe_fds[1], STDOUT_FILENO);
-        close(pipe_info->pipe_fds[1]);
-        close(pipe_info->pipe_fds[0]);
-    }
-
+        exit (EXIT_FAILURE);
+    handle_pipe_io(pipe_info);
     if (builtin_func)
     {
-        int result = builtin_func(cmd->cmd, env);
-        exit(result);  
+        result = builtin_func(cmd->cmd, env);
+        exit (result);  
     }
     else
     {
@@ -83,11 +92,12 @@ static pid_t prepare_command(t_cmd *cmd, t_builtin *builtins,
 {
     int (*builtin_func)(char **, t_list *);
     pid_t pid;
+    int builtin_index;
     
     builtin_func = NULL;
-    if (get_builtin_index(builtins, cmd->cmd[0]) >= 0)
-        builtin_func = builtins[get_builtin_index(builtins, cmd->cmd[0])].func;
-    
+	builtin_index = get_builtin_index(builtins, cmd->cmd[0]);
+	if (builtin_index >= 0)
+		builtin_func = builtins[builtin_index].func;
     setup_exec_signals();
     pid = fork();
     if (pid == -1)
@@ -95,7 +105,6 @@ static pid_t prepare_command(t_cmd *cmd, t_builtin *builtins,
         perror("fork");
         return -1;
     }
-    
     if (pid == 0)
         execute_command_in_child(cmd, builtin_func, env, pipe_info);
     
@@ -119,7 +128,7 @@ int execute_commands(t_cmd **cmds, t_builtin *builtins, t_list *env,
             return -1;
             
         pids[i] = pid;
-        manage_parent_pipes(pipe_info);
+        manage_pipes(pipe_info);
         i++;
     }
     

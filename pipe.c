@@ -6,7 +6,7 @@
 /*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 01:16:07 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/19 03:40:19 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/19 20:34:32 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,15 +24,14 @@ static bool check_pipeline(t_cmd **cmds, int *cmd_count)
     return is_pipeline;
 }
 
-static int handle_single_builtin(t_cmd *cmd, t_builtin *builtins, t_list *env)
+static int try_execute_as_builtin(t_cmd *cmd, t_builtin *builtins, t_list *env)
 {
-    int is_builtin_index;
-    
-    is_builtin_index = get_builtin_index(builtins, cmd->cmd[0]);
-    if (is_builtin_index >= 0)
-        return execute_single_builtin(cmd, builtins, is_builtin_index, env);
-    
-    return -1;
+	int	builtin_index;
+
+	builtin_index = get_builtin_index(builtins, cmd->cmd[0]);
+	if (builtin_index >= 0)
+		return (execute_single_builtin(cmd, builtins, builtin_index, env));
+	return (-1);
 }
 
 int wait_for_children(pid_t *pids, int cmd_count)
@@ -62,17 +61,18 @@ int execute_pipeline(t_cmd **cmds, t_builtin *builtins, t_list *env)
     int cmd_count;
     pid_t *pids;
     t_pipe_info pipe_info;
+    int result;
     
     if (!check_pipeline(cmds, &cmd_count))
     {
-        int result = handle_single_builtin(cmds[0], builtins, env);
+        result = try_execute_as_builtin(cmds[0], builtins, env);
         if (result != -1)
             return result;
     }
     
     pids = (pid_t *)malloc(sizeof(pid_t) * cmd_count);
     if (!pids)
-        return EXIT_FAILURE;
+        return (EXIT_FAILURE);
         
     pipe_info.prev_fd = -1;
     execute_commands(cmds, builtins, env, pids, &pipe_info);
