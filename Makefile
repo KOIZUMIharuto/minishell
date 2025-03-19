@@ -45,10 +45,17 @@ env_update.c\
 env_utils.c
 
 PARSER_SRCS =\
+parser_expand_env_quote_utils.c\
+parser_expand_env_quote.c\
+parser_free.c\
+parser_redirect_utils.c\
+parser_redirect.c\
 parser_split_tokens.c\
 parser_syntax.c\
-parser_tokenize.c
-# parser.c
+parser_tokenize.c\
+parser_tokens_to_cmd.c\
+parser_utils.c\
+parser.c
 
 SRCS += $(BUILTIN_SRCS)	$(ENV_SRCS) $(PARSER_SRCS)
 
@@ -73,7 +80,7 @@ $(NAME): $(MAIN) $(OBJS) $(LIBFT)
 p: $(PARSER)
 
 $(PARSER): $(PARSER_TEST_MAIN) $(OBJS) $(LIBFT)
-	$(CC) $(CFLAGS) $(READLINE) $(INCLUDES) $(PARSER_TEST_MAIN) $(OBJS) $(LIBFT)  -o $(PARSER)
+	$(CC) $(CFLAGS) $(READLINE) $(INCLUDES) $(PARSER_TEST_MAIN) $(OBJS) $(LIBFT) -o $(PARSER) $(FSANITIZE)
 
 # ソースファイルからオブジェクトファイル生成
 $(OBJ_DIR)/%.o: %.c | $(OBJ_DIR)

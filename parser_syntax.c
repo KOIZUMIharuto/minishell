@@ -6,42 +6,65 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 23:24:37 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/19 02:54:43 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/19 21:50:11 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
 
-static bool	is_redirect(char *token);
+static bool	is_quote_closed(char *token);
+static bool	is_rdrct(char *token);
 static bool	print_syntax_error(char *token);
 
 bool	check_syntax(t_list *tokens)
 {
-	t_list	*current;
+	t_list	*cur;
 	char	*prev;
 	char	*token;
 
 	if (!tokens)
 		return (true);
 	prev = NULL;
-	current = tokens;
-	while (current)
+	cur = tokens;
+	while (cur)
 	{
-		token = (char *)current->content;
+		token = (char *)cur->content;
+		if (!is_quote_closed(token))
+			return (print_syntax_error(token));
 		if ((prev && ft_strncmp(prev, "|", 2) == 0
 				&& ft_strncmp(token, "|", 2) == 0)
-			|| (prev && is_redirect(prev)
-				&& (ft_strncmp(token, "|", 2) == 0 || is_redirect(token))))
+			|| (prev && is_rdrct(prev)
+				&& (ft_strncmp(token, "|", 2) == 0 || is_rdrct(token))))
 			return (print_syntax_error(token));
 		prev = token;
-		current = current->next;
+		cur = cur->next;
 	}
-	if (prev && (ft_strncmp(prev, "|", 2) == 0 || is_redirect(prev)))
+	if (prev && (ft_strncmp(prev, "|", 2) == 0 || is_rdrct(prev)))
 		return (print_syntax_error("newline"));
 	return (true);
 }
 
-static bool	is_redirect(char *token)
+static bool	is_quote_closed(char *token)
+{
+	int	quote;
+
+	quote = NONE_Q;
+	while (*token)
+	{
+		if (*token == '\'' && quote == NONE_Q)
+			quote = SINGLE_Q;
+		else if (*token == '\'' && quote == SINGLE_Q)
+			quote = NONE_Q;
+		else if (*token == '"' && quote == NONE_Q)
+			quote = DOUBLE_Q;
+		else if (*token == '"' && quote == DOUBLE_Q)
+			quote = NONE_Q;
+		token++;
+	}
+	return (quote == NONE_Q);
+}
+
+static bool	is_rdrct(char *token)
 {
 	return (ft_strncmp(token, "<", 2) == 0 || ft_strncmp(token, ">", 2) == 0
 		|| ft_strncmp(token, "<<", 3) == 0 || ft_strncmp(token, ">>", 3) == 0);

@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 14:13:46 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/19 02:42:07 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/19 23:01:35 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@
 # define BUILTIN_NUM 7
 # define PROMPT "minishell$ "
 
-char **environ;
 extern int g_last_exit_status;
 
 typedef struct s_env
@@ -59,16 +58,17 @@ typedef enum e_quote
 
 typedef enum s_rdrct_type
 {
-	NONE_RDRCT,
-	OVERWRITE_RDRCT,
-	APPEND_RDRCT,
-	INPUT_RDRCT,
+	NONE_REDIRECT,
+	OVERWRITE_REDIRECT,
+	APPEND_REDIRECT,
+	INPUT_REDIRECT,
 	HEREDOCUMENT
 }	t_rdrct_type;
 
 typedef struct s_rdrct
 {
 	t_rdrct_type	type;
+	char			*token;
 	char			**file;
 	int				fd;
 }	t_rdrct;
@@ -112,7 +112,20 @@ bool	print_invalid_key(char *cmd, char *key);
 t_cmd	**parser(char *line, int exit_status, t_list *env);
 t_list	*tokenize(char *line);
 bool	check_syntax(t_list *tokens);
-t_list	**split_tokens(t_list *tokens);
+bool	split_tokens(t_list ***splited_tokens, t_list *tokens);
+t_list	*splited_tokens_to_cmd_list(t_list **splited_tokens, t_parser data);
+bool	get_rdrcts(t_rdrct ***rdrcts, t_list **tokens, char key, t_parser data);
+bool	get_rdrct_list(t_list **rdrct_list, t_list **tokens, char key);
+t_list	*expand_env_quote(char *token, t_parser data);
+char	*recursive_expand(char **token, t_parser *data, t_quote quote, int len);
+
+bool	is_in_quote(char c, t_quote *quote, bool is_include_quote);
+bool	is_effective_quote(char c, t_quote *quote);
+
+void	free_cmd(void *content);
+void	free_cmd(void *content);
+void	free_rdrcts(void *content);
+void	free_rdrct(void *content);
 
 // builtin
 void	init_builtins(t_builtin *builtins);
@@ -129,9 +142,9 @@ int		builtin_exit(char **cmd, t_list *env);
 int execute_builtin(t_cmd *cmd, int (*func)(char **, t_list *), t_list *env);
 char **convert_env_list_to_array(t_list *env);
 
-int handle_redirection(t_cmd *cmd);
+int handle_rdrction(t_cmd *cmd);
 int handle_heredocument(char *delimiter, t_cmd *cmd);
-int restore_redirection(t_cmd *cmd);
+int restore_rdrction(t_cmd *cmd);
 
 int execute_pipeline(t_cmd **cmds,t_builtin *builtins,t_list *env);
 void execute_cmd(char **cmd, t_list *env);

@@ -6,79 +6,91 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 16:43:17 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/18 23:13:14 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/19 22:44:28 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
 
+static void	handle_quote(char *line, int i, int *token_start, t_quote *quote);
+static bool	handle_no_q(t_list **tokens, char *line, int *i, int *token_start);
 static bool	add_token(t_list **tokens, char *start, int length);
 
 t_list	*tokenize(char *line)
 {
-	t_list	*tokens = NULL;
-	char	*ptr = line;
-	char	*token_start = NULL;
-	t_quote	quote = NONE_Q;
+	t_list	*tokens;
+	int		i;
+	int		token_start;
+	t_quote	quote;
 
-	while (*ptr)
+	tokens = NULL;
+	i = 0;
+	token_start = -1;
+	quote = NONE_Q;
+	while (line[i])
 	{
-		// クォートの開始または終了
-		if (*ptr == '\'' && quote != DOUBLE_Q)
-		{
-			quote = (quote == SINGLE_Q) ? NONE_Q : SINGLE_Q;
-			if (!token_start) token_start = ptr;  // トークン開始
-		}
-		else if (*ptr == '"' && quote != SINGLE_Q)
-		{
-			quote = (quote == DOUBLE_Q) ? NONE_Q : DOUBLE_Q;
-			if (!token_start) token_start = ptr;  // トークン開始
-		}
-		else if (quote == NONE_Q)
-		{
-			// |, <, >, <<, >> の処理
-			if (*ptr == '|' || *ptr == '<' || *ptr == '>')
-			{
-				if (token_start)
-				{
-					if (!add_token(&tokens, token_start, ptr - token_start))
-						return NULL;
-					token_start = NULL;
-				}
-				if ((ptr[0] == '<' && ptr[1] == '<') || (ptr[0] == '>' && ptr[1] == '>'))
-				{
-					if (!add_token(&tokens, ptr, 2))
-						return NULL;
-					ptr++;
-				}
-				else
-					if (!add_token(&tokens, ptr, 1))
-						return NULL;
-			}
-			// 空白文字（トークンの区切り）
-			else if (isspace(*ptr))
-			{
-				if (token_start)
-				{
-					if (!add_token(&tokens, token_start, ptr - token_start))
-						return NULL;
-					token_start = NULL;
-				}
-			}
-			// 通常の文字列
-			else if (!token_start)
-				token_start = ptr;
-		}
-		ptr++;
+		if ((line[i] == '\'' && quote != DOUBLE_Q)
+			|| (line[i] == '"' && quote != SINGLE_Q))
+			handle_quote(line, i, &token_start, &quote);
+		else if (quote == NONE_Q
+			&& !handle_no_q(&tokens, line, &i, &token_start))
+			return (NULL);
+		i++;
 	}
-	// 最後のトークンを追加
-	if (token_start)
-		if (!add_token(&tokens, token_start, ptr - token_start))
-			return NULL;
-	return tokens;
+	if (token_start != -1)
+		if (!add_token(&tokens, line + token_start, i - token_start))
+			return (NULL);
+	return (tokens);
 }
 
-// トークンをリストに追加する
+static void	handle_quote(char *line, int i, int *token_start, t_quote *quote)
+{
+	if (line[i] == '\'')
+	{
+		if (*quote == SINGLE_Q)
+			*quote = NONE_Q;
+		else
+			*quote = SINGLE_Q;
+		if (*token_start == -1)
+			*token_start = i;
+	}
+	else if (line[i] == '"')
+	{
+		if (*quote == DOUBLE_Q)
+			*quote = NONE_Q;
+		else
+			*quote = DOUBLE_Q;
+		if (*token_start == -1)
+			*token_start = i;
+	}
+}
+
+static bool	handle_no_q(t_list **tokens, char *line, int *i, int *token_start)
+{
+	if (line[*i] == '|' || line[*i] == '<' || line[*i] == '>')
+	{
+		if (*token_start != -1
+			&& !add_token(tokens, line + *token_start, *i - *token_start))
+			return (false);
+		*token_start = -1;
+		if ((line[*i] == '<' && line[*i + 1] == '<')
+			|| (line[*i] == '>' && line[*i + 1] == '>'))
+			return (add_token(tokens, line + (*i)++, 2));
+		else
+			return (add_token(tokens, line + *i, 1));
+	}
+	else if (ft_strchr(" \t\n", line[*i]))
+	{
+		if (*token_start != -1
+			&& !add_token(tokens, line + *token_start, *i - *token_start))
+			return (false);
+		*token_start = -1;
+	}
+	else if (*token_start == -1)
+		*token_start = *i;
+	return (true);
+}
+
 static bool	add_token(t_list **tokens, char *start, int length)
 {
 	t_list	*new_token;

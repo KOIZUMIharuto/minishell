@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 02:05:55 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/19 02:39:30 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/19 11:01:39 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,19 +14,17 @@
 
 static t_list	**recursive_split_tokens(t_list *tokens, int cmd_count);
 
-t_list	**split_tokens(t_list *tokens)
+bool	split_tokens(t_list ***splited_tokens, t_list *tokens)
 {
-	t_list	**cmds;
-
-	cmds = recursive_split_tokens(tokens, 0);
-	if (!cmds)
-		return ((t_list **)perror_ptr("malloc", errno));
-	return (cmds);
+	*splited_tokens = recursive_split_tokens(tokens, 0);
+	if (!*splited_tokens)
+		return (perror_bool("malloc", errno));
+	return (true);
 }
 
 static t_list	**recursive_split_tokens(t_list *tokens, int cmd_count)
 {
-	t_list	**cmds;
+	t_list	**splited_tokens;
 	t_list	*cmd_head;
 	t_list	*prev_token;
 
@@ -41,14 +39,14 @@ static t_list	**recursive_split_tokens(t_list *tokens, int cmd_count)
 	}
 	if (tokens)
 		tokens = tokens->next;
-	cmds = recursive_split_tokens(tokens, cmd_count + 1);
-	if (!cmds)
+	splited_tokens = recursive_split_tokens(tokens, cmd_count + 1);
+	if (!splited_tokens)
 		return (NULL);
-	cmds[cmd_count] = cmd_head;
+	splited_tokens[cmd_count] = cmd_head;
 	if (prev_token)
 	{
 		ft_lstdelone(prev_token->next, free);
 		prev_token->next = NULL;
 	}
-	return (cmds);
+	return (splited_tokens);
 }

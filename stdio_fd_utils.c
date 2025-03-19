@@ -13,7 +13,7 @@
 #include <minishell.h>
 
 // リダイレクトを元に戻す関数を追加
-int restore_redirection(t_cmd *cmd)
+int restore_rdrction(t_cmd *cmd)
 {
     if (cmd->backup_stdin != -1)
     {

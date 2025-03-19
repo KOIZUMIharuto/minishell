@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipe.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 01:16:07 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/16 23:34:24 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/19 21:50:11 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,14 +41,14 @@ int execute_pipeline(t_cmd **cmds, t_builtin *builtins, t_list *env)
             }
             
             // リダイレクト処理
-            if (handle_redirection(cmds[0]) == -1)
+            if (handle_rdrction(cmds[0]) == -1)
                 return EXIT_FAILURE;
                 
             // ビルトイン実行
             int result = builtins[is_builtin_index].func(cmds[0]->cmd, env);
             
             // リダイレクトを元に戻す
-            restore_redirection(cmds[0]);
+            restore_rdrction(cmds[0]);
             
             // exit コマンドの特別処理
             if (ft_strcmp(cmds[0]->cmd[0], "exit") == 0)
@@ -112,7 +112,7 @@ int execute_pipeline(t_cmd **cmds, t_builtin *builtins, t_list *env)
             }
 
             // リダイレクト処理
-            if (handle_redirection(cmds[i]) == -1)
+            if (handle_rdrction(cmds[i]) == -1)
                 exit(EXIT_FAILURE);
 
             // パイプの設定
