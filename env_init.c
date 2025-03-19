@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 16:51:27 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/17 15:04:03 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/20 02:36:22 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 static bool	init_shlvl(t_list **env_list);
 static bool	shlvl_not_exist(t_list **env_list, char *shlvl_key);
 static bool	init_oldpwd(t_list **env_list);
+static bool	init_pwd(t_list **env_list);
 
 t_list	*env_init(char **env)
 {
@@ -35,7 +36,8 @@ t_list	*env_init(char **env)
 		}
 		env++;
 	}
-	if (!init_shlvl(&env_list) || !init_oldpwd(&env_list))
+	if (!init_shlvl(&env_list) || !init_oldpwd(&env_list)
+		|| !init_pwd(&env_list))
 	{
 		ft_lstclear(&env_list, env_free);
 		return (NULL);
@@ -108,4 +110,29 @@ static bool	init_oldpwd(t_list **env_list)
 		}
 	}
 	return (true);
+}
+
+static bool	init_pwd(t_list **env_list)
+{
+	t_env	*env;
+	char	*pwd_key;
+	char	*pwd_value;
+
+	pwd_value = get_pwd();
+	if (!pwd_value)
+		return (false);
+	env = env_get(*env_list, "PWD", false);
+	if (env)
+	{
+		free(env->value);
+		env->value = pwd_value;
+		return (true);
+	}
+	pwd_key = ft_strdup("PWD");
+	if (!pwd_key)
+	{
+		free(pwd_value);
+		return (perror_bool("malloc", errno));
+	}
+	return (env_update(env_list, pwd_key, pwd_value));
 }
