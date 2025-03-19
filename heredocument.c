@@ -6,28 +6,35 @@
 /*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 17:33:18 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/19 20:14:07 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/20 02:39:44 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
 
-static int	setup_heredoc_pipe(int pipe_fds[2], t_cmd *cmd)
+static int setup_heredoc_pipe(int pipe_fds[2], t_cmd *cmd)
 {
-	if (pipe(pipe_fds) == -1)
-	{
-		perror("pipe");
-		return (-1);
-	}
-	cmd->backup_stdin = dup(STDIN_FILENO);
-	if (cmd->backup_stdin == -1)
-	{
-		perror("dup");
-		close(pipe_fds[0]);
-		close(pipe_fds[1]);
-		return (-1);
-	}
-	return (0);
+    if (pipe(pipe_fds) == -1)
+    {
+        perror("pipe");
+        return (-1);
+    }
+    if (cmd->backup_stdin == -1)
+    {
+        cmd->backup_stdin = dup(STDIN_FILENO);
+        if (cmd->backup_stdin == -1)
+        {
+            perror("dup");
+            close(pipe_fds[0]);
+            close(pipe_fds[1]);
+            return (-1);
+        }
+    }
+    else
+    {
+        dup2(cmd->backup_stdin, STDIN_FILENO);
+    }
+    return (0);
 }
 
 static void	process_heredoc_child(int pipe_fds[2], char *delimiter)
@@ -51,6 +58,7 @@ static void	process_heredoc_child(int pipe_fds[2], char *delimiter)
 		free(line);
 	}
 	close(pipe_fds[1]);
+	exit(0);
 }
 
 static int	setup_parent_process(int pipe_fds[2], t_cmd *cmd, pid_t pid)
