@@ -13,6 +13,7 @@
 #include <minishell.h>
 
 static void		init_parser(t_parser *data, int exit_status, t_list *env);
+// static bool		is_empty_cmd_list(t_list *cmd_list);
 static t_cmd	**list_to_cmds(t_list *cmd_list);
 static void		free_splited_tokens(t_list ***splited_tokens);
 
@@ -34,8 +35,12 @@ t_cmd	**parser(char *line, int exit_status, t_list *env)
 		return (NULL);
 	}
 	cmd_list = splited_tokens_to_cmd_list(splited_tokens, data);
-	if (cmd_list)
-		cmds = list_to_cmds(cmd_list);
+	// if (is_empty_cmd_list(cmd_list))
+	// {
+	// 	free_splited_tokens(&splited_tokens);
+	// 	return (NULL);
+	// }
+	cmds = list_to_cmds(cmd_list);
 	if (!cmd_list || !cmds)
 	{
 		free_splited_tokens(&splited_tokens);
@@ -68,8 +73,11 @@ static void	init_parser(t_parser *data, int exit_status, t_list *env)
 	while (i <= 3)
 		data->exit_status[i++] = '\0';
 	data->env = env;
+	data->is_empty_env_exist = false;
+	data->is_failed = false;
 	data->tmp = NULL;
 }
+
 
 static t_cmd	**list_to_cmds(t_list *cmd_list)
 {
@@ -77,6 +85,8 @@ static t_cmd	**list_to_cmds(t_list *cmd_list)
 	t_list	*tmp;
 	int		cmd_count;
 
+	if (!cmd_list)
+		return (NULL);
 	cmd_count = ft_lstsize(cmd_list);
 	cmds = (t_cmd **)ft_calloc(cmd_count + 1, sizeof(t_cmd *));
 	if (!cmds)

@@ -6,14 +6,14 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 11:44:47 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/20 12:14:43 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/20 15:00:08 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
 
 static t_cmd	*tokens_to_cmd(t_list *tokens, t_parser data);
-static bool		get_cmd(char ***cmd, t_list **tokens, t_parser parser);
+static bool		get_cmd(char ***cmd, t_list **tokens, t_parser data);
 static void		copy_list_to_cmd(char **cmd, t_list *tokens);
 
 t_list	*splited_tokens_to_cmd_list(t_list **splited_tokens, t_parser data)
@@ -65,7 +65,7 @@ static t_cmd	*tokens_to_cmd(t_list *tokens, t_parser data)
 	return (cmd);
 }
 
-static bool	get_cmd(char ***cmd, t_list **tokens, t_parser parser)
+static bool	get_cmd(char ***cmd, t_list **tokens, t_parser data)
 {
 	t_list	*expanded_list;
 	t_list	*tmp;
@@ -73,13 +73,22 @@ static bool	get_cmd(char ***cmd, t_list **tokens, t_parser parser)
 	expanded_list = NULL;
 	while (*tokens)
 	{
-		tmp = expand_env_quote((char *)(*tokens)->content, parser);
-		if (!tmp)
+		data.is_failed = true;
+		tmp = expand_env_quote((char *)(*tokens)->content, &data);
+		if (!tmp && data.is_failed)
+		{
+			ft_lstclear(&expanded_list, free);
 			return (false);
-		ft_lstadd_back(&expanded_list, tmp);
+		}
+		if (tmp)
+			ft_lstadd_back(&expanded_list, tmp);
 		tmp = *tokens;
 		*tokens = (*tokens)->next;
-		ft_lstdelone(tmp, free);
+	}
+	if (ft_lstsize(expanded_list) == 0)
+	{
+		ft_lstclear(&expanded_list, free);
+		return (false);
 	}
 	*cmd = (char **)ft_calloc(ft_lstsize(expanded_list) + 1, sizeof(char *));
 	if (!*cmd)

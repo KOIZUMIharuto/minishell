@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 03:20:59 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/20 11:49:07 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/20 15:03:57 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,9 @@ void execute_cmd(char **cmd, t_list *env)
 	struct stat path_stat;
 
 	path_env = env_get(env, "PATH", false);
-	if (ft_strchr(cmd[0], '/') || !path_env || !path_env->value)
+	if (!cmd[0][0])
+		cmd_path = NULL;
+	else if (ft_strchr(cmd[0], '/') || !path_env || !path_env->value)
 		cmd_path = ft_strdup(cmd[0]);
 	else if (!find_cmd_path(&cmd_path, cmd[0], path_env))
 		exit(perror_int("malloc", errno));
