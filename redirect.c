@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirect.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 20:05:03 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/20 12:17:53 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/20 23:09:54 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,20 +14,26 @@
 
 int	backup_io(t_cmd *cmd)
 {
-	cmd->backup_stdin = dup(STDIN_FILENO);
-	if (cmd->backup_stdin == -1)
-	{
-		perror("dup");
-		return (-1);
-	}
-	cmd->backup_stdout = dup(STDOUT_FILENO);
-	if (cmd->backup_stdout == -1)
-	{
-		perror("dup");
-		close(cmd->backup_stdin);
-		cmd->backup_stdin = -1;
-		return (-1);
-	}
+    if (cmd->backup_stdin == -1)
+    {
+        cmd->backup_stdin = dup(STDIN_FILENO);
+        if (cmd->backup_stdin == -1)
+        {
+            perror("dup");
+            return (-1);
+        }
+    }
+    if (cmd->backup_stdout == -1)
+    {
+        cmd->backup_stdout = dup(STDOUT_FILENO);
+        if (cmd->backup_stdout == -1)
+        {
+            perror("dup");
+            close(cmd->backup_stdin);
+            cmd->backup_stdin = -1;
+            return (-1);
+        }
+    }
 	return (0);
 }
 

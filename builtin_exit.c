@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_exit.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 00:54:17 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/20 03:33:11 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/20 23:42:22 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ int is_numeric(const char *str) {
 int builtin_exit(char **cmd, t_list *env) {
 
 	(void)env;
-    write(STDOUT_FILENO, "exit\n", 5);
+    // write(STDOUT_FILENO, "exit\n", 5);
 
     if (cmd[1] != NULL) {
         if (!is_numeric(cmd[1])) {

@@ -6,8 +6,18 @@ CC = cc
 RM = rm
 FSANITIZE = -fsanitize=address
 CFLAGS = -Wall -Wextra -Werror 
-INCLUDES = -I./includes -I/usr/local/opt/readline/include
-READLINE = -lreadline -L/usr/local/opt/readline/lib 
+
+# OSに応じた設定
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Darwin)
+    # MacOS用の設定
+    INCLUDES = -I./includes -I/usr/local/opt/readline/include
+    READLINE = -L/usr/local/opt/readline/lib -lreadline
+else
+    # Linux用の設定
+    INCLUDES = -I./includes
+    READLINE = -lreadline
+endif
 
 LIBFT_DIR = libft
 LIBFT = $(LIBFT_DIR)/libft.a
@@ -77,9 +87,9 @@ MAIN = $(OBJ_DIR)/main.o
 # デフォルトターゲット
 all: $(NAME)
 
-# バイナリ生成ルール
+# バイナリ生成ルール（リンカオプションの順序を修正）
 $(NAME): $(MAIN) $(OBJS) $(LIBFT)
-	$(CC) $(CFLAGS) $(READLINE) $(INCLUDES) $(MAIN) $(OBJS) $(LIBFT) -o $(NAME)
+	$(CC) $(CFLAGS) $(INCLUDES) $(MAIN) $(OBJS) $(LIBFT) $(READLINE) -o $(NAME)
 
 # ソースファイルからオブジェクトファイル生成
 $(OBJ_DIR)/%.o: %.c | $(OBJ_DIR)

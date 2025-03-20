@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipe_command.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 12:30:41 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/20 12:16:35 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/21 00:06:34 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,20 +15,39 @@
 int	process_heredocs(t_cmd *cmd)
 {
 	int	j;
+    int original_stdin = -1;
 
+    if (cmd->backup_stdin == -1)
+    {
+        cmd->backup_stdin = dup(STDIN_FILENO);
+        if (cmd->backup_stdin == -1)
+            return (-1);
+    }
+    original_stdin = dup(cmd->backup_stdin);
+    if (original_stdin == -1)
+    {
+        perror("dup");
+        return (-1);
+    }
 	j = 0;
 	while (cmd->rdrcts[j])
 	{
 		if (cmd->rdrcts[j]->type == HEREDOCUMENT)
 		{
+            dup2(original_stdin, STDIN_FILENO);
 			if (handle_heredocument(cmd->rdrcts[j]->file[0], cmd) == -1)
+            {
+                close(original_stdin);
 				return (-1);
+            }
 		}
 		j++;
 	}
-	
+    close(original_stdin);
 	return (0);
 }
+
+
 int execute_single_builtin(t_cmd *cmd, t_builtin *builtins, 
                            int builtin_index, t_list *env)
 {
@@ -38,7 +57,6 @@ int execute_single_builtin(t_cmd *cmd, t_builtin *builtins,
     setup_builtin_signals();
     if (process_heredocs(cmd) == -1)
         return (1);
-
     redirect_status = handle_redirection(cmd);
     if (redirect_status == -1)
     {
@@ -48,10 +66,10 @@ int execute_single_builtin(t_cmd *cmd, t_builtin *builtins,
     }
     
     result = builtins[builtin_index].func(cmd->cmd, env);
+    restore_redirection(cmd);
     if (ft_strcmp(cmd->cmd[0], "exit") != 0)
         g_last_exit_status = result;
     
-    restore_redirection(cmd);
     
     if (ft_strcmp(cmd->cmd[0], "exit") == 0)
     {
