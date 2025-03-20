@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipe_command.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 12:30:41 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/20 11:32:45 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/20 12:16:35 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,11 +17,11 @@ int	process_heredocs(t_cmd *cmd)
 	int	j;
 
 	j = 0;
-	while (cmd->input_rdrct[j])
+	while (cmd->rdrcts[j])
 	{
-		if (cmd->input_rdrct[j]->type == HEREDOCUMENT)
+		if (cmd->rdrcts[j]->type == HEREDOCUMENT)
 		{
-			if (handle_heredocument(cmd->input_rdrct[j]->file[0], cmd) == -1)
+			if (handle_heredocument(cmd->rdrcts[j]->file[0], cmd) == -1)
 				return (-1);
 		}
 		j++;
@@ -70,10 +70,10 @@ bool has_input_redirection(t_cmd *cmd)
 {
     int j = 0;
     
-    while (cmd->input_rdrct[j])
+    while (cmd->rdrcts[j])
     {
-        if (cmd->input_rdrct[j]->type == INPUT_RDRCT || 
-            cmd->input_rdrct[j]->type == HEREDOCUMENT)
+        if (cmd->rdrcts[j]->type == INPUT_RDRCT || 
+            cmd->rdrcts[j]->type == HEREDOCUMENT)
             return true;
         j++;
     }
@@ -83,10 +83,10 @@ bool has_input_redirection(t_cmd *cmd)
 bool has_output_redirection(t_cmd *cmd)
 {
     int j = 0;
-    while (cmd->output_rdrct[j])
+    while (cmd->rdrcts[j])
     {
-        if (cmd->output_rdrct[j]->type == OVERWRITE_RDRCT || 
-            cmd->output_rdrct[j]->type == APPEND_RDRCT)
+        if (cmd->rdrcts[j]->type == OVERWRITE_RDRCT || 
+            cmd->rdrcts[j]->type == APPEND_RDRCT)
             return true;
         j++;
     }

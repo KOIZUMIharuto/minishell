@@ -17,12 +17,12 @@ static char		**set_heredocument(char *token);
 static char		**set_file_name(char *token, t_parser data);
 static t_rdrct	**list_to_rdrcts(t_list *rdrct_list);
 
-bool	get_rdrcts(t_rdrct ***rdrcts, t_list **tokens, char key, t_parser data)
+bool	get_rdrcts(t_rdrct ***rdrcts, t_list **tokens, t_parser data)
 {
 	t_list	*rdrct_list;
 
 	rdrct_list = NULL;
-	if (!get_rdrct_list(&rdrct_list, tokens, key))
+	if (!get_rdrct_list(&rdrct_list, tokens))
 		return (false);
 	*rdrcts = list_to_rdrcts(rdrct_list);
 	if (!*rdrcts)
