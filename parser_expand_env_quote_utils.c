@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 21:43:48 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/20 03:22:04 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/20 14:22:34 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,11 +79,10 @@ static char	*noenv_remain(char **token, t_parser *data, t_quote quote, int len)
 		expanded = recursive_expand(token, data, quote, len + i);
 	else if (tmp[i] == '\'' || tmp[i] == '"')
 		expanded = recursive_expand(token, data, quote, len + i);
-	if (expanded)
-		while (i--)
-			expanded[len + i] = tmp[i];
 	if (!expanded)
 		return (NULL);
+	while (i--)
+		expanded[len + i] = tmp[i];
 	return (expanded);
 }
 
@@ -104,6 +103,11 @@ static void	move_arg_pointer(char **token, t_parser *data, char *tmp, int i)
 			while (ft_isalnum(key_tmp[key_len]) || key_tmp[key_len] == '_')
 				key_len++;
 		expand_env(*token + i + 1, key_len, data);
+		if (!data->tmp)
+		{
+			data->is_empty_env_exist = true;
+			data->is_failed = false;
+		}
 		*token += key_len + i + 1;
 	}
 	else if (tmp[i] == '\'' || tmp[i] == '"')

@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 14:13:46 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/20 12:14:33 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/20 14:20:14 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,8 @@ typedef struct s_parser
 {
 	char	exit_status[4];
 	t_list	*env;
+	bool	is_empty_env_exist;
+	bool	is_failed;
 	char	*tmp;
 }	t_parser;
 
@@ -154,7 +156,7 @@ bool	split_tokens(t_list ***splited_tokens, t_list *tokens);
 t_list	*splited_tokens_to_cmd_list(t_list **splited_tokens, t_parser data);
 bool	get_rdrcts(t_rdrct ***rdrcts, t_list **tokens, t_parser data);
 bool	get_rdrct_list(t_list **rdrct_list, t_list **tokens);
-t_list	*expand_env_quote(char *token, t_parser data);
+t_list	*expand_env_quote(char *token, t_parser *data);
 char	*recursive_expand(char **token, t_parser *data, t_quote quote, int len);
 bool	is_in_quote(char c, t_quote *quote, bool is_include_quote);
 bool	is_effective_quote(char c, t_quote *quote);

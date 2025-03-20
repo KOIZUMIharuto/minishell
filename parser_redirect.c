@@ -90,7 +90,7 @@ static char	**set_file_name(char *token, t_parser data)
 	int		file_count;
 	char	**files;
 
-	expanded_list = expand_env_quote(token, data);
+	expanded_list = expand_env_quote(token, &data);
 	if (!expanded_list)
 		return (NULL);
 	file_count = ft_lstsize(expanded_list);
