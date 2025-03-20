@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 20:05:03 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/19 23:34:00 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/20 12:17:53 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,22 +82,17 @@ int	handle_redirection(t_cmd *cmd)
 		return (-1);
 		
 	j = 0;
-	while (cmd->input_rdrct[j])
+	while (cmd->rdrcts[j])
 	{
-		if (cmd->input_rdrct[j]->type == INPUT_RDRCT)
+		if (cmd->rdrcts[j]->type == INPUT_RDRCT)
 		{
-			if (handle_input_rdrct(cmd, cmd->input_rdrct[j]) == -1)
+			if (handle_input_rdrct(cmd, cmd->rdrcts[j]) == -1)
 				return (-1);
 		}
-		j++;
-	}
-	j = 0;
-	while (cmd->output_rdrct[j])
-	{
-		if (cmd->output_rdrct[j]->type == OVERWRITE_RDRCT
-			|| cmd->output_rdrct[j]->type == APPEND_RDRCT)
+		else if (cmd->rdrcts[j]->type == OVERWRITE_RDRCT
+			|| cmd->rdrcts[j]->type == APPEND_RDRCT)
 		{
-			if (handle_output_rdrct(cmd, cmd->output_rdrct[j]) == -1)
+			if (handle_output_rdrct(cmd, cmd->rdrcts[j]) == -1)
 				return (-1);
 		}
 		j++;

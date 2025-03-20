@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 14:13:46 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/20 11:19:39 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/20 12:14:33 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,8 +74,7 @@ typedef struct s_rdrct
 typedef struct s_cmd
 {
 	char	**cmd;
-	t_rdrct	**input_rdrct;
-	t_rdrct	**output_rdrct;
+	t_rdrct	**rdrcts;
 	int		infile_fd;
 	int		outfile_fd;
     int     backup_stdin;
@@ -153,8 +152,8 @@ t_list	*tokenize(char *line);
 bool	check_syntax(t_list *tokens);
 bool	split_tokens(t_list ***splited_tokens, t_list *tokens);
 t_list	*splited_tokens_to_cmd_list(t_list **splited_tokens, t_parser data);
-bool	get_rdrcts(t_rdrct ***rdrcts, t_list **tokens, char key, t_parser data);
-bool	get_rdrct_list(t_list **rdrct_list, t_list **tokens, char key);
+bool	get_rdrcts(t_rdrct ***rdrcts, t_list **tokens, t_parser data);
+bool	get_rdrct_list(t_list **rdrct_list, t_list **tokens);
 t_list	*expand_env_quote(char *token, t_parser data);
 char	*recursive_expand(char **token, t_parser *data, t_quote quote, int len);
 bool	is_in_quote(char c, t_quote *quote, bool is_include_quote);

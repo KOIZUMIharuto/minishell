@@ -12,12 +12,12 @@
 
 #include <minishell.h>
 
-static bool			get_rdrct(t_rdrct **rdrct, t_list **tokens, char key);
-static t_rdrct_type	get_rdrct_type(char *token, char key);
+static bool			get_rdrct(t_rdrct **rdrct, t_list **tokens);
+static t_rdrct_type	get_rdrct_type(char *token);
 static t_rdrct		*create_rdrct(t_rdrct_type type, char *token);
 static void			rejoin_tokens(t_list **tokens, t_list *cur, t_list *prev);
 
-bool	get_rdrct_list(t_list **rdrct_list, t_list **tokens, char key)
+bool	get_rdrct_list(t_list **rdrct_list, t_list **tokens)
 {
 	t_rdrct	*rdrct;
 	t_list	*rdrct_node;
@@ -25,7 +25,7 @@ bool	get_rdrct_list(t_list **rdrct_list, t_list **tokens, char key)
 	while (true)
 	{
 		rdrct = NULL;
-		if (!get_rdrct(&rdrct, tokens, key))
+		if (!get_rdrct(&rdrct, tokens))
 		{
 			ft_lstclear(rdrct_list, free);
 			return (false);
@@ -44,7 +44,7 @@ bool	get_rdrct_list(t_list **rdrct_list, t_list **tokens, char key)
 	return (true);
 }
 
-static bool	get_rdrct(t_rdrct **rdrct, t_list **tokens, char key)
+static bool	get_rdrct(t_rdrct **rdrct, t_list **tokens)
 {
 	t_list			*prev;
 	t_list			*cur;
@@ -56,7 +56,7 @@ static bool	get_rdrct(t_rdrct **rdrct, t_list **tokens, char key)
 	while (cur)
 	{
 		token = (char *)cur->content;
-		rdrct_type = get_rdrct_type(token, key);
+		rdrct_type = get_rdrct_type(token);
 		if (rdrct_type != NONE_RDRCT)
 		{
 			cur = cur->next;
@@ -73,22 +73,16 @@ static bool	get_rdrct(t_rdrct **rdrct, t_list **tokens, char key)
 	return (true);
 }
 
-static t_rdrct_type	get_rdrct_type(char *token, char key)
+static t_rdrct_type	get_rdrct_type(char *token)
 {
-	if (token[0] == key && token[1] == '\0')
-	{
-		if (key == '<')
-			return (INPUT_RDRCT);
-		else
-			return (OVERWRITE_RDRCT);
-	}
-	else if (token[0] == key && token[1] == key && token[2] == '\0')
-	{
-		if (key == '<')
-			return (HEREDOCUMENT);
-		else
-			return (APPEND_RDRCT);
-	}
+	if (token[0] == '<' && token[1] == '\0')
+		return (INPUT_RDRCT);
+	else if (token[0] == '>' && token[1] == '\0')
+		return (OVERWRITE_RDRCT);
+	else if (token[0] == '>' && token[1] == '>' && token[2] == '\0')
+		return (APPEND_RDRCT);
+	else if (token[0] == '<' && token[1] == '<' && token[2] == '\0')
+		return (HEREDOCUMENT);
 	return (NONE_RDRCT);
 }
 
