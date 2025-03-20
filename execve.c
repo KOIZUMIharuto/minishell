@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 03:20:59 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/20 11:43:20 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/20 11:49:07 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,9 +69,7 @@ void execute_cmd(char **cmd, t_list *env)
 		exit(perror_int("malloc", errno));
     if (!cmd_path)
     {
-		ft_putstr_fd("minishell: ", STDERR_FILENO);
-		ft_putstr_fd(cmd[0], STDERR_FILENO);
-		ft_putstr_fd(": command not found\n", STDERR_FILENO);
+		(void)error_msg(cmd[0], "command not found");
         exit(127);
     }
 
