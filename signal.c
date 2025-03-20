@@ -6,11 +6,11 @@
 /*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 22:01:52 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/19 22:55:46 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/20 22:28:20 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "minishell.h"
+# include <minishell.h>
 
 void sig_ctrl_c(int signal)
 {

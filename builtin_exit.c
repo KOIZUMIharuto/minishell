@@ -6,7 +6,7 @@
 /*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 00:54:17 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/20 23:42:22 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/21 01:27:29 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,22 +32,20 @@ int is_numeric(const char *str) {
 int builtin_exit(char **cmd, t_list *env) {
 
 	(void)env;
-    // write(STDOUT_FILENO, "exit\n", 5);
 
-    if (cmd[1] != NULL) {
-        if (!is_numeric(cmd[1])) {
-            write(STDERR_FILENO, "exit: ", 6);
-            write(STDERR_FILENO, cmd[1], ft_strlen(cmd[1]));
-            write(STDERR_FILENO, ": numeric argument required\n", 28);
-            g_last_exit_status = 255;
-			return (0);
-        }
-        else if (cmd[2] != NULL) {
-            write(STDERR_FILENO, "exit: too many arguments\n", 26);
-            g_last_exit_status = 1;
-            return (-1);
-        }
-        g_last_exit_status = ft_atoi(cmd[1]) & 0xFF;  // ビットマスクで確実に0-255に制限;
+    if (cmd[1] && cmd[2]) {
+        ft_putstr_fd("minishell: exit: too many arguments\n", STDERR_FILENO);
+        g_last_exit_status = 1;
+        return (-1);
     }
+     if (cmd[1] && !is_numeric(cmd[1])) {
+        ft_putstr_fd("minishell: exit: ", STDERR_FILENO);
+        ft_putstr_fd(cmd[1], STDERR_FILENO);
+        ft_putstr_fd(": numeric argument required\n", STDERR_FILENO);
+        g_last_exit_status = 2;  // Linuxでは終了コード2
+        exit(g_last_exit_status);
+    }
+    g_last_exit_status = ft_atoi(cmd[1]) & 0xFF;  // ビットマスクで確実に0-255に制限;
+    write(STDOUT_FILENO, "exit\n", 5);
     return (0);
 }

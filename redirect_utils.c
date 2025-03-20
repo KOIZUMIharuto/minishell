@@ -6,7 +6,7 @@
 /*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 19:16:44 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/20 22:57:29 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/21 01:01:50 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,8 @@ int restore_redirection(t_cmd *cmd)
 int    handle_ambiguous_rdrct(t_rdrct *rdrct)
 {
     (void)rdrct;
+    ft_putstr_fd("minishell: ", STDERR_FILENO);
+	ft_putstr_fd("$", STDERR_FILENO);
     ft_putstr_fd(rdrct->token, STDERR_FILENO);
     ft_putstr_fd(": ambiguous redirect\n", STDERR_FILENO);
     return (-1);

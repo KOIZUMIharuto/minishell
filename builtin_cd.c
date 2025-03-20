@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_cd.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 14:37:35 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/17 13:54:29 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/21 00:53:24 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,12 @@ int	builtin_cd(char **cmd, t_list *env)
 	struct stat	path_stat;
 	t_env		*home_dir;
 	char		*directory;
+
+	if (cmd[1] && cmd[2])
+	{
+		ft_putstr_fd("minishell: cd: too many arguments\n", STDERR_FILENO);
+		return (1);
+	}
 
 	if (cmd[1] == NULL)
 	{
