@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 23:24:37 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/20 04:15:56 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/20 10:23:52 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,10 +31,10 @@ bool	check_syntax(t_list *tokens)
 		token = (char *)cur->content;
 		if (!is_quote_closed(token))
 			return (print_syntax_error(token));
-		if ((prev && ft_strncmp(prev, "|", 2) == 0
-				&& ft_strncmp(token, "|", 2) == 0)
+		if ((!prev && !ft_strncmp(token, "|", 2))
+			|| (prev && !ft_strncmp(prev, "|", 2) && !ft_strncmp(token, "|", 2))
 			|| (prev && is_rdrct(prev)
-				&& (ft_strncmp(token, "|", 2) == 0 || is_rdrct(token))))
+				&& (!ft_strncmp(token, "|", 2) || is_rdrct(token))))
 			return (print_syntax_error(token));
 		prev = token;
 		cur = cur->next;
