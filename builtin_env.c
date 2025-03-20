@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 00:48:52 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/18 12:19:49 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/20 03:17:08 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ static int	print_env(t_list *env_list)
 	{
 		env_content = (t_env *)env_list_tmp->content;
 		env_list_tmp = env_list_tmp->next;
-		if (env_content->is_shell_var)
+		if (env_content->is_shell_var || !env_content->value)
 			continue ;
 		if (printf("%s=%s\n", env_content->key, env_content->value) < 0)
 			return (1);
