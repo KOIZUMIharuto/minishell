@@ -6,7 +6,7 @@
 /*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 12:30:41 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/19 22:56:55 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/20 11:32:45 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ int	process_heredocs(t_cmd *cmd)
 		}
 		j++;
 	}
+	
 	return (0);
 }
 int execute_single_builtin(t_cmd *cmd, t_builtin *builtins, 
@@ -65,16 +66,48 @@ int execute_single_builtin(t_cmd *cmd, t_builtin *builtins,
     return result;
 }
 
+bool has_input_redirection(t_cmd *cmd)
+{
+    int j = 0;
+    
+    while (cmd->input_rdrct[j])
+    {
+        if (cmd->input_rdrct[j]->type == INPUT_RDRCT || 
+            cmd->input_rdrct[j]->type == HEREDOCUMENT)
+            return true;
+        j++;
+    }
+    return false;
+}
+
+bool has_output_redirection(t_cmd *cmd)
+{
+    int j = 0;
+    while (cmd->output_rdrct[j])
+    {
+        if (cmd->output_rdrct[j]->type == OVERWRITE_RDRCT || 
+            cmd->output_rdrct[j]->type == APPEND_RDRCT)
+            return true;
+        j++;
+    }
+    return false;
+}
+
 void execute_command_in_child(t_cmd *cmd, int (*builtin_func)(char **, t_list *), 
                              t_list *env, t_pipe_info *pipe_info)
 {
     int result;
     
     if (process_heredocs(cmd) == -1)
-        exit (EXIT_FAILURE);
+        exit(EXIT_FAILURE);
     if (handle_redirection(cmd) == -1)
-        exit (EXIT_FAILURE);
-    handle_pipe_io(pipe_info);
+        exit(EXIT_FAILURE);
+
+    if (!has_input_redirection(cmd))
+        handle_pipe_input(pipe_info);
+        
+    if (!has_output_redirection(cmd))
+        handle_pipe_output(pipe_info);
     if (builtin_func)
     {
         setup_builtin_signals();
@@ -135,4 +168,6 @@ int execute_commands(t_cmd **cmds, t_builtin *builtins, t_list *env,
     
     return i;
 }
+
+
 

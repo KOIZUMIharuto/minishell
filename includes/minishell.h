@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 14:13:46 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/19 23:33:38 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/20 11:19:39 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,7 +115,8 @@ int execute_single_builtin(t_cmd *cmd, t_builtin *builtins, int builtin_index, t
 int execute_commands(t_cmd **cmds, t_builtin *builtins, t_list *env, pid_t *pids, t_pipe_info *pipe_info);
 void execute_cmd(char **cmd, t_list *env);
 void manage_pipes(t_pipe_info *pipe_info);
-void	handle_pipe_io(t_pipe_info *pipe_info);
+void handle_pipe_input(t_pipe_info *pipe_info);
+void handle_pipe_output(t_pipe_info *pipe_info);
 
 //redirect and heredoc
 int handle_heredocument(char *delimiter, t_cmd *cmd);
