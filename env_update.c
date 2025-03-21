@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env_update.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 00:25:18 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/17 14:13:31 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/21 13:52:54 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,12 +24,12 @@ bool	env_update(t_list **env_list, char *key, char *value)
 	if (!env)
 		return (add_env(env_list, key, value));
 	free(key);
-	if (value)
+	if (env->is_hidden || value)
 	{
 		free(env->value);
 		env->value = value;
-		env->is_shell_var = false;
 	}
+	env->is_hidden = false;
 	return (true);
 }
 
@@ -76,7 +76,7 @@ static t_list	*create_new_env(char *key, char *value)
 	}
 	env->key = key;
 	env->value = value;
-	env->is_shell_var = false;
+	env->is_hidden = false;
 	new_env = ft_lstnew((void *)env);
 	if (!new_env)
 	{

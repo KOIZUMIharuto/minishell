@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env_get.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 00:27:05 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/17 13:07:40 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/21 13:52:25 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ t_env	*env_get(t_list *env_list, char *key, bool even_if_shell_var)
 		env_list_tmp = env_list_tmp->next;
 		if (ft_strcmp(env_content->key, key) == 0)
 		{
-			if (even_if_shell_var || !env_content->is_shell_var)
+			if (even_if_shell_var || !env_content->is_hidden)
 				return (env_content);
 			return (NULL);
 		}

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser_expand_env_quote_utils.c                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 21:43:48 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/20 14:22:34 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/21 13:52:25 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,7 +130,7 @@ static void	expand_env(char *token, int key_len, t_parser *data)
 	{
 		env = (t_env *)list_tmp->content;
 		list_tmp = list_tmp->next;
-		if (env->is_shell_var)
+		if (env->is_hidden)
 			continue ;
 		if (ft_strncmp(env->key, token, key_len) == 0 && !env->key[key_len])
 		{

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env_convert_to_array.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 12:56:15 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/17 13:58:42 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/21 13:52:25 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ char	**convert_env_list_to_array(t_list *env)
 	{
 		env_node = (t_env *)env->content;
 		env = env->next;
-		if (env_node->is_shell_var)
+		if (env_node->is_hidden)
 			continue ;
 		env_array[env_count] = ft_strjoin3(env_node->key, "=", env_node->value);
 		if (!env_array[env_count])
@@ -54,7 +54,7 @@ static int	count_env(t_list *env)
 	{
 		env_node = (t_env *)env->content;
 		env = env->next;
-		if (env_node->is_shell_var)
+		if (env_node->is_hidden)
 			continue ;
 		count++;
 	}
