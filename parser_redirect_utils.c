@@ -59,16 +59,20 @@ static bool	get_rdrct(t_rdrct **rdrct, t_list **tokens)
 		rdrct_type = get_rdrct_type(token);
 		if (rdrct_type != NONE_RDRCT)
 		{
-			cur = cur->next;
+			rejoin_tokens(tokens, cur, prev);
+			ft_lstdelone(cur, free);
+			cur = prev->next;
 			token = (char *)cur->content;
 			*rdrct = create_rdrct(rdrct_type, token);
 			if (!*rdrct)
 				return (false);
 			rejoin_tokens(tokens, cur, prev);
+			free(cur);
+			cur = prev->next;
 			return (true);
 		}
 		prev = cur;
-		cur = cur->next;
+		cur = prev->next;
 	}
 	return (true);
 }

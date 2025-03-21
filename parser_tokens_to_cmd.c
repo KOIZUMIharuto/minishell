@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 11:44:47 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/21 15:50:01 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/21 16:04:24 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,11 +85,6 @@ static bool	get_cmd(char ***cmd, t_list **tokens, t_parser data)
 		tmp = *tokens;
 		*tokens = (*tokens)->next;
 	}
-	// if (ft_lstsize(expanded_list) == 0)
-	// {
-	// 	ft_lstclear(&expanded_list, free);
-	// 	return (false);
-	// }
 	*cmd = (char **)ft_calloc(ft_lstsize(expanded_list) + 1, sizeof(char *));
 	if (!*cmd)
 	{

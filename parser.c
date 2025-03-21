@@ -41,6 +41,7 @@ t_cmd	**parser(char *line, int exit_status, t_list *env)
 		free_splited_tokens(&splited_tokens);
 		return (NULL);
 	}
+	ft_lstclear(&tokens, free);
 	return (cmds);
 }
 
