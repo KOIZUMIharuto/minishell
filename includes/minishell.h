@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 14:13:46 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/22 02:19:28 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/22 02:28:24 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -181,5 +181,6 @@ void	*perror_ptr(char *msg, int errnum);
 void	my_perror(char *msg, int errnum);
 
 void	free_double_pointor(char **array);
+void	free_data(t_data data);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 21:59:46 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/22 02:22:46 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/22 02:32:11 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ int	main(int argc, char **argv, char **envp)
 }
 
 
-__attribute__((destructor))
-static void destructor() {
-	system("leaks -q minishell");
-}
+// __attribute__((destructor))
+// static void destructor() {
+// 	system("leaks -q minishell");
+// }

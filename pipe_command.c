@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 12:30:41 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/22 02:21:44 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/22 02:30:55 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,8 +116,7 @@ void	execute_command_in_child(t_cmd *cmd,
 
 	if (process_heredocs(cmd) == -1 || handle_redirection(cmd))
 	{
-		free_cmds(data.cmds);
-		free(data.pids);
+		free_data(data);
 		exit(EXIT_FAILURE);
 	}
 	if (!has_input_redirection(cmd))
@@ -126,16 +125,14 @@ void	execute_command_in_child(t_cmd *cmd,
 		handle_pipe_output(pipe_info);
 	if (!cmd->cmd[0])
 	{
-		free_cmds(data.cmds);
-		free(data.pids);
+		free_data(data);
 		exit(EXIT_SUCCESS);
 	}
 	if (builtin_func)
 	{
 		setup_builtin_signals();
 		result = builtin_func(cmd->cmd, data.env);
-		free_cmds(data.cmds);
-		free(data.pids);
+		free_data(data);
 		exit (result);
 	}
 	else
