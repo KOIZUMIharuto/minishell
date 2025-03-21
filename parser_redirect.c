@@ -22,6 +22,15 @@ bool	get_rdrcts(t_rdrct ***rdrcts, t_list **tokens, t_parser data)
 	t_list	*rdrct_list;
 
 	rdrct_list = NULL;
+
+	t_list *tmp = *tokens;
+	// printf("get_rdrcts\n");
+	while (tmp)
+	{
+		// printf("\t%s\n", (char *)tmp->content);
+		tmp = tmp->next;
+	}
+
 	if (!get_rdrct_list(&rdrct_list, tokens))
 		return (false);
 	*rdrcts = list_to_rdrcts(rdrct_list);

@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 17:00:00 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/21 16:03:42 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/21 17:53:30 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,10 @@
 
 bool	expand_env_quote(t_list **expanded, char *token, t_parser *data)
 {
-	char	*token_head;
 	t_quote	quote;
 	char	*expanded_token;
 	t_list	*expanded_node;
 
-	token_head = token;
 	data->is_empty_env_exist = false;
 	data->tmp = NULL;
 	quote = NONE_Q;

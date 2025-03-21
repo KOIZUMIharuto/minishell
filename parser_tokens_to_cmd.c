@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 11:44:47 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/21 16:04:24 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/21 19:42:18 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,10 +23,13 @@ t_list	*splited_tokens_to_cmd_list(t_list **splited_tokens, t_parser data)
 	t_cmd	*cmd;
 	int		i;
 
+	if (!splited_tokens)
+		return (NULL);
 	cmd_list = NULL;
 	i = -1;
 	while (splited_tokens[++i])
 	{
+		// printf("splited_tokens[%d]\n", i);
 		cmd = tokens_to_cmd(splited_tokens[i], data);
 		if (!cmd)
 		{
@@ -36,6 +39,7 @@ t_list	*splited_tokens_to_cmd_list(t_list **splited_tokens, t_parser data)
 		cmd_node = ft_lstnew(cmd);
 		if (!cmd_node)
 		{
+			// printf("cmd_node is NULL\n");
 			free(cmd);
 			ft_lstclear(&cmd_list, free);
 			return ((t_list *)perror_ptr("malloc", errno));
@@ -43,6 +47,8 @@ t_list	*splited_tokens_to_cmd_list(t_list **splited_tokens, t_parser data)
 		ft_lstadd_back(&cmd_list, cmd_node);
 	}
 	free(splited_tokens);
+	// if (!cmd_list)
+	// 	printf("cmd_list is NULL\n");
 	return (cmd_list);
 }
 

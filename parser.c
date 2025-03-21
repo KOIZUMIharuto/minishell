@@ -13,7 +13,6 @@
 #include <minishell.h>
 
 static void		init_parser(t_parser *data, int exit_status, t_list *env);
-// static bool		is_empty_cmd_list(t_list *cmd_list);
 static t_cmd	**list_to_cmds(t_list *cmd_list);
 static void		free_splited_tokens(t_list ***splited_tokens);
 
@@ -36,8 +35,9 @@ t_cmd	**parser(char *line, int exit_status, t_list *env)
 	}
 	cmd_list = splited_tokens_to_cmd_list(splited_tokens, data);
 	cmds = list_to_cmds(cmd_list);
-	if (!cmd_list || !cmds)
+	if (!cmds)
 	{
+		ft_lstclear(&tokens, free);
 		free_splited_tokens(&splited_tokens);
 		return (NULL);
 	}
@@ -109,4 +109,5 @@ static void	free_splited_tokens(t_list ***splited_tokens)
 	while ((*splited_tokens)[i])
 		ft_lstclear(&(*splited_tokens)[i++], free);
 	free(*splited_tokens);
+	*splited_tokens = NULL;
 }

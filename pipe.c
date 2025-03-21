@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 01:16:07 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/21 15:11:15 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/21 18:32:35 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,10 @@ int execute_pipeline(t_cmd **cmds, t_builtin *builtins, t_list *env)
     {
         result = try_execute_as_builtin(cmds[0], builtins, env);
         if (result != -1)
+		{
+			free_cmds(cmds);
             return result;
+		}
     }
     
     pids = (pid_t *)malloc(sizeof(pid_t) * cmd_count);

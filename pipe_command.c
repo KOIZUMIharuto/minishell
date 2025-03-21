@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 12:30:41 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/21 15:56:53 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/21 20:13:10 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,14 +155,14 @@ static pid_t prepare_command(t_cmd *cmd, t_builtin *builtins,
 		builtin_func = builtins[builtin_index].func;
     setup_exec_signals();
     pid = fork();
+    if (pid == 0)
+        execute_command_in_child(cmd, builtin_func, env, pipe_info);
+    free_cmd(cmd);
     if (pid == -1)
     {
         perror("fork");
         return -1;
     }
-    if (pid == 0)
-        execute_command_in_child(cmd, builtin_func, env, pipe_info);
-    
     return pid;
 }
 
@@ -186,7 +186,7 @@ int execute_commands(t_cmd **cmds, t_builtin *builtins, t_list *env,
         manage_pipes(pipe_info);
         i++;
     }
-    
+	free(cmds);
     return i;
 }
 
