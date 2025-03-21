@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execve.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 03:20:59 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/20 15:03:57 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/21 13:54:02 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,7 @@ void execute_cmd(char **cmd, t_list *env)
 	}
 	if (S_ISDIR(path_stat.st_mode))
 	{
-		(void)error_msg(cmd_path, "is a directory");
+		(void)error_msg(cmd_path, "Is a directory");
 		if (cmd_path != cmd[0])
 			free(cmd_path);
 		exit(126);

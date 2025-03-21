@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env_delete.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 00:32:55 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/17 21:23:12 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/21 13:52:25 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ static bool	hide_pwd(t_env *env_content)
 {
 	if (ft_strcmp(env_content->key, "PWD") != 0)
 		return (true);
-	env_content->is_shell_var = true;
+	env_content->is_hidden = true;
 	free(env_content->value);
 	env_content->value = ft_strdup("");
 	if (!env_content->value)

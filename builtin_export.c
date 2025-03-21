@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_export.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 14:44:22 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/18 12:19:49 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/21 13:52:25 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ static int	export_env(t_list *env_list)
 	{
 		env = (t_env *)env_list->content;
 		env_list = env_list->next;
-		if (env->is_shell_var || ft_strcmp(env->key, "_") == 0)
+		if (env->is_hidden || ft_strcmp(env->key, "_") == 0)
 			continue ;
 		if (printf("declare -x %s", env->key) < 0
 			|| (env->value && printf("=\"%s\"", env->value) < 0)
