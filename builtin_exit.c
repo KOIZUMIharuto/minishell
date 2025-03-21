@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_exit.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 00:54:17 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/20 23:42:22 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/21 11:49:43 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,40 +14,73 @@
 
 // extern int g_last_exit_status;
 
-int is_numeric(const char *str) {
-    int i = 0;
+bool	is_numeric(const char *str)
+{
+	int	i;
 
-    if (!str || !str[0])
-        return (0);
-    if (str[i] == '-' || str[i] == '+')
-        i++;
-    while (str[i]) {
-        if (!ft_isdigit(str[i]))
-            return (0);
-        i++;
-    }
-    return (1);
+	i = 0;
+	if (!str || !str[0])
+		return (false);
+	while (ft_strchr(" \t\n\v\f\r", str[i]))
+		i++;
+	if (str[i] == '-' || str[i] == '+')
+		i++;
+	while (ft_isdigit(str[i]))
+		i++;
+	while (str[i] && ft_strchr(" \t\n\v\f\r", str[i]))
+		i++;
+	if (str[i])
+		return (false);
+	return (true);
 }
 
-int builtin_exit(char **cmd, t_list *env) {
+bool	is_in_long_range(long *result, const char *str)
+{
+	int		sign;
+
+	while (str && *str && ft_strchr(" \t\n\v\f\r", *str))
+		str++;
+	sign = 1;
+	if (str && (*str == '-' || *str == '+'))
+	{
+		if (*str == '-')
+			sign = -1;
+		str++;
+	}
+	while (str && ('0' <= *str && *str <= '9'))
+	{
+		if (*result < LONG_MIN / 10 || LONG_MAX / 10 < *result)
+			return (false);
+		*result *= 10;
+		if (*result < LONG_MIN + (*str - '0')
+			|| LONG_MAX - (*str - '0') < *result)
+			return (false);
+		*result += sign * (*(str++) - '0');
+	}
+	return (true);
+}
+
+int	builtin_exit(char **cmd, t_list *env)
+{
+	long	result;
 
 	(void)env;
-    // write(STDOUT_FILENO, "exit\n", 5);
-
-    if (cmd[1] != NULL) {
-        if (!is_numeric(cmd[1])) {
-            write(STDERR_FILENO, "exit: ", 6);
-            write(STDERR_FILENO, cmd[1], ft_strlen(cmd[1]));
-            write(STDERR_FILENO, ": numeric argument required\n", 28);
-            g_last_exit_status = 255;
-			return (0);
-        }
-        else if (cmd[2] != NULL) {
-            write(STDERR_FILENO, "exit: too many arguments\n", 26);
-            g_last_exit_status = 1;
-            return (-1);
-        }
-        g_last_exit_status = ft_atoi(cmd[1]) & 0xFF;  // ビットマスクで確実に0-255に制限;
-    }
-    return (0);
+	result = 0;
+	if (cmd[1] && (!is_numeric(cmd[1]) || !is_in_long_range(&result, cmd[1])))
+	{
+		ft_putstr_fd("minishell: exit: ", STDERR_FILENO);
+		ft_putstr_fd(cmd[1], STDERR_FILENO);
+		ft_putstr_fd(": numeric argument required\n", STDERR_FILENO);
+		g_last_exit_status = 2;  // Linuxでは終了コード2
+		exit(g_last_exit_status);
+	}
+	if (cmd[1] && cmd[2])
+	{
+		ft_putstr_fd("minishell: exit: too many arguments\n", STDERR_FILENO);
+		g_last_exit_status = 1;
+		return (-1);
+	}
+	g_last_exit_status = (result % 256 + 256) % 256;
+	ft_putstr_fd("exit\n", STDOUT_FILENO);
+	return (0);
 }

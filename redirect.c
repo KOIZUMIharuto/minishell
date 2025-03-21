@@ -3,53 +3,42 @@
 /*                                                        :::      ::::::::   */
 /*   redirect.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 20:05:03 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/20 23:09:54 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/21 12:23:54 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
 
-int	backup_io(t_cmd *cmd)
+static int	backup_io(t_cmd *cmd)
 {
-    if (cmd->backup_stdin == -1)
-    {
-        cmd->backup_stdin = dup(STDIN_FILENO);
-        if (cmd->backup_stdin == -1)
-        {
-            perror("dup");
-            return (-1);
-        }
-    }
-    if (cmd->backup_stdout == -1)
-    {
-        cmd->backup_stdout = dup(STDOUT_FILENO);
-        if (cmd->backup_stdout == -1)
-        {
-            perror("dup");
-            close(cmd->backup_stdin);
-            cmd->backup_stdin = -1;
-            return (-1);
-        }
-    }
+	if (cmd->backup_stdin == -1)
+	{
+		cmd->backup_stdin = dup(STDIN_FILENO);
+		if (cmd->backup_stdin == -1)
+			return (perror_int("dup", errno));
+	}
+	if (cmd->backup_stdout == -1)
+	{
+		cmd->backup_stdout = dup(STDOUT_FILENO);
+		if (cmd->backup_stdout == -1)
+		{
+			(void)perror_int("dup", errno);
+			close(cmd->backup_stdin);
+			cmd->backup_stdin = -1;
+			return (1);
+		}
+	}
 	return (0);
 }
 
 static int	handle_input_rdrct(t_cmd *cmd, t_rdrct *rdrct)
 {
-	if (rdrct->file[1] != NULL)
-		return (handle_ambiguous_rdrct(rdrct));
-	
 	cmd->infile_fd = open(rdrct->file[0], O_RDONLY);
 	if (cmd->infile_fd == -1)
-	{
-		ft_putstr_fd(rdrct->file[0], STDERR_FILENO);
-		ft_putstr_fd(": ", STDERR_FILENO);
-		perror("");
-		return (-1);
-	}
+		return (error_msg(rdrct->file[0], strerror(errno)));
 	dup2(cmd->infile_fd, STDIN_FILENO);
 	close(cmd->infile_fd);
 	return (0);
@@ -59,9 +48,6 @@ static int	handle_output_rdrct(t_cmd *cmd, t_rdrct *rdrct)
 {
 	int	flags;
 
-	if (rdrct->file[1] != NULL)
-		return (handle_ambiguous_rdrct(rdrct));
-	
 	flags = O_WRONLY | O_CREAT;
 	if (rdrct->type == OVERWRITE_RDRCT)
 		flags |= O_TRUNC;
@@ -69,12 +55,7 @@ static int	handle_output_rdrct(t_cmd *cmd, t_rdrct *rdrct)
 		flags |= O_APPEND;
 	cmd->outfile_fd = open(rdrct->file[0], flags, 0644);
 	if (cmd->outfile_fd == -1)
-	{
-		ft_putstr_fd(rdrct->file[0], STDERR_FILENO);
-		ft_putstr_fd(": ", STDERR_FILENO);
-		perror("");
-		return (-1);
-	}
+		return (error_msg(rdrct->file[0], strerror(errno)));
 	dup2(cmd->outfile_fd, STDOUT_FILENO);
 	close(cmd->outfile_fd);
 	return (0);
@@ -84,26 +65,40 @@ int	handle_redirection(t_cmd *cmd)
 {
 	int	j;
 
-	if (backup_io(cmd) == -1)
-		return (-1);
-		
+	if (backup_io(cmd))
+		return (1);
 	j = 0;
 	while (cmd->rdrcts[j])
 	{
-		if (cmd->rdrcts[j]->type == INPUT_RDRCT)
-		{
-			if (handle_input_rdrct(cmd, cmd->rdrcts[j]) == -1)
-				return (-1);
-		}
-		else if (cmd->rdrcts[j]->type == OVERWRITE_RDRCT
-			|| cmd->rdrcts[j]->type == APPEND_RDRCT)
-		{
-			if (handle_output_rdrct(cmd, cmd->rdrcts[j]) == -1)
-				return (-1);
-		}
+		if (cmd->rdrcts[j]->type != HEREDOCUMENT
+			&& cmd->rdrcts[j]->file[1] != NULL)
+			return (error_msg(cmd->rdrcts[j]->token, "ambiguous redirect"));
+		else if ((cmd->rdrcts[j]->type == INPUT_RDRCT
+				&& handle_input_rdrct(cmd, cmd->rdrcts[j]))
+			|| ((cmd->rdrcts[j]->type == OVERWRITE_RDRCT
+					|| cmd->rdrcts[j]->type == APPEND_RDRCT)
+				&& (handle_output_rdrct(cmd, cmd->rdrcts[j]))))
+			return (1);
 		j++;
 	}
 	return (0);
 }
 
-
+int	restore_redirection(t_cmd *cmd)
+{
+	if (cmd->backup_stdin != -1)
+	{
+		if (dup2(cmd->backup_stdin, STDIN_FILENO) == -1)
+			return (perror_int("dup2", errno));
+		close(cmd->backup_stdin);
+		cmd->backup_stdin = -1;
+	}
+	if (cmd->backup_stdout != -1)
+	{
+		if (dup2(cmd->backup_stdout, STDOUT_FILENO) == -1)
+			return (perror_int("dup2", errno));
+		close(cmd->backup_stdout);
+		cmd->backup_stdout = -1;
+	}
+	return (0);
+}

@@ -38,7 +38,6 @@ pipe_utils.c \
 # redirect and heredocument
 REDIRECT_HEREDOC_SRCS =\
 redirect.c \
-redirect_utils.c \
 heredocument.c\
 
 # builtin
