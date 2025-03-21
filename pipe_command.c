@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipe_command.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 12:30:41 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/21 12:02:57 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/21 13:12:28 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,7 +116,7 @@ void execute_command_in_child(t_cmd *cmd, int (*builtin_func)(char **, t_list *)
     
     if (process_heredocs(cmd) == -1)
         exit(EXIT_FAILURE);
-    if (handle_redirection(cmd) == -1)
+    if (handle_redirection(cmd))
         exit(EXIT_FAILURE);
 
     if (!has_input_redirection(cmd))
