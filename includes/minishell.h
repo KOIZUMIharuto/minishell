@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 14:13:46 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/21 13:52:25 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/21 14:48:47 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,13 +20,15 @@
 # include <sys/stat.h>
 # include <stdio.h>
 # include <signal.h>
+# include <sys/types.h>
+# include <asm-generic/termbits.h>
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <sys/wait.h>
 # include <fcntl.h>
 # include <errno.h>
 # include <stdbool.h>
-#include <termios.h>
+# include <termios.h>
 
 # define BUILTIN_NUM 7
 # define PROMPT "minishell$ "
@@ -155,7 +157,7 @@ bool	split_tokens(t_list ***splited_tokens, t_list *tokens);
 t_list	*splited_tokens_to_cmd_list(t_list **splited_tokens, t_parser data);
 bool	get_rdrcts(t_rdrct ***rdrcts, t_list **tokens, t_parser data);
 bool	get_rdrct_list(t_list **rdrct_list, t_list **tokens);
-t_list	*expand_env_quote(char *token, t_parser *data);
+bool	expand_env_quote(t_list **expanded, char *token, t_parser *data);
 char	*recursive_expand(char **token, t_parser *data, t_quote quote, int len);
 bool	is_in_quote(char c, t_quote *quote, bool is_include_quote);
 bool	is_effective_quote(char c, t_quote *quote);

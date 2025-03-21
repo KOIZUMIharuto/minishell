@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser_tokens_to_cmd.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 11:44:47 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/20 15:00:08 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/21 14:35:24 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,8 +74,9 @@ static bool	get_cmd(char ***cmd, t_list **tokens, t_parser data)
 	while (*tokens)
 	{
 		data.is_failed = true;
-		tmp = expand_env_quote((char *)(*tokens)->content, &data);
-		if (!tmp && data.is_failed)
+		tmp = NULL;
+		if (!expand_env_quote(&tmp, (char *)(*tokens)->content, &data)
+			&& data.is_failed)
 		{
 			ft_lstclear(&expanded_list, free);
 			return (false);

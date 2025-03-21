@@ -90,8 +90,8 @@ static char	**set_file_name(char *token, t_parser data)
 	int		file_count;
 	char	**files;
 
-	expanded_list = expand_env_quote(token, &data);
-	if (!expanded_list)
+	expanded_list = NULL;
+	if (!expand_env_quote(&expanded_list, token, &data))
 		return (NULL);
 	file_count = ft_lstsize(expanded_list);
 	files = (char **)ft_calloc(file_count + 1, sizeof(char *));
