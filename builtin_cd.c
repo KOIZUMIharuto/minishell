@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_cd.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 14:37:35 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/21 00:53:24 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/21 11:55:23 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
 
 static bool	update_pwd(t_list *env_list);
-static int	perror_cd(char *command, char *arg, int errnum);
+static int	perror_cd(char *arg, int errnum);
 
 int	builtin_cd(char **cmd, t_list *env)
 {
@@ -22,29 +22,22 @@ int	builtin_cd(char **cmd, t_list *env)
 	char		*directory;
 
 	if (cmd[1] && cmd[2])
-	{
-		ft_putstr_fd("minishell: cd: too many arguments\n", STDERR_FILENO);
-		return (1);
-	}
-
+		return (error_msg("cd", "too many arguments"));
 	if (cmd[1] == NULL)
 	{
 		home_dir = env_get(env, "HOME", false);
 		if (!home_dir)
-		{
-			ft_putstr_fd("minishell: cd: HOME not set\n", STDERR_FILENO);
-			return (1);
-		}
+			return (error_msg("cd", "HOME not set"));
 		directory = home_dir->value;
 	}
 	else
 		directory = cmd[1];
 	if (stat(directory, &path_stat) != 0)
-		return (perror_cd("cd", directory, errno));
+		return (perror_cd(directory, errno));
 	if (!S_ISDIR(path_stat.st_mode))
-		return (perror_cd("cd", directory, ENOTDIR));
+		return (perror_cd(directory, ENOTDIR));
 	if (chdir(directory) != 0)
-		return (perror_cd("cd", directory, errno));
+		return (perror_cd(directory, errno));
 	if (!update_pwd(env))
 		return (1);
 	return (0);
@@ -70,11 +63,9 @@ static bool	update_pwd(t_list *env_list)
 	return (true);
 }
 
-static int	perror_cd(char *command, char *arg, int errnum)
+static int	perror_cd(char *arg, int errnum)
 {
-	ft_putstr_fd("minishell: ", STDERR_FILENO);
-	ft_putstr_fd(command, STDERR_FILENO);
-	ft_putstr_fd(": ", STDERR_FILENO);
+	ft_putstr_fd("minishell: cd: ", STDERR_FILENO);
 	ft_putstr_fd(arg, STDERR_FILENO);
 	ft_putstr_fd(": ", STDERR_FILENO);
 	ft_putstr_fd(strerror(errnum), STDERR_FILENO);

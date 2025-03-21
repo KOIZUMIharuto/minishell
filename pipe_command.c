@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipe_command.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 12:30:41 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/21 00:06:34 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/21 12:02:57 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,13 +52,11 @@ int execute_single_builtin(t_cmd *cmd, t_builtin *builtins,
                            int builtin_index, t_list *env)
 {
     int result;
-    int redirect_status;
     
     setup_builtin_signals();
     if (process_heredocs(cmd) == -1)
         return (1);
-    redirect_status = handle_redirection(cmd);
-    if (redirect_status == -1)
+    if (handle_redirection(cmd))
     {
         restore_redirection(cmd);
         g_last_exit_status = 1;

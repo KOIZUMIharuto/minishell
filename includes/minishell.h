@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 14:13:46 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/20 14:20:14 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/21 12:18:47 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,7 +122,6 @@ void handle_pipe_output(t_pipe_info *pipe_info);
 //redirect and heredoc
 int handle_heredocument(char *delimiter, t_cmd *cmd);
 int handle_redirection(t_cmd *cmd);
-int	handle_ambiguous_rdrct(t_rdrct *rdrct);
 int restore_redirection(t_cmd *cmd);
 
 // builtin
