@@ -108,12 +108,11 @@ static void	rejoin_tokens(t_list **tokens, t_list *cur, t_list *prev)
 {
 	if (prev)
 	{
-		ft_lstdelone(prev->next, free);
 		prev->next = cur->next;
 	}
 	else
 	{
-		ft_lstdelone(*tokens, free);
 		*tokens = cur->next;
 	}
+	cur->next = NULL;
 }
