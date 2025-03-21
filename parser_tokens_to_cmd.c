@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 11:44:47 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/21 14:35:24 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/21 15:50:01 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ t_list	*splited_tokens_to_cmd_list(t_list **splited_tokens, t_parser data)
 		}
 		ft_lstadd_back(&cmd_list, cmd_node);
 	}
+	free(splited_tokens);
 	return (cmd_list);
 }
 
@@ -75,22 +76,20 @@ static bool	get_cmd(char ***cmd, t_list **tokens, t_parser data)
 	{
 		data.is_failed = true;
 		tmp = NULL;
-		if (!expand_env_quote(&tmp, (char *)(*tokens)->content, &data)
-			&& data.is_failed)
+		if (!expand_env_quote(&tmp, (char *)(*tokens)->content, &data))
 		{
 			ft_lstclear(&expanded_list, free);
 			return (false);
 		}
-		if (tmp)
-			ft_lstadd_back(&expanded_list, tmp);
+		ft_lstadd_back(&expanded_list, tmp);
 		tmp = *tokens;
 		*tokens = (*tokens)->next;
 	}
-	if (ft_lstsize(expanded_list) == 0)
-	{
-		ft_lstclear(&expanded_list, free);
-		return (false);
-	}
+	// if (ft_lstsize(expanded_list) == 0)
+	// {
+	// 	ft_lstclear(&expanded_list, free);
+	// 	return (false);
+	// }
 	*cmd = (char **)ft_calloc(ft_lstsize(expanded_list) + 1, sizeof(char *));
 	if (!*cmd)
 	{
@@ -101,17 +100,17 @@ static bool	get_cmd(char ***cmd, t_list **tokens, t_parser data)
 	return (true);
 }
 
-static void	copy_list_to_cmd(char **cmd, t_list *tokens)
+static void	copy_list_to_cmd(char **cmd, t_list *expanded_list)
 {
 	t_list	*tmp;
 	int		i;
 
 	i = -1;
-	while (tokens)
+	while (expanded_list)
 	{
-		cmd[++i] = (char *)tokens->content;
-		tmp = tokens;
-		tokens = tokens->next;
+		cmd[++i] = (char *)expanded_list->content;
+		tmp = expanded_list;
+		expanded_list = expanded_list->next;
 		free(tmp);
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 14:13:46 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/21 14:48:47 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/21 15:57:37 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,6 @@
 # include <stdio.h>
 # include <signal.h>
 # include <sys/types.h>
-# include <asm-generic/termbits.h>
 # include <readline/readline.h>
 # include <readline/history.h>
 # include <sys/wait.h>

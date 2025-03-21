@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   signal.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 22:01:52 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/21 12:13:11 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/21 15:04:19 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,9 +31,11 @@ void sig_ctrl_c_exec(int signal)
 
 void setup_interactive_signals(void)
 {
-    struct sigaction sa;
-    struct termios term;
-    
+	struct sigaction	sa;
+	struct termios		term;
+
+	ft_bzero(&sa, sizeof(sa));
+	ft_bzero(&term, sizeof(term));
     // 現在の端末設定を取得
     tcgetattr(STDIN_FILENO, &term);
     

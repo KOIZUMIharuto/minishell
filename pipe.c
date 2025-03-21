@@ -3,25 +3,22 @@
 /*                                                        :::      ::::::::   */
 /*   pipe.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 01:16:07 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/19 23:23:53 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/21 15:11:15 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
 
-static bool check_pipeline(t_cmd **cmds, int *cmd_count)
+static bool	check_pipeline(t_cmd **cmds, int *cmd_count)
 {
-    bool is_pipeline;
-    
     *cmd_count = 0;
     while (cmds[*cmd_count])
         (*cmd_count)++;
         
-    is_pipeline = (*cmd_count > 1);
-    return is_pipeline;
+    return (*cmd_count > 1);
 }
 
 static int try_execute_as_builtin(t_cmd *cmd, t_builtin *builtins, t_list *env)

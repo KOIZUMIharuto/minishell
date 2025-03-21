@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 12:30:41 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/21 13:12:28 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/21 15:56:53 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,32 +109,37 @@ bool has_output_redirection(t_cmd *cmd)
     return false;
 }
 
-void execute_command_in_child(t_cmd *cmd, int (*builtin_func)(char **, t_list *), 
-                             t_list *env, t_pipe_info *pipe_info)
+void	execute_command_in_child(t_cmd *cmd,
+	int (*builtin_func)(char **, t_list *), t_list *env, t_pipe_info *pipe_info)
 {
-    int result;
-    
-    if (process_heredocs(cmd) == -1)
-        exit(EXIT_FAILURE);
-    if (handle_redirection(cmd))
-        exit(EXIT_FAILURE);
+	int		result;
 
-    if (!has_input_redirection(cmd))
-        handle_pipe_input(pipe_info);
-        
-    if (!has_output_redirection(cmd))
-        handle_pipe_output(pipe_info);
-    if (builtin_func)
-    {
-        setup_builtin_signals();
-        result = builtin_func(cmd->cmd, env);
-        exit (result);  
-    }
-    else
-    {
-        setup_child_signals(); 
-        execute_cmd(cmd->cmd, env);
-    }
+	if (process_heredocs(cmd) == -1 || handle_redirection(cmd))
+	{
+		free_cmd(cmd);
+		exit(EXIT_FAILURE);
+	}
+	if (!has_input_redirection(cmd))
+		handle_pipe_input(pipe_info);
+	if (!has_output_redirection(cmd))
+		handle_pipe_output(pipe_info);
+	if (!cmd->cmd[0])
+	{
+		free_cmd(cmd);
+		exit(EXIT_SUCCESS);
+	}
+	if (builtin_func)
+	{
+		setup_builtin_signals();
+		result = builtin_func(cmd->cmd, env);
+		free_cmd(cmd);
+		exit (result);
+	}
+	else
+	{
+		setup_child_signals();
+		execute_cmd(cmd->cmd, env);
+	}
 }
 
 static pid_t prepare_command(t_cmd *cmd, t_builtin *builtins, 

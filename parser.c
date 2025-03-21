@@ -35,11 +35,6 @@ t_cmd	**parser(char *line, int exit_status, t_list *env)
 		return (NULL);
 	}
 	cmd_list = splited_tokens_to_cmd_list(splited_tokens, data);
-	// if (is_empty_cmd_list(cmd_list))
-	// {
-	// 	free_splited_tokens(&splited_tokens);
-	// 	return (NULL);
-	// }
 	cmds = list_to_cmds(cmd_list);
 	if (!cmd_list || !cmds)
 	{

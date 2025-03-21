@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 21:59:46 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/20 04:11:16 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/21 15:53:39 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,10 +50,10 @@ int	main(int argc, char **argv, char **envp)
 				continue ;
 			}
 			status = execute_pipeline(cmds, builtins, env);
+			free_cmds(cmds);
 			if (status == -42)
 			{
 				free(line);
-				free_cmds(cmds);
 				exit(g_last_exit_status);
 			}
 		}

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 22:37:26 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/15 22:50:06 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/21 15:26:54 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,8 @@ int	get_builtin_index(t_builtin *builtins, char *cmd)
 {
 	int	i;
 
+	if (!cmd)
+		return (-1);
 	i = 0;
 	while (i < BUILTIN_NUM)
 	{

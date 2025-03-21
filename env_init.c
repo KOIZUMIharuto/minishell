@@ -6,14 +6,14 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 16:51:27 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/21 13:45:07 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/21 15:34:23 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
 
 static bool	init_shlvl(t_list **env_list);
-static bool	shlvl_not_exist(t_list **env_list, char *shlvl_key);
+static bool	shlvl_not_exist(t_list **env_list);
 static bool	init_oldpwd(t_list **env_list);
 static bool	init_pwd(t_list **env_list);
 
@@ -49,15 +49,11 @@ static bool	init_shlvl(t_list **env_list)
 {
 	t_env	*env;
 	int		shlvl;
-	char	*shlvl_key;
 	char	*shlvl_value;
 
 	env = env_get(*env_list, "SHLVL", false);
-	shlvl_key = ft_strdup("SHLVL");
-	if (!shlvl_key)
-		return (perror_bool("malloc", errno));
 	if (!env)
-		return (shlvl_not_exist(env_list, shlvl_key));
+		return (shlvl_not_exist(env_list));
 	shlvl = ft_atoi(env->value);
 	if (shlvl < 0)
 		shlvl = 0;
@@ -65,23 +61,23 @@ static bool	init_shlvl(t_list **env_list)
 		shlvl++;
 	shlvl_value = ft_itoa(shlvl);
 	if (!shlvl_value)
-	{
-		free(shlvl_key);
 		return (perror_bool("malloc", errno));
-	}
 	free(env->value);
 	env->value = shlvl_value;
 	return (true);
 }
 
-static bool	shlvl_not_exist(t_list **env_list, char *shlvl_key)
+static bool	shlvl_not_exist(t_list **env_list)
 {
+	char	*shlvl_key;
 	char	*shlvl_value;
 
+	shlvl_key = ft_strdup("SHLVL");
 	shlvl_value = ft_itoa(1);
-	if (!shlvl_value)
+	if (!shlvl_key || !shlvl_value)
 	{
 		free(shlvl_key);
+		free(shlvl_value);
 		return (perror_bool("malloc", errno));
 	}
 	return (env_update(env_list, shlvl_key, shlvl_value));
