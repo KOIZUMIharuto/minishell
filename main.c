@@ -37,29 +37,25 @@ int	main(int argc, char **argv, char **envp)
 		line = readline(PROMPT);
 		if (!line)
 		{
-			ft_putstr_fd("exit", STDOUT_FILENO);
+			ft_putstr_fd("exit\n", STDOUT_FILENO);
 			break ;
 		}
 		if (ft_strlen(line) > 0)
 		{
 			add_history(line);
 			cmds = parser(line, g_last_exit_status, env);
+			free(line);
 			if (!cmds)
-			{
-				free(line);
 				continue ;
-			}
 			// (void)status;
 			status = execute_pipeline(cmds, builtins, env);
 			// free_cmds(cmds);
 			if (status == -42)
-			{
-				free(line);
 				exit(g_last_exit_status);
-			}
 			// free_cmds(cmds);
 		}
-		free(line);
+		else
+			free(line);
 	}
 	ft_lstclear(&env, env_free);
 	return (0);

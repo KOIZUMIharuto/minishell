@@ -76,6 +76,7 @@ int execute_pipeline(t_cmd **cmds, t_builtin *builtins, t_list *env)
     pipe_info.prev_fd = -1;
 	data.cmds = cmds;
 	data.env = env;
+	data.pids = NULL;
     data.pids = execute_commands(builtins, data, &pipe_info);
     
 	free_cmds(cmds);
