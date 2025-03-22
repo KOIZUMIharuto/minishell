@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 12:30:41 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/22 02:30:55 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/23 01:22:10 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,7 +140,7 @@ void	execute_command_in_child(t_cmd *cmd,
 	else
 	{
 		setup_child_signals();
-		execute_cmd(cmd->cmd, data.env);
+		execute_cmd(cmd->cmd, data);
 	}
 }
 

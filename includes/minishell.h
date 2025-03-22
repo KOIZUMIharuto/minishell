@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 14:13:46 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/22 02:28:24 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/23 01:34:55 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,7 +123,7 @@ int setup_pipe(t_pipe_info *pipe_info, bool has_next);
 int execute_pipeline(t_cmd **cmds, t_builtin *builtins, t_list *env);
 int execute_single_builtin(t_cmd *cmd, t_builtin *builtins, int builtin_index, t_list *env);
 pid_t	* execute_commands(t_builtin *builtins, t_data data, t_pipe_info *pipe_info);
-void execute_cmd(char **cmd, t_list *env);
+void execute_cmd(char **cmd, t_data data);
 void manage_pipes(t_pipe_info *pipe_info);
 void handle_pipe_input(t_pipe_info *pipe_info);
 void handle_pipe_output(t_pipe_info *pipe_info);
