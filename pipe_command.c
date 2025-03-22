@@ -114,6 +114,8 @@ void	execute_command_in_child(t_cmd *cmd,
 {
 	int		result;
 
+	free(data.pids);
+	data.pids = NULL;
 	if (process_heredocs(cmd) == -1 || handle_redirection(cmd))
 	{
 		free_data(data);
@@ -155,48 +157,46 @@ static pid_t prepare_command(t_cmd *cmd, t_builtin *builtins,
 		builtin_func = builtins[builtin_index].func;
     setup_exec_signals();
     pid = fork();
-    if (pid == 0)
-        execute_command_in_child(cmd, builtin_func, data, pipe_info);
     if (pid == -1)
     {
         perror("fork");
         return -1;
     }
+    if (pid == 0)
+        execute_command_in_child(cmd, builtin_func, data, pipe_info);
     return pid;
 }
 
-pid_t	*execute_commands(t_builtin *builtins,
-	t_data data, t_pipe_info *pipe_info)
+pid_t	*execute_commands(t_builtin *builtins, t_data data, t_pipe_info *pipe_info)
 {
     int i;
-    pid_t *pids;
     
 
 	i = 0;
 	while (data.cmds[i])
 		i++;
-	pids = (pid_t *)malloc(sizeof(pid_t) * i);
-    if (!pids)
+	data.pids = (pid_t *)malloc(sizeof(pid_t) * i);
+    if (!data.pids)
         return (NULL);
     i = 0;
     while (data.cmds[i])
     {
         if (setup_pipe(pipe_info, data.cmds[i + 1] != NULL) == -1)
 		{
-			free(pids);
+			free(data.pids);
 			return (NULL);
 		}
             
-        pids[i] = prepare_command(data.cmds[i], builtins, data, pipe_info);
-        if (pids[i] == -1)
+        data.pids[i] = prepare_command(data.cmds[i], builtins, data, pipe_info);
+        if (data.pids[i] == -1)
 		{
-			free(pids);
+			free(data.pids);
 			return (NULL);
 		}
         manage_pipes(pipe_info);
         i++;
     }
-    return (pids);
+    return (data.pids);
 }
 
 

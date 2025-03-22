@@ -29,7 +29,6 @@ t_list	*splited_tokens_to_cmd_list(t_list **splited_tokens, t_parser data)
 	i = -1;
 	while (splited_tokens[++i])
 	{
-		// printf("splited_tokens[%d]\n", i);
 		cmd = tokens_to_cmd(splited_tokens[i], data);
 		if (!cmd)
 		{
@@ -39,16 +38,12 @@ t_list	*splited_tokens_to_cmd_list(t_list **splited_tokens, t_parser data)
 		cmd_node = ft_lstnew(cmd);
 		if (!cmd_node)
 		{
-			// printf("cmd_node is NULL\n");
 			free(cmd);
 			ft_lstclear(&cmd_list, free);
 			return ((t_list *)perror_ptr("malloc", errno));
 		}
 		ft_lstadd_back(&cmd_list, cmd_node);
 	}
-	free(splited_tokens);
-	// if (!cmd_list)
-	// 	printf("cmd_list is NULL\n");
 	return (cmd_list);
 }
 

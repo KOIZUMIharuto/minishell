@@ -39,6 +39,7 @@ bool	get_rdrct_list(t_list **rdrct_list, t_list **tokens)
 			ft_lstclear(rdrct_list, free_rdrct);
 			return (perror_bool("malloc", errno));
 		}
+		// printf("rdrct_node: [%p]\n", rdrct_node);
 		ft_lstadd_back(rdrct_list, rdrct_node);
 	}
 	return (true);
@@ -59,10 +60,13 @@ static bool	get_rdrct(t_rdrct **rdrct, t_list **tokens)
 		rdrct_type = get_rdrct_type(token);
 		if (rdrct_type != NONE_RDRCT)
 		{
+			token = (char *)cur->next->content;
 			rejoin_tokens(tokens, cur, prev);
 			ft_lstdelone(cur, free);
-			cur = prev->next;
-			token = (char *)cur->content;
+			if (prev)
+				cur = prev->next;
+			else
+				cur = *tokens;
 			*rdrct = create_rdrct(rdrct_type, token);
 			if (!*rdrct)
 				return (false);
@@ -96,7 +100,10 @@ static t_rdrct	*create_rdrct(t_rdrct_type type, char *token)
 
 	rdrct = (t_rdrct *)ft_calloc(1, sizeof(t_rdrct));
 	if (!rdrct)
+	{
+		free(token);
 		return ((t_rdrct *)perror_ptr("malloc", errno));
+	}
 	rdrct->type = type;
 	rdrct->token = token;
 	rdrct->file = NULL;

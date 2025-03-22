@@ -34,14 +34,13 @@ t_cmd	**parser(char *line, int exit_status, t_list *env)
 		return (NULL);
 	}
 	cmd_list = splited_tokens_to_cmd_list(splited_tokens, data);
+	free_splited_tokens(&splited_tokens);
 	cmds = list_to_cmds(cmd_list);
 	if (!cmds)
 	{
-		ft_lstclear(&tokens, free);
-		free_splited_tokens(&splited_tokens);
+		ft_lstclear(&cmd_list, free_cmd);
 		return (NULL);
 	}
-	ft_lstclear(&tokens, free);
 	return (cmds);
 }
 
@@ -94,9 +93,9 @@ static t_cmd	**list_to_cmds(t_list *cmd_list)
 	while (cmd_list)
 	{
 		cmds[++cmd_count] = (t_cmd *)cmd_list->content;
-		tmp = cmd_list;
-		cmd_list = cmd_list->next;
-		free(tmp);
+		tmp = cmd_list->next;
+		free(cmd_list);
+		cmd_list = tmp;
 	}
 	return (cmds);
 }

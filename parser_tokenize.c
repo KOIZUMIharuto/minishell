@@ -40,15 +40,6 @@ t_list	*tokenize(char *line)
 	if (token_start != -1
 		&& !add_token(&tokens, line + token_start, i - token_start))
 		return (NULL);
-
-	// t_list *tmp = tokens;
-	// while (tmp)
-	// {
-	// 	printf("[%s]", (char *)tmp->content);
-	// 	tmp = tmp->next;
-	// }
-	// printf("\n");
-
 	return (tokens);
 }
 
