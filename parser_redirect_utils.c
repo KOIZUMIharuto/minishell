@@ -60,22 +60,23 @@ static bool	get_rdrct(t_rdrct **rdrct, t_list **tokens)
 		rdrct_type = get_rdrct_type(token);
 		if (rdrct_type != NONE_RDRCT)
 		{
+			token = (char *)cur->next->content;
 			rejoin_tokens(tokens, cur, prev);
 			ft_lstdelone(cur, free);
 			if (prev)
 				cur = prev->next;
 			else
 				cur = *tokens;
-			token = (char *)cur->content;
+			// token = (char *)cur->content;
 			*rdrct = create_rdrct(rdrct_type, token);
 			if (!*rdrct)
 				return (false);
 			rejoin_tokens(tokens, cur, prev);
 			free(cur);
-			if (prev)
-				cur = prev->next;
-			else
-				cur = *tokens;
+			// if (prev)
+			// 	cur = prev->next;
+			// else
+			// 	cur = *tokens;
 			return (true);
 		}
 		prev = cur;
@@ -125,12 +126,12 @@ static void	rejoin_tokens(t_list **tokens, t_list *cur, t_list *prev)
 		*tokens = cur->next;
 	}
 	cur->next = NULL;
-	t_list *tmp = *tokens;
-	printf("rejoin tokens\n");
-	while (tmp)
-	{
-		printf("\ttoken: [%s]\n", (char *)tmp->content);
-		tmp = tmp->next;
-	}
+	// t_list *tmp = *tokens;
+	// printf("rejoin tokens\n");
+	// while (tmp)
+	// {
+	// 	printf("\ttoken: [%s]\n", (char *)tmp->content);
+	// 	tmp = tmp->next;
+	// }
 
 }
