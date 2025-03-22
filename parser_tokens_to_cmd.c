@@ -6,13 +6,13 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 11:44:47 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/21 19:42:18 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/22 12:50:30 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
 
-static t_cmd	*tokens_to_cmd(t_list *tokens, t_parser data);
+static t_cmd	*tokens_to_cmd(t_list **tokens, t_parser data);
 static bool		get_cmd(char ***cmd, t_list **tokens, t_parser data);
 static void		copy_list_to_cmd(char **cmd, t_list *tokens);
 
@@ -29,7 +29,7 @@ t_list	*splited_tokens_to_cmd_list(t_list **splited_tokens, t_parser data)
 	i = -1;
 	while (splited_tokens[++i])
 	{
-		cmd = tokens_to_cmd(splited_tokens[i], data);
+		cmd = tokens_to_cmd(&(splited_tokens[i]), data);
 		if (!cmd)
 		{
 			ft_lstclear(&cmd_list, free);
@@ -47,15 +47,15 @@ t_list	*splited_tokens_to_cmd_list(t_list **splited_tokens, t_parser data)
 	return (cmd_list);
 }
 
-static t_cmd	*tokens_to_cmd(t_list *tokens, t_parser data)
+static t_cmd	*tokens_to_cmd(t_list **tokens, t_parser data)
 {
 	t_cmd	*cmd;
 
 	cmd = (t_cmd *)ft_calloc(1, sizeof(t_cmd));
 	if (!cmd)
 		return (NULL);
-	if (!get_rdrcts(&(cmd->rdrcts), &tokens, data)
-		|| !get_cmd(&(cmd->cmd), &tokens, data))
+	if (!get_rdrcts(&(cmd->rdrcts), tokens, data)
+		|| !get_cmd(&(cmd->cmd), tokens, data))
 	{
 		free_cmd((void *)cmd);
 		return (NULL);
