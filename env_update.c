@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 00:25:18 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/21 13:52:54 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/23 10:58:10 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 static bool		add_env(t_list **env_list, char *key, char *value);
 static t_list	*create_new_env(char *key, char *value);
 
-//成功: true, 失敗: false
 bool	env_update(t_list **env_list, char *key, char *value)
 {
 	t_env	*env;
@@ -33,7 +32,6 @@ bool	env_update(t_list **env_list, char *key, char *value)
 	return (true);
 }
 
-//成功: true, 失敗: false
 static bool	add_env(t_list **env_list, char *key, char *value)
 {
 	t_list	*new_list;

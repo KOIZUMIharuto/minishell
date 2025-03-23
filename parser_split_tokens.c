@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 02:05:55 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/21 20:15:10 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/23 10:57:52 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,17 +38,13 @@ static t_list	**recursive_split_tokens(t_list *tokens, int cmd_count)
 		tokens = prev_token->next;
 	}
 	if (tokens)
-	{
-		// printf("tokens [%s]\n", (char *)tokens->content);
 		tokens = tokens->next;
-	}
 	splited_tokens = recursive_split_tokens(tokens, cmd_count + 1);
 	if (!splited_tokens)
 		return (NULL);
 	splited_tokens[cmd_count] = cmd_head;
 	if (!prev_token->next)
 		return (splited_tokens);
-	// printf("prev_token->next [%s]\n", (char *)prev_token->next->content);
 	ft_lstdelone(prev_token->next, free);
 	prev_token->next = NULL;
 	return (splited_tokens);

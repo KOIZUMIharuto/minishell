@@ -39,7 +39,6 @@ bool	get_rdrct_list(t_list **rdrct_list, t_list **tokens)
 			ft_lstclear(rdrct_list, free_rdrct);
 			return (perror_bool("malloc", errno));
 		}
-		// printf("rdrct_node: [%p]\n", rdrct_node);
 		ft_lstadd_back(rdrct_list, rdrct_node);
 	}
 	return (true);
@@ -60,23 +59,18 @@ static bool	get_rdrct(t_rdrct **rdrct, t_list **tokens)
 		rdrct_type = get_rdrct_type(token);
 		if (rdrct_type != NONE_RDRCT)
 		{
-			token = (char *)cur->next->content;
 			rejoin_tokens(tokens, cur, prev);
 			ft_lstdelone(cur, free);
 			if (prev)
 				cur = prev->next;
 			else
 				cur = *tokens;
-			// token = (char *)cur->content;
+			token = (char *)cur->content;
+			rejoin_tokens(tokens, cur, prev);
+			free(cur);
 			*rdrct = create_rdrct(rdrct_type, token);
 			if (!*rdrct)
 				return (false);
-			rejoin_tokens(tokens, cur, prev);
-			free(cur);
-			// if (prev)
-			// 	cur = prev->next;
-			// else
-			// 	cur = *tokens;
 			return (true);
 		}
 		prev = cur;
@@ -118,20 +112,8 @@ static t_rdrct	*create_rdrct(t_rdrct_type type, char *token)
 static void	rejoin_tokens(t_list **tokens, t_list *cur, t_list *prev)
 {
 	if (prev)
-	{
 		prev->next = cur->next;
-	}
 	else
-	{
 		*tokens = cur->next;
-	}
 	cur->next = NULL;
-	// t_list *tmp = *tokens;
-	// printf("rejoin tokens\n");
-	// while (tmp)
-	// {
-	// 	printf("\ttoken: [%s]\n", (char *)tmp->content);
-	// 	tmp = tmp->next;
-	// }
-
 }

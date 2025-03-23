@@ -3,16 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_exit.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 00:54:17 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/21 11:49:43 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/23 10:58:21 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
-
-// extern int g_last_exit_status;
 
 bool	is_numeric(const char *str)
 {
@@ -71,7 +69,7 @@ int	builtin_exit(char **cmd, t_list *env)
 		ft_putstr_fd("minishell: exit: ", STDERR_FILENO);
 		ft_putstr_fd(cmd[1], STDERR_FILENO);
 		ft_putstr_fd(": numeric argument required\n", STDERR_FILENO);
-		g_last_exit_status = 2;  // Linuxでは終了コード2
+		g_last_exit_status = 2;
 		exit(g_last_exit_status);
 	}
 	if (cmd[1] && cmd[2])

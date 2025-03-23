@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 21:59:46 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/23 01:37:34 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/23 10:56:35 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,12 +47,9 @@ int	main(int argc, char **argv, char **envp)
 			free(line);
 			if (!cmds)
 				continue ;
-			// (void)status;
 			status = execute_pipeline(cmds, builtins, env);
-			// free_cmds(cmds);
 			if (status == -42)
 				exit(g_last_exit_status);
-			// free_cmds(cmds);
 		}
 		else
 			free(line);
@@ -60,9 +57,3 @@ int	main(int argc, char **argv, char **envp)
 	ft_lstclear(&env, env_free);
 	return (0);
 }
-
-
-// __attribute__((destructor))
-// static void destructor() {
-// 	system("leaks -q minishell");
-// }

@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 16:43:17 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/21 20:15:28 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/23 10:57:58 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,6 @@ static bool	add_token(t_list **tokens, char *start, int length)
 	if (length <= 0)
 		return (true);
 	token_str = ft_substr(start, 0, length);
-	// printf("substr [%s]\n", token_str);
 	if (!token_str)
 		return (perror_bool("malloc", errno));
 	new_token = ft_lstnew(token_str);
