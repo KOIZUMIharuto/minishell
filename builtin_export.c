@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 14:44:22 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/21 13:52:25 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/24 15:35:52 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ int	builtin_export(char **cmd, t_list *env)
 	status = 0;
 	while (cmd[++i])
 	{
-		is_valid = env_split(cmd[i], &key, &value);
+		is_valid = env_split(cmd[i], &key, &value, env);
 		if (is_valid == ERROR)
 			return (1);
 		if (is_valid == INVALID)
