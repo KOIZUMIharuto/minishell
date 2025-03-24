@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipe_command.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 12:30:41 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/21 15:56:53 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/23 01:22:10 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,13 +110,15 @@ bool has_output_redirection(t_cmd *cmd)
 }
 
 void	execute_command_in_child(t_cmd *cmd,
-	int (*builtin_func)(char **, t_list *), t_list *env, t_pipe_info *pipe_info)
+	int (*builtin_func)(char **, t_list *), t_data data, t_pipe_info *pipe_info)
 {
 	int		result;
 
+	free(data.pids);
+	data.pids = NULL;
 	if (process_heredocs(cmd) == -1 || handle_redirection(cmd))
 	{
-		free_cmd(cmd);
+		free_data(data);
 		exit(EXIT_FAILURE);
 	}
 	if (!has_input_redirection(cmd))
@@ -125,25 +127,25 @@ void	execute_command_in_child(t_cmd *cmd,
 		handle_pipe_output(pipe_info);
 	if (!cmd->cmd[0])
 	{
-		free_cmd(cmd);
+		free_data(data);
 		exit(EXIT_SUCCESS);
 	}
 	if (builtin_func)
 	{
 		setup_builtin_signals();
-		result = builtin_func(cmd->cmd, env);
-		free_cmd(cmd);
+		result = builtin_func(cmd->cmd, data.env);
+		free_data(data);
 		exit (result);
 	}
 	else
 	{
 		setup_child_signals();
-		execute_cmd(cmd->cmd, env);
+		execute_cmd(cmd->cmd, data);
 	}
 }
 
 static pid_t prepare_command(t_cmd *cmd, t_builtin *builtins, 
-                            t_list *env, t_pipe_info *pipe_info)
+                            t_data data, t_pipe_info *pipe_info)
 {
     int (*builtin_func)(char **, t_list *);
     pid_t pid;
@@ -161,33 +163,40 @@ static pid_t prepare_command(t_cmd *cmd, t_builtin *builtins,
         return -1;
     }
     if (pid == 0)
-        execute_command_in_child(cmd, builtin_func, env, pipe_info);
-    
+        execute_command_in_child(cmd, builtin_func, data, pipe_info);
     return pid;
 }
 
-int execute_commands(t_cmd **cmds, t_builtin *builtins, t_list *env, 
-                    pid_t *pids, t_pipe_info *pipe_info)
+pid_t	*execute_commands(t_builtin *builtins, t_data data, t_pipe_info *pipe_info)
 {
     int i;
-    pid_t pid;
     
+
+	i = 0;
+	while (data.cmds[i])
+		i++;
+	data.pids = (pid_t *)malloc(sizeof(pid_t) * i);
+    if (!data.pids)
+        return (NULL);
     i = 0;
-    while (cmds[i])
+    while (data.cmds[i])
     {
-        if (setup_pipe(pipe_info, cmds[i + 1] != NULL) == -1)
-            return -1;
+        if (setup_pipe(pipe_info, data.cmds[i + 1] != NULL) == -1)
+		{
+			free(data.pids);
+			return (NULL);
+		}
             
-        pid = prepare_command(cmds[i], builtins, env, pipe_info);
-        if (pid == -1)
-            return -1;
-            
-        pids[i] = pid;
+        data.pids[i] = prepare_command(data.cmds[i], builtins, data, pipe_info);
+        if (data.pids[i] == -1)
+		{
+			free(data.pids);
+			return (NULL);
+		}
         manage_pipes(pipe_info);
         i++;
     }
-    
-    return i;
+    return (data.pids);
 }
 
 

@@ -59,16 +59,22 @@ static bool	get_rdrct(t_rdrct **rdrct, t_list **tokens)
 		rdrct_type = get_rdrct_type(token);
 		if (rdrct_type != NONE_RDRCT)
 		{
-			cur = cur->next;
+			rejoin_tokens(tokens, cur, prev);
+			ft_lstdelone(cur, free);
+			if (prev)
+				cur = prev->next;
+			else
+				cur = *tokens;
 			token = (char *)cur->content;
+			rejoin_tokens(tokens, cur, prev);
+			free(cur);
 			*rdrct = create_rdrct(rdrct_type, token);
 			if (!*rdrct)
 				return (false);
-			rejoin_tokens(tokens, cur, prev);
 			return (true);
 		}
 		prev = cur;
-		cur = cur->next;
+		cur = prev->next;
 	}
 	return (true);
 }
@@ -92,7 +98,10 @@ static t_rdrct	*create_rdrct(t_rdrct_type type, char *token)
 
 	rdrct = (t_rdrct *)ft_calloc(1, sizeof(t_rdrct));
 	if (!rdrct)
+	{
+		free(token);
 		return ((t_rdrct *)perror_ptr("malloc", errno));
+	}
 	rdrct->type = type;
 	rdrct->token = token;
 	rdrct->file = NULL;
@@ -103,13 +112,8 @@ static t_rdrct	*create_rdrct(t_rdrct_type type, char *token)
 static void	rejoin_tokens(t_list **tokens, t_list *cur, t_list *prev)
 {
 	if (prev)
-	{
-		ft_lstdelone(prev->next, free);
 		prev->next = cur->next;
-	}
 	else
-	{
-		ft_lstdelone(*tokens, free);
 		*tokens = cur->next;
-	}
+	cur->next = NULL;
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 14:13:46 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/21 15:57:37 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/23 01:34:55 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@
 # define BUILTIN_NUM 7
 # define PROMPT "minishell$ "
 
-extern int g_last_exit_status;
+extern int	g_last_exit_status;
 
 typedef struct s_env
 {
@@ -78,8 +78,8 @@ typedef struct s_cmd
 	t_rdrct	**rdrcts;
 	int		infile_fd;
 	int		outfile_fd;
-    int     backup_stdin;
-    int     backup_stdout;
+	int		backup_stdin;
+	int		backup_stdout;
 }	t_cmd;
 
 typedef struct s_parser
@@ -99,10 +99,18 @@ typedef struct s_builtin
 
 typedef struct s_pipe_info
 {
-    int prev_fd;
-    int pipe_fds[2];
-    bool has_next;
-} t_pipe_info;
+	int		prev_fd;
+	int		pipe_fds[2];
+	bool	has_next;
+}	t_pipe_info;
+
+typedef struct s_data
+{
+	t_list	*env;
+	t_cmd	**cmds;
+	pid_t	*pids;
+}	t_data;
+
 
 // signals
 void setup_interactive_signals(void);
@@ -114,8 +122,8 @@ void setup_child_signals(void);
 int setup_pipe(t_pipe_info *pipe_info, bool has_next);
 int execute_pipeline(t_cmd **cmds, t_builtin *builtins, t_list *env);
 int execute_single_builtin(t_cmd *cmd, t_builtin *builtins, int builtin_index, t_list *env);
-int execute_commands(t_cmd **cmds, t_builtin *builtins, t_list *env, pid_t *pids, t_pipe_info *pipe_info);
-void execute_cmd(char **cmd, t_list *env);
+pid_t	* execute_commands(t_builtin *builtins, t_data data, t_pipe_info *pipe_info);
+void execute_cmd(char **cmd, t_data data);
 void manage_pipes(t_pipe_info *pipe_info);
 void handle_pipe_input(t_pipe_info *pipe_info);
 void handle_pipe_output(t_pipe_info *pipe_info);
@@ -173,5 +181,6 @@ void	*perror_ptr(char *msg, int errnum);
 void	my_perror(char *msg, int errnum);
 
 void	free_double_pointor(char **array);
+void	free_data(t_data data);
 
 #endif

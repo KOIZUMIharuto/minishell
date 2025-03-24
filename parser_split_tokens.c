@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser_split_tokens.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 02:05:55 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/19 11:01:39 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/23 10:57:52 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,14 +28,14 @@ static t_list	**recursive_split_tokens(t_list *tokens, int cmd_count)
 	t_list	*cmd_head;
 	t_list	*prev_token;
 
-	if (!tokens)
-		return ((t_list **)ft_calloc(cmd_count + 1, sizeof(t_list *)));
 	cmd_head = tokens;
 	prev_token = NULL;
+	if (!tokens)
+		return ((t_list **)ft_calloc(cmd_count + 1, sizeof(t_list *)));
 	while (tokens && ft_strncmp((char *)tokens->content, "|", 2) != 0)
 	{
 		prev_token = tokens;
-		tokens = tokens->next;
+		tokens = prev_token->next;
 	}
 	if (tokens)
 		tokens = tokens->next;
@@ -43,10 +43,9 @@ static t_list	**recursive_split_tokens(t_list *tokens, int cmd_count)
 	if (!splited_tokens)
 		return (NULL);
 	splited_tokens[cmd_count] = cmd_head;
-	if (prev_token)
-	{
-		ft_lstdelone(prev_token->next, free);
-		prev_token->next = NULL;
-	}
+	if (!prev_token->next)
+		return (splited_tokens);
+	ft_lstdelone(prev_token->next, free);
+	prev_token->next = NULL;
 	return (splited_tokens);
 }

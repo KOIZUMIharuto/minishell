@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser_tokenize.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 16:43:17 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/19 22:44:28 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/23 10:57:58 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,9 +37,9 @@ t_list	*tokenize(char *line)
 			return (NULL);
 		i++;
 	}
-	if (token_start != -1)
-		if (!add_token(&tokens, line + token_start, i - token_start))
-			return (NULL);
+	if (token_start != -1
+		&& !add_token(&tokens, line + token_start, i - token_start))
+		return (NULL);
 	return (tokens);
 }
 
@@ -105,6 +105,7 @@ static bool	add_token(t_list **tokens, char *start, int length)
 	if (!new_token)
 	{
 		free(token_str);
+		ft_lstclear(tokens, free);
 		return (perror_bool("malloc", errno));
 	}
 	ft_lstadd_back(tokens, new_token);

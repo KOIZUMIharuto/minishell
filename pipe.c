@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipe.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 01:16:07 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/21 15:11:15 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/22 02:30:14 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,8 +55,8 @@ int wait_for_children(pid_t *pids, int cmd_count)
 
 int execute_pipeline(t_cmd **cmds, t_builtin *builtins, t_list *env)
 {
+	t_data	data;
     int cmd_count;
-    pid_t *pids;
     t_pipe_info pipe_info;
     int result;
     
@@ -64,19 +64,30 @@ int execute_pipeline(t_cmd **cmds, t_builtin *builtins, t_list *env)
     {
         result = try_execute_as_builtin(cmds[0], builtins, env);
         if (result != -1)
+		{
+			free_cmds(cmds);
             return result;
+		}
     }
     
-    pids = (pid_t *)malloc(sizeof(pid_t) * cmd_count);
-    if (!pids)
-        return (EXIT_FAILURE);
-        
+    // data.pids = (pid_t *)malloc(sizeof(pid_t) * cmd_count);
+    // if (!data.pids)
+    //     return (EXIT_FAILURE);
     pipe_info.prev_fd = -1;
-    execute_commands(cmds, builtins, env, pids, &pipe_info);
+	data.cmds = cmds;
+	data.env = env;
+	data.pids = NULL;
+    data.pids = execute_commands(builtins, data, &pipe_info);
     
-    wait_for_children(pids, cmd_count);
+	free_cmds(cmds);
+	if (!data.pids)
+	{
+		return (EXIT_FAILURE);
+	}
+
+    wait_for_children(data.pids, cmd_count);
     
-    free(pids);
+    free(data.pids);
     setup_interactive_signals();
     return g_last_exit_status;
 }

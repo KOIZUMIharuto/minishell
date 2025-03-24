@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 21:59:46 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/21 15:53:39 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/23 10:56:35 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,29 +37,23 @@ int	main(int argc, char **argv, char **envp)
 		line = readline(PROMPT);
 		if (!line)
 		{
-			ft_putstr_fd("exit", STDOUT_FILENO);
+			ft_putstr_fd("exit\n", STDOUT_FILENO);
 			break ;
 		}
 		if (ft_strlen(line) > 0)
 		{
 			add_history(line);
 			cmds = parser(line, g_last_exit_status, env);
+			free(line);
 			if (!cmds)
-			{
-				free(line);
 				continue ;
-			}
 			status = execute_pipeline(cmds, builtins, env);
-			free_cmds(cmds);
 			if (status == -42)
-			{
-				free(line);
 				exit(g_last_exit_status);
-			}
 		}
-		free(line);
+		else
+			free(line);
 	}
 	ft_lstclear(&env, env_free);
 	return (0);
 }
-

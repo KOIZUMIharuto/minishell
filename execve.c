@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execve.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 03:20:59 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/21 13:54:02 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/23 01:27:38 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,23 +55,27 @@ bool	find_cmd_path(char **cmd_path, char *cmd, t_env *path_env) {
     return true;
 }
 
-void execute_cmd(char **cmd, t_list *env)
+void execute_cmd(char **cmd, t_data data)
 {
 	t_env	*path_env;
     char *cmd_path;
     char **env_array;
 	struct stat path_stat;
 
-	path_env = env_get(env, "PATH", false);
+	path_env = env_get(data.env, "PATH", false);
 	if (!cmd[0][0])
 		cmd_path = NULL;
 	else if (ft_strchr(cmd[0], '/') || !path_env || !path_env->value)
 		cmd_path = ft_strdup(cmd[0]);
 	else if (!find_cmd_path(&cmd_path, cmd[0], path_env))
+	{
+		free_data(data);
 		exit(perror_int("malloc", errno));
+	}
     if (!cmd_path)
     {
 		(void)error_msg(cmd[0], "command not found");
+		free_data(data);
         exit(127);
     }
 
@@ -80,6 +84,7 @@ void execute_cmd(char **cmd, t_list *env)
 		(void)error_msg(cmd_path, strerror(errno));
 		if (cmd_path != cmd[0])
 			free(cmd_path);
+		free_data(data);
 		if (errno == ENOENT)
 			exit(127);
 		exit(126);
@@ -89,13 +94,15 @@ void execute_cmd(char **cmd, t_list *env)
 		(void)error_msg(cmd_path, "Is a directory");
 		if (cmd_path != cmd[0])
 			free(cmd_path);
+		free_data(data);
 		exit(126);
 	}
-    env_array = convert_env_list_to_array(env);
+    env_array = convert_env_list_to_array(data.env);
     if (!env_array)
     {
         if (cmd_path != cmd[0])
             free(cmd_path);
+		free_data(data);
         exit(perror_int("malloc", errno));
     }
     if (execve(cmd_path, cmd, env_array) == -1)
@@ -103,6 +110,7 @@ void execute_cmd(char **cmd, t_list *env)
         (void)error_msg(cmd_path, strerror(errno));
         if (cmd_path != cmd[0])
             free(cmd_path);
+		free_data(data);
 		free_double_pointor(env_array);
 		if (errno == ENOENT)
 			exit(127);
