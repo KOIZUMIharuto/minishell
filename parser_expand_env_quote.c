@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 17:00:00 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/24 13:38:34 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/24 17:31:29 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,8 @@ bool	expand_env_quote(t_list **expanded, char *token, t_parser *data)
 			return (perror_bool("malloc", errno));
 		}
 		ft_lstadd_back(expanded, expanded_node);
-		while ((data->tmp && *(data->tmp)) && ft_strchr(" \t\n", *(data->tmp)))
+		while ((data->tmp && *(data->tmp))
+			&& ft_strchr(data->del, *(data->tmp)))
 			(data->tmp)++;
 		if (data->tmp && !*(data->tmp))
 			data->tmp = NULL;

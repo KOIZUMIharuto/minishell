@@ -13,6 +13,7 @@
 #include <minishell.h>
 
 static void		init_parser(t_parser *data, int exit_status, t_list *env);
+static void		set_exit_status(t_parser *data, int exit_status);
 static t_cmd	**list_to_cmds(t_list *cmd_list);
 static void		free_splited_tokens(t_list ***splited_tokens);
 
@@ -46,6 +47,22 @@ t_cmd	**parser(char *line, int exit_status, t_list *env)
 
 static void	init_parser(t_parser *data, int exit_status, t_list *env)
 {
+	t_env	*ifs_env;
+
+	set_exit_status(data, exit_status);
+	data->env = env;
+	ifs_env = env_get(env, "IFS", false);
+	if (ifs_env)
+		data->del = ifs_env->value;
+	else
+		data->del = " \t\n";
+	data->is_empty_env_exist = false;
+	data->is_failed = false;
+	data->tmp = NULL;
+}
+
+static void	set_exit_status(t_parser *data, int exit_status)
+{
 	int	i;
 	int	tmp;
 	int	div;
@@ -67,10 +84,6 @@ static void	init_parser(t_parser *data, int exit_status, t_list *env)
 	}
 	while (i <= 3)
 		data->exit_status[i++] = '\0';
-	data->env = env;
-	data->is_empty_env_exist = false;
-	data->is_failed = false;
-	data->tmp = NULL;
 }
 
 

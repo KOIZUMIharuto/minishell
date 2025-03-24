@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 14:13:46 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/24 15:36:59 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/24 17:31:29 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,7 @@ typedef struct s_parser
 {
 	char	exit_status[4];
 	t_list	*env;
+	char	*del;
 	bool	is_empty_env_exist;
 	bool	is_failed;
 	char	*tmp;
