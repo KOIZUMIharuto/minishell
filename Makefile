@@ -88,7 +88,7 @@ all: $(NAME)
 
 # バイナリ生成ルール（リンカオプションの順序を修正）
 $(NAME): $(MAIN) $(OBJS) $(LIBFT)
-	$(CC) $(CFLAGS) $(INCLUDES) $(MAIN) $(OBJS) $(LIBFT) $(READLINE) -o $(NAME) $(FSANITIZE)
+	$(CC) $(CFLAGS) $(INCLUDES) $(MAIN) $(OBJS) $(LIBFT) $(READLINE) -o $(NAME)
 
 # ソースファイルからオブジェクトファイル生成
 $(OBJ_DIR)/%.o: %.c | $(OBJ_DIR)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredocument.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 17:33:18 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/24 11:15:06 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/24 11:34:58 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ static int	create_temp_file(void)
 
 static int	write_expand_env(int tmp_fd, char *line, t_list *env_list)
 {
+	t_list	*list_tmp;
 	t_env	*env;
 	int		key_len;
 
@@ -43,22 +44,29 @@ static int	write_expand_env(int tmp_fd, char *line, t_list *env_list)
 			}
 			else if (ft_isalpha(line[1]) || line[1] == '_')
 			{
-				while (env_list)
+				line++;
+				list_tmp = env_list;
+				while (list_tmp)
 				{
-					env = (t_env *)env_list->content;
+					env = (t_env *)list_tmp->content;
 					key_len = ft_strlen(env->key);
-					if (ft_strncmp(env->key, &(line[1]), key_len) == 0
-						&& !(ft_isalnum(line[key_len + 1]) || line[key_len + 1] == '_'))
+					if (ft_strncmp(env->key, line, key_len) == 0
+						&& !(ft_isalnum(line[key_len]) || line[key_len] == '_'))
 					{
 						if (write(tmp_fd, env->value, ft_strlen(env->value)) == -1)
 							return (-1);
-						line += key_len + 1;
+						line += key_len;
 						break ;
 					}
-					env_list = env_list->next;
+					list_tmp = list_tmp->next;
 				}
-				if (env_list)
+				if (list_tmp)
 					continue ;
+				while (ft_isalnum(*line) || *line == '_')
+					line++;
+				if (write(tmp_fd, "", 0) == -1)
+					return (-1);
+				continue ;
 			}
 		}
 		if (write(tmp_fd, line++, 1) == -1)

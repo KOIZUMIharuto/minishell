@@ -68,7 +68,6 @@ static bool	set_heredocument(t_rdrct *redirect)
 	while (token[++i])
 		if (is_in_quote(token[i], &quote, false) || !ft_strchr("'\"", token[i]))
 			heredoc_i++;
-	printf("i: %d, heredoc_i: %d\n", i, heredoc_i);
 	if (i != heredoc_i)
 		redirect->is_quoted = true;
 	redirect->file = (char **)ft_calloc(2, sizeof(char *));

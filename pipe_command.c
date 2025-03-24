@@ -3,18 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   pipe_command.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 12:30:41 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/24 10:42:10 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/24 12:32:11 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
 
-int	process_heredocs(t_cmd *cmd, t_list* env)
+int	process_heredocs(t_cmd *cmd, t_rdrct *redirect, t_list* env)
 {
-	int	j;
+	// int	j;
     int original_stdin = -1;
 
     if (cmd->backup_stdin == -1)
@@ -29,20 +29,26 @@ int	process_heredocs(t_cmd *cmd, t_list* env)
         perror("dup");
         return (-1);
     }
-	j = 0;
-	while (cmd->rdrcts[j])
+	dup2(original_stdin, STDIN_FILENO);
+	if (handle_heredocument(redirect, cmd, env) == -1)
 	{
-		if (cmd->rdrcts[j]->type == HEREDOCUMENT)
-		{
-            dup2(original_stdin, STDIN_FILENO);
-			if (handle_heredocument(cmd->rdrcts[j], cmd, env) == -1)
-            {
-                close(original_stdin);
-				return (-1);
-            }
-		}
-		j++;
+		close(original_stdin);
+		return (-1);
 	}
+	// j = 0;
+	// while (cmd->rdrcts[j])
+	// {
+	// 	if (redirect->type == HEREDOCUMENT)
+	// 	{
+    //         dup2(original_stdin, STDIN_FILENO);
+	// 		if (handle_heredocument(redirect, cmd, env) == -1)
+    //         {
+    //             close(original_stdin);
+	// 			return (-1);
+    //         }
+	// 	}
+	// 	j++;
+	// }
     close(original_stdin);
 	return (0);
 }
@@ -54,9 +60,9 @@ int execute_single_builtin(t_cmd *cmd, t_builtin *builtins,
     int result;
     
     setup_builtin_signals();
-    if (process_heredocs(cmd, env) == -1)
-        return (1);
-    if (handle_redirection(cmd))
+    // if (process_heredocs(cmd, env) == -1)
+    //     return (1);
+    if (handle_redirection(cmd, env))
     {
         restore_redirection(cmd);
         g_last_exit_status = 1;
@@ -116,7 +122,8 @@ void	execute_command_in_child(t_cmd *cmd,
 
 	free(data.pids);
 	data.pids = NULL;
-	if (process_heredocs(cmd, data.env) == -1 || handle_redirection(cmd))
+	// if (process_heredocs(cmd, data.env) == -1 || handle_redirection(cmd, data.env))
+	if (handle_redirection(cmd, data.env))
 	{
 		free_data(data);
 		exit(EXIT_FAILURE);
