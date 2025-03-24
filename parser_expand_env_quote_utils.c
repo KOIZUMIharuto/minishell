@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 21:43:48 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/24 17:31:54 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/24 18:45:55 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,7 +106,7 @@ static void	move_arg_pointer(char **token, t_parser *data, char *tmp, int i)
 		expand_env(*token + i + 1, key_len, data);
 		if (!data->tmp)
 		{
-			data->is_empty_env_exist = true;
+			data->is_env_empty = true;
 			data->is_failed = false;
 		}
 		*token += key_len + i + 1;

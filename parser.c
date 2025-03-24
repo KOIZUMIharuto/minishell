@@ -56,7 +56,7 @@ static void	init_parser(t_parser *data, int exit_status, t_list *env)
 		data->del = ifs_env->value;
 	else
 		data->del = " \t\n";
-	data->is_empty_env_exist = false;
+	data->is_env_empty = false;
 	data->is_failed = false;
 	data->tmp = NULL;
 }
@@ -85,7 +85,6 @@ static void	set_exit_status(t_parser *data, int exit_status)
 	while (i <= 3)
 		data->exit_status[i++] = '\0';
 }
-
 
 static t_cmd	**list_to_cmds(t_list *cmd_list)
 {

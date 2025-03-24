@@ -6,43 +6,30 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 17:00:00 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/24 17:31:29 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/24 18:46:55 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
 
+static bool	free_expanded_bool(t_list **expanded, char *token, bool ret);
+
 bool	expand_env_quote(t_list **expanded, char *token, t_parser *data)
 {
-	t_quote	quote;
 	char	*expanded_token;
 	t_list	*expanded_node;
 
-	data->is_empty_env_exist = false;
-	data->tmp = NULL;
-	quote = NONE_Q;
 	while (token && (*token || (data->tmp && *(data->tmp))))
 	{
-		expanded_token = recursive_expand(&token, data, quote, 0);
+		expanded_token = recursive_expand(&token, data, NONE_Q, 0);
 		if (!expanded_token)
-		{
-			ft_lstclear(expanded, free);
-			return (false);
-		}
-		if (!data->tmp && ft_strlen(expanded_token) == 0
-			&& data->is_empty_env_exist)
-		{
-			free(expanded_token);
-			ft_lstclear(expanded, free);
-			return (true);
-		}
+			return (free_expanded_bool(expanded, NULL, false));
+		if (!data->tmp && !ft_strlen(expanded_token) && data->is_env_empty)
+			return (free_expanded_bool(expanded, expanded_token, true));
 		expanded_node = ft_lstnew(expanded_token);
 		if (!expanded_node)
-		{
-			free(expanded_token);
-			ft_lstclear(expanded, free);
-			return (perror_bool("malloc", errno));
-		}
+			return (free_expanded_bool(expanded, expanded_token,
+					perror_bool("malloc", errno)));
 		ft_lstadd_back(expanded, expanded_node);
 		while ((data->tmp && *(data->tmp))
 			&& ft_strchr(data->del, *(data->tmp)))
@@ -51,4 +38,11 @@ bool	expand_env_quote(t_list **expanded, char *token, t_parser *data)
 			data->tmp = NULL;
 	}
 	return (true);
+}
+
+static bool	free_expanded_bool(t_list **expanded, char *token, bool ret)
+{
+	ft_lstclear(expanded, free);
+	free(token);
+	return (ret);
 }
