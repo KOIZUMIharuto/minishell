@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 20:05:03 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/24 12:32:30 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/24 12:48:10 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ static int	handle_input_rdrct(t_cmd *cmd, t_rdrct *rdrct)
 		return (error_msg(rdrct->file[0], strerror(errno)));
 	dup2(cmd->infile_fd, STDIN_FILENO);
 	close(cmd->infile_fd);
+	cmd->infile_fd = -1;
 	return (0);
 }
 
@@ -58,6 +59,7 @@ static int	handle_output_rdrct(t_cmd *cmd, t_rdrct *rdrct)
 		return (error_msg(rdrct->file[0], strerror(errno)));
 	dup2(cmd->outfile_fd, STDOUT_FILENO);
 	close(cmd->outfile_fd);
+	cmd->outfile_fd = -1;
 	return (0);
 }
 
