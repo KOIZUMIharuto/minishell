@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 20:05:03 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/21 14:39:06 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/24 12:32:30 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,11 +61,12 @@ static int	handle_output_rdrct(t_cmd *cmd, t_rdrct *rdrct)
 	return (0);
 }
 
-int	handle_redirection(t_cmd *cmd)
+int	handle_redirection(t_cmd *cmd, t_list *env)
 {
 	int		j;
 	t_rdrct	*redirect;
 
+	(void)env;
 	if (backup_io(cmd))
 		return (1);
 	j = 0;
@@ -75,7 +76,9 @@ int	handle_redirection(t_cmd *cmd)
 		if (redirect->type != HEREDOCUMENT
 			&& (!redirect->file[0] || redirect->file[1]))
 			return (error_msg(redirect->token, "ambiguous redirect"));
-		if ((redirect->type == INPUT_RDRCT && handle_input_rdrct(cmd, redirect))
+		// if ((redirect->type == INPUT_RDRCT && handle_input_rdrct(cmd, redirect))
+		if ((redirect->type == HEREDOCUMENT && process_heredocs(cmd, cmd->rdrcts[j], env) == -1)
+			|| (redirect->type == INPUT_RDRCT && handle_input_rdrct(cmd, redirect))
 			|| ((redirect->type == OVERWRITE_RDRCT
 					|| redirect->type == APPEND_RDRCT)
 				&& handle_output_rdrct(cmd, redirect)))

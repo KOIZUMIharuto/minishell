@@ -105,6 +105,7 @@ static t_rdrct	*create_rdrct(t_rdrct_type type, char *token)
 	rdrct->type = type;
 	rdrct->token = token;
 	rdrct->file = NULL;
+	rdrct->is_quoted = false;
 	rdrct->fd = -1;
 	return (rdrct);
 }

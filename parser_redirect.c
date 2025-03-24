@@ -13,7 +13,7 @@
 #include <minishell.h>
 
 static bool		token_to_file(t_rdrct **rdrcts, t_parser data);
-static char		**set_heredocument(char *token);
+static bool		set_heredocument(t_rdrct *redirect);
 static char		**set_file_name(char *token, t_parser data);
 static t_rdrct	**list_to_rdrcts(t_list *rdrct_list);
 
@@ -43,9 +43,9 @@ static bool	token_to_file(t_rdrct **rdrcts, t_parser data)
 	i = 0;
 	while (rdrcts[i])
 	{
-		if (rdrcts[i]->type == HEREDOCUMENT)
-			rdrcts[i]->file = set_heredocument(rdrcts[i]->token);
-		else
+		if (rdrcts[i]->type == HEREDOCUMENT && !set_heredocument(rdrcts[i]))
+			return (false);
+		else if (rdrcts[i]->type != HEREDOCUMENT)
 			rdrcts[i]->file = set_file_name(rdrcts[i]->token, data);
 		if (!rdrcts[i]->file)
 			return (false);
@@ -54,33 +54,36 @@ static bool	token_to_file(t_rdrct **rdrcts, t_parser data)
 	return (true);
 }
 
-static char	**set_heredocument(char *token)
+static bool	set_heredocument(t_rdrct *redirect)
 {
 	t_quote	quote;
+	char	*token;
 	int		i;
 	int		heredoc_i;
-	char	**heredoc;
 
 	quote = NONE_Q;
+	token = redirect->token;
 	i = -1;
 	heredoc_i = 0;
 	while (token[++i])
 		if (is_in_quote(token[i], &quote, false) || !ft_strchr("'\"", token[i]))
 			heredoc_i++;
-	heredoc = (char **)ft_calloc(2, sizeof(char *));
-	if (heredoc)
-		heredoc[0] = (char *)ft_calloc(heredoc_i + 1, sizeof(char));
-	if (!heredoc || !heredoc[0])
+	if (i != heredoc_i)
+		redirect->is_quoted = true;
+	redirect->file = (char **)ft_calloc(2, sizeof(char *));
+	if (redirect->file)
+		redirect->file[0] = (char *)ft_calloc(heredoc_i + 1, sizeof(char));
+	if (!redirect->file || !redirect->file[0])
 	{
-		free(heredoc);
-		return (perror_ptr("malloc", errno));
+		free(redirect->file);
+		return (perror_bool("malloc", errno));
 	}
 	i = -1;
 	heredoc_i = 0;
 	while (token[++i])
 		if (is_in_quote(token[i], &quote, false) || !ft_strchr("'\"", token[i]))
-			heredoc[0][heredoc_i++] = token[i];
-	return (heredoc);
+			redirect->file[0][heredoc_i++] = token[i];
+	return (true);
 }
 
 static char	**set_file_name(char *token, t_parser data)
