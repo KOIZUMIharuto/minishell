@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 14:13:46 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/24 12:32:42 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/24 15:36:59 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,7 +149,7 @@ int		builtin_exit(char **cmd, t_list *env);
 
 // env
 t_list	*env_init(char **env);
-t_valid	env_split(char *env, char **key, char **value);
+t_valid	env_split(char *env, char **key, char **value, t_list *env_list);
 bool	env_delete(t_list **env_list, char *key);
 void	env_free(void *content);
 t_env	*env_get(t_list *env_list, char *key, bool even_if_shell_var);

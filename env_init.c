@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 16:51:27 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/21 15:34:23 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/24 15:35:41 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ t_list	*env_init(char **env)
 	env_list = NULL;
 	while (*env)
 	{
-		if (env_split(*env, &key, &value) != VALID
+		if (env_split(*env, &key, &value, env_list) != VALID
 			|| !env_update(&env_list, key, value))
 		{
 			ft_lstclear(&env_list, env_free);
