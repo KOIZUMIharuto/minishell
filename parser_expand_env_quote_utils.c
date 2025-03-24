@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 21:43:48 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/24 13:34:07 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/24 17:31:54 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,10 +38,11 @@ static char	*env_remain(char **token, t_parser *data, t_quote quote, int len)
 	int		i;
 
 	i = 0;
-	while (*(data->tmp) && quote == NONE_Q && ft_strchr(" \t\n", *(data->tmp)))
+	while (*(data->tmp) && quote == NONE_Q
+		&& ft_strchr(data->del, *(data->tmp)))
 		(data->tmp)++;
 	tmp = data->tmp;
-	while (tmp[i] && !(quote == NONE_Q && ft_strchr(" \t\n", tmp[i])))
+	while (tmp[i] && !(quote == NONE_Q && ft_strchr(data->del, tmp[i])))
 		i++;
 	data->tmp += i;
 	if (!tmp[i])
