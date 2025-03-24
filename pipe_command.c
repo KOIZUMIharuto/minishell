@@ -6,13 +6,13 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 12:30:41 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/23 01:22:10 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/24 10:42:10 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
 
-int	process_heredocs(t_cmd *cmd)
+int	process_heredocs(t_cmd *cmd, t_list* env)
 {
 	int	j;
     int original_stdin = -1;
@@ -35,7 +35,7 @@ int	process_heredocs(t_cmd *cmd)
 		if (cmd->rdrcts[j]->type == HEREDOCUMENT)
 		{
             dup2(original_stdin, STDIN_FILENO);
-			if (handle_heredocument(cmd->rdrcts[j]->file[0], cmd) == -1)
+			if (handle_heredocument(cmd->rdrcts[j], cmd, env) == -1)
             {
                 close(original_stdin);
 				return (-1);
@@ -54,7 +54,7 @@ int execute_single_builtin(t_cmd *cmd, t_builtin *builtins,
     int result;
     
     setup_builtin_signals();
-    if (process_heredocs(cmd) == -1)
+    if (process_heredocs(cmd, env) == -1)
         return (1);
     if (handle_redirection(cmd))
     {
@@ -116,7 +116,7 @@ void	execute_command_in_child(t_cmd *cmd,
 
 	free(data.pids);
 	data.pids = NULL;
-	if (process_heredocs(cmd) == -1 || handle_redirection(cmd))
+	if (process_heredocs(cmd, data.env) == -1 || handle_redirection(cmd))
 	{
 		free_data(data);
 		exit(EXIT_FAILURE);

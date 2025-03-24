@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 01:16:07 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/22 02:30:14 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/24 10:35:15 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,8 +74,8 @@ int execute_pipeline(t_cmd **cmds, t_builtin *builtins, t_list *env)
     // if (!data.pids)
     //     return (EXIT_FAILURE);
     pipe_info.prev_fd = -1;
-	data.cmds = cmds;
 	data.env = env;
+	data.cmds = cmds;
 	data.pids = NULL;
     data.pids = execute_commands(builtins, data, &pipe_info);
     
