@@ -14,8 +14,8 @@
 
 static bool			get_rdrct(t_rdrct **rdrct, t_list **tokens);
 static t_rdrct_type	get_rdrct_type(char *token);
-static t_rdrct		*create_rdrct(t_rdrct_type type, char *token);
-static void			rejoin_tokens(t_list **tokens, t_list *cur, t_list *prev);
+static bool			set_rdrct(t_rdrct **rdrct, t_rdrct_type type, char *token);
+static void			rejoin_tokens(t_list **tokens, t_list **cur, t_list *prev);
 
 bool	get_rdrct_list(t_list **rdrct_list, t_list **tokens)
 {
@@ -59,19 +59,11 @@ static bool	get_rdrct(t_rdrct **rdrct, t_list **tokens)
 		rdrct_type = get_rdrct_type(token);
 		if (rdrct_type != NONE_RDRCT)
 		{
-			rejoin_tokens(tokens, cur, prev);
-			ft_lstdelone(cur, free);
-			if (prev)
-				cur = prev->next;
-			else
-				cur = *tokens;
-			token = (char *)cur->content;
-			rejoin_tokens(tokens, cur, prev);
-			free(cur);
-			*rdrct = create_rdrct(rdrct_type, token);
-			if (!*rdrct)
-				return (false);
-			return (true);
+			token = (char *)cur->next->content;
+			rejoin_tokens(tokens, &cur, prev);
+			cur->content = NULL;
+			rejoin_tokens(tokens, &cur, prev);
+			return (set_rdrct(rdrct, rdrct_type, token));
 		}
 		prev = cur;
 		cur = prev->next;
@@ -92,29 +84,31 @@ static t_rdrct_type	get_rdrct_type(char *token)
 	return (NONE_RDRCT);
 }
 
-static t_rdrct	*create_rdrct(t_rdrct_type type, char *token)
+static bool	set_rdrct(t_rdrct **rdrct, t_rdrct_type type, char *token)
 {
-	t_rdrct	*rdrct;
-
-	rdrct = (t_rdrct *)ft_calloc(1, sizeof(t_rdrct));
-	if (!rdrct)
+	*rdrct = (t_rdrct *)ft_calloc(1, sizeof(t_rdrct));
+	if (!*rdrct)
 	{
 		free(token);
-		return ((t_rdrct *)perror_ptr("malloc", errno));
+		return (perror_bool("malloc", errno));
 	}
-	rdrct->type = type;
-	rdrct->token = token;
-	rdrct->file = NULL;
-	rdrct->is_quoted = false;
-	rdrct->fd = -1;
-	return (rdrct);
+	(*rdrct)->type = type;
+	(*rdrct)->token = token;
+	(*rdrct)->file = NULL;
+	(*rdrct)->is_quoted = false;
+	(*rdrct)->fd = -1;
+	return (true);
 }
 
-static void	rejoin_tokens(t_list **tokens, t_list *cur, t_list *prev)
+static void	rejoin_tokens(t_list **tokens, t_list **cur, t_list *prev)
 {
 	if (prev)
-		prev->next = cur->next;
+		prev->next = (*cur)->next;
 	else
-		*tokens = cur->next;
-	cur->next = NULL;
+		*tokens = (*cur)->next;
+	ft_lstdelone(*cur, free);
+	if (prev)
+		*cur = prev->next;
+	else
+		*cur = *tokens;
 }

@@ -13,7 +13,7 @@
 #include <minishell.h>
 
 static bool		token_to_file(t_rdrct **rdrcts, t_parser data);
-static bool		set_heredocument(t_rdrct *redirect);
+static bool		set_heredocument(t_rdrct *redirect, t_quote quote, char *token);
 static char		**set_file_name(char *token, t_parser data);
 static t_rdrct	**list_to_rdrcts(t_list *rdrct_list);
 
@@ -43,7 +43,8 @@ static bool	token_to_file(t_rdrct **rdrcts, t_parser data)
 	i = 0;
 	while (rdrcts[i])
 	{
-		if (rdrcts[i]->type == HEREDOCUMENT && !set_heredocument(rdrcts[i]))
+		if (rdrcts[i]->type == HEREDOCUMENT
+			&& !set_heredocument(rdrcts[i], NONE_Q, rdrcts[i]->token))
 			return (false);
 		else if (rdrcts[i]->type != HEREDOCUMENT)
 			rdrcts[i]->file = set_file_name(rdrcts[i]->token, data);
@@ -54,15 +55,11 @@ static bool	token_to_file(t_rdrct **rdrcts, t_parser data)
 	return (true);
 }
 
-static bool	set_heredocument(t_rdrct *redirect)
+static bool	set_heredocument(t_rdrct *redirect, t_quote quote, char *token)
 {
-	t_quote	quote;
-	char	*token;
 	int		i;
 	int		heredoc_i;
 
-	quote = NONE_Q;
-	token = redirect->token;
 	i = -1;
 	heredoc_i = 0;
 	while (token[++i])

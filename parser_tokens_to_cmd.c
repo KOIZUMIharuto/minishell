@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 11:44:47 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/23 10:53:40 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/24 20:22:31 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 static t_cmd	*tokens_to_cmd(t_list **tokens, t_parser data);
 static bool		get_cmd(char ***cmd, t_list *tokens, t_parser data);
-static void		copy_list_to_cmd(char **cmd, t_list *tokens);
+static bool		copy_list_to_cmd(char ***cmd, t_list *tokens);
 
 t_list	*splited_tokens_to_cmd_list(t_list **splited_tokens, t_parser data)
 {
@@ -66,43 +66,44 @@ static t_cmd	*tokens_to_cmd(t_list **tokens, t_parser data)
 static bool	get_cmd(char ***cmd, t_list *tokens, t_parser data)
 {
 	t_list	*expanded_list;
-	t_list	*tmp;
+	t_list	*expanded;
 
 	expanded_list = NULL;
 	while (tokens)
 	{
 		data.is_failed = true;
-		tmp = NULL;
-		if (!expand_env_quote(&tmp, (char *)tokens->content, &data))
+		data.is_env_empty = false;
+		data.tmp = NULL;
+		expanded = NULL;
+		if (!expand_env_quote(&expanded, (char *)tokens->content, &data))
 		{
 			ft_lstclear(&expanded_list, free);
 			return (false);
 		}
-		ft_lstadd_back(&expanded_list, tmp);
-		tmp = tokens;
+		ft_lstadd_back(&expanded_list, expanded);
 		tokens = tokens->next;
 	}
+	return (copy_list_to_cmd(cmd, expanded_list));
+}
+
+static bool	copy_list_to_cmd(char ***cmd, t_list *expanded_list)
+{
+	t_list	*tmp;
+	int		i;
+
 	*cmd = (char **)ft_calloc(ft_lstsize(expanded_list) + 1, sizeof(char *));
 	if (!*cmd)
 	{
 		ft_lstclear(&expanded_list, free);
 		return (perror_bool("malloc", errno));
 	}
-	copy_list_to_cmd(*cmd, expanded_list);
-	return (true);
-}
-
-static void	copy_list_to_cmd(char **cmd, t_list *expanded_list)
-{
-	t_list	*tmp;
-	int		i;
-
 	i = -1;
 	while (expanded_list)
 	{
-		cmd[++i] = (char *)expanded_list->content;
+		(*cmd)[++i] = (char *)expanded_list->content;
 		tmp = expanded_list;
 		expanded_list = expanded_list->next;
 		free(tmp);
 	}
+	return (true);
 }
