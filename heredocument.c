@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   heredocument.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
+/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 17:33:18 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/24 11:34:58 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/25 21:02:49 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
 
-static int	create_temp_file(void)
+int	create_temp_file(void)
 {
 	int	tmp_fd;
 
@@ -77,78 +77,164 @@ static int	write_expand_env(int tmp_fd, char *line, t_list *env_list)
 
 static int	write_heredoc_content(int tmp_fd, t_rdrct *rdrct, t_list *env)
 {
-	char	*line;
-	size_t	delimiter_len;
-
-	delimiter_len = ft_strlen(rdrct->file[0]);
+	char *line;
+	char *delimiter;
+	struct termios orig_term;
+	
+	// 端末設定を保存
+	tcgetattr(STDIN_FILENO, &orig_term);
+	
+	// ヒアドキュメント用のシグナル設定
+	// setup_heredoc_signals();
+	
+	delimiter = rdrct->file[0];
+	
 	while (1)
 	{
-		write(STDOUT_FILENO, "> ", 2);
-		line = get_next_line(STDIN_FILENO);
-		if (!line || (ft_strncmp(line, rdrct->file[0], delimiter_len) == 0
-				&& ft_strlen(line) - 1 == delimiter_len))
+		// プロンプト表示と入力受付
+		line = readline("> ");
+		
+		// Ctrl+Cで中断された場合
+		if (g_last_exit_status == 1)
+		{
+			if (line)
+				free(line);
+				
+			// 端末設定を元に戻す
+			tcsetattr(STDIN_FILENO, TCSAFLUSH, &orig_term);
+			
+			// 対話モードに戻す
+			setup_interactive_signals();
+			
+			exit(1);
+		}
+		
+		// EOF (Ctrl+D) チェック（nullptrの場合のみ）
+		if (!line)
+		{
+			// 端末設定を元に戻す
+			tcsetattr(STDIN_FILENO, TCSAFLUSH, &orig_term);
+			
+			// 対話モードに戻す
+			setup_interactive_signals();
+			
+			return (0);
+		}
+		
+		// デリミタと完全一致で終了 - 空行は無視しない
+		if (ft_strcmp(line, delimiter) == 0)
 		{
 			free(line);
-			break ;
+			break;
 		}
-		if (rdrct->is_quoted && write(tmp_fd, line, ft_strlen(line)) == -1)
+		
+		// 内容を一時ファイルに書き込み (空行も書き込む)
+		if (rdrct->is_quoted)
 		{
-			free(line);
-			return (-1);
+			write(tmp_fd, line, ft_strlen(line));
+			write(tmp_fd, "\n", 1);
 		}
-		else if (!rdrct->is_quoted && write_expand_env(tmp_fd, line, env) == -1)
+		else
 		{
-			free(line);
-			return (-1);
+			// 空行でも改行は書き込む
+			if (ft_strlen(line) > 0)
+				write_expand_env(tmp_fd, line, env);
+			write(tmp_fd, "\n", 1);
 		}
+		
 		free(line);
 	}
+	
+	// 端末設定を元に戻す
+	tcsetattr(STDIN_FILENO, TCSAFLUSH, &orig_term);
+	
+	// 対話モードに戻す
+	setup_interactive_signals();
+	
 	return (0);
 }
 
 static int	setup_heredoc_input(int tmp_fd)
 {
+	int fd;
+	
+	// 書き込み用ファイルを閉じる
 	close(tmp_fd);
-	tmp_fd = open("/tmp/minishell_heredoc", O_RDONLY);
-	if (tmp_fd == -1)
+	
+	// 読み取り用に再オープン
+	fd = open("/tmp/minishell_heredoc", O_RDONLY);
+	if (fd == -1)
+		return (perror_int("open", errno));
+	
+	// 標準入力にリダイレクト
+	if (dup2(fd, STDIN_FILENO) == -1)
 	{
-		perror("open");
-		return (-1);
+		close(fd);
+		return (perror_int("dup2", errno));
 	}
-	if (dup2(tmp_fd, STDIN_FILENO) == -1)
-	{
-		perror("dup2");
-		close(tmp_fd);
-		return (-1);
-	}
+	
+	// 一時ファイルを削除（内容はまだ読み取り可能）
 	unlink("/tmp/minishell_heredoc");
-	close(tmp_fd);
+	close(fd);
+	
 	return (0);
 }
 
 int	handle_heredocument(t_rdrct *redirect, t_cmd *cmd, t_list *env)
 {
-    
-	int	tmp_fd;
+	int tmp_fd;
+	int result;
+	int original_stdin;
 	
+	// 標準入力のバックアップが必要なら作成
 	if (cmd->backup_stdin == -1)
 	{
 		cmd->backup_stdin = dup(STDIN_FILENO);
 		if (cmd->backup_stdin == -1)
-		{
-			perror("dup");
-			return (-1);
-		}
+			return (perror_int("dup", errno));
 	}
-	tmp_fd = create_temp_file();
+	
+	// バックアップから作業用コピーを作成
+	original_stdin = dup(cmd->backup_stdin);
+	if (original_stdin == -1)
+		return (perror_int("dup", errno));
+	
+	// 標準入力を元の状態に戻す
+	if (dup2(original_stdin, STDIN_FILENO) == -1)
+	{
+		close(original_stdin);
+		return (perror_int("dup2", errno));
+	}
+	
+	// 一時ファイル作成
+	tmp_fd = open("/tmp/minishell_heredoc", O_WRONLY | O_CREAT | O_TRUNC, 0600);
 	if (tmp_fd == -1)
-		return (-1);
-	if (write_heredoc_content(tmp_fd, redirect, env) == -1)
+	{
+		close(original_stdin);
+		return (perror_int("open", errno));
+	}
+	
+	// ヒアドキュメント内容の取得
+	result = write_heredoc_content(tmp_fd, redirect, env);
+	
+	// 作業用標準入力を閉じる
+	close(original_stdin);
+	
+	// エラーの場合は処理を中断
+	if (result == -1)
 	{
 		close(tmp_fd);
+		unlink("/tmp/minishell_heredoc");
+		
+		// 中断時に標準入力を確実に復元
+		dup2(cmd->backup_stdin, STDIN_FILENO);
+		
 		return (-1);
 	}
+	
+	// 一時ファイルを標準入力に設定
 	if (setup_heredoc_input(tmp_fd) == -1)
 		return (-1);
+	
 	return (0);
 }
