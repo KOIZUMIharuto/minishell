@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   signal.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
+/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 22:01:52 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/21 18:13:40 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/26 03:24:47 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,3 +85,32 @@ void setup_child_signals(void)
     sigaction(SIGINT, &sa, NULL);
     sigaction(SIGQUIT, &sa, NULL);
 }
+
+void setup_heredoc_signals(void)
+{
+    struct sigaction sa;
+    struct termios term;
+
+    ft_bzero(&sa, sizeof(sa));
+    ft_bzero(&term, sizeof(term));
+
+    // 現在の端末設定を取得
+    tcgetattr(STDIN_FILENO, &term);
+    
+    // `ECHOCTL` をオフにして `^C` の表示を抑制
+    term.c_lflag &= ~(ECHOCTL);
+    tcsetattr(STDIN_FILENO, TCSANOW, &term);
+
+    // `SIGINT` (`Ctrl+C`) はデフォルトの動作を適用 (中断可能にする)
+    sa.sa_handler = SIG_DFL;
+    sigemptyset(&sa.sa_mask);
+    sigaction(SIGINT, &sa, NULL);
+
+    // `SIGQUIT` (`Ctrl+\`) は無視する
+    sa.sa_handler = SIG_IGN;
+    sigaction(SIGQUIT, &sa, NULL);
+}
+
+
+
+

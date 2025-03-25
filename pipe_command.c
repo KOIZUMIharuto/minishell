@@ -6,16 +6,17 @@
 /*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 12:30:41 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/25 23:20:58 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/26 03:26:33 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
 
-int	process_heredocs(t_cmd *cmd, t_rdrct *redirect)
+int	process_heredocs(t_cmd *cmd, t_rdrct *redirect, t_list *env)
 {
 	// int	j;
     int original_stdin = -1;
+    int result;
 
     if (cmd->backup_stdin == -1)
     {
@@ -23,34 +24,25 @@ int	process_heredocs(t_cmd *cmd, t_rdrct *redirect)
         if (cmd->backup_stdin == -1)
             return (-1);
     }
+    
     original_stdin = dup(cmd->backup_stdin);
     if (original_stdin == -1)
     {
         perror("dup");
         return (-1);
     }
-	dup2(original_stdin, STDIN_FILENO);
-	if (handle_heredocument((char *)redirect->file[0], cmd) == -1)
-	{
-		close(original_stdin);
-		return (-1);
-	}
-	// j = 0;
-	// while (cmd->rdrcts[j])
-	// {
-	// 	if (redirect->type == HEREDOCUMENT)
-	// 	{
-    //         dup2(original_stdin, STDIN_FILENO);
-	// 		if (handle_heredocument(redirect, cmd, env) == -1)
-    //         {
-    //             close(original_stdin);
-	// 			return (-1);
-    //         }
-	// 	}
-	// 	j++;
-	// }
+    
+    // 標準入力を元に戻す
+    dup2(original_stdin, STDIN_FILENO);
+    
+    // ヒアドキュメント処理
+    result = handle_heredocument(redirect, cmd, env);
+    setup_interactive_signals();
+    
+    // 後処理
     close(original_stdin);
-	return (0);
+    
+    return result;
 }
 
 

@@ -6,7 +6,7 @@
 /*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 20:05:03 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/26 01:19:51 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/26 01:34:13 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ int	handle_redirection(t_cmd *cmd, t_list *env)
 			&& (!redirect->file[0] || redirect->file[1]))
 			return (error_msg(redirect->token, "ambiguous redirect"));
 		// if ((redirect->type == INPUT_RDRCT && handle_input_rdrct(cmd, redirect))
-		if ((redirect->type == HEREDOCUMENT && process_heredocs(cmd, cmd->rdrcts[j]) == -1)
+		if ((redirect->type == HEREDOCUMENT && process_heredocs(cmd, cmd->rdrcts[j],env) == -1)
 			|| (redirect->type == INPUT_RDRCT && handle_input_rdrct(cmd, redirect))
 			|| ((redirect->type == OVERWRITE_RDRCT
 					|| redirect->type == APPEND_RDRCT)

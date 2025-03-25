@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
+/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 21:59:46 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/23 10:56:35 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/26 02:58:57 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,6 @@ int	main(int argc, char **argv, char **envp)
 	(void)argc;
 	(void)argv;
 	init_builtins(builtins);
-	setup_interactive_signals();
 	env = env_init(envp);
 	if (!env)
 	{
@@ -34,6 +33,7 @@ int	main(int argc, char **argv, char **envp)
 	}
 	while (true)
 	{
+	    setup_interactive_signals();
 		line = readline(PROMPT);
 		if (!line)
 		{

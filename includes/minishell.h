@@ -6,7 +6,7 @@
 /*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 14:13:46 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/25 23:23:14 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/26 01:39:50 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,6 +119,7 @@ void setup_interactive_signals(void);
 void setup_builtin_signals(void);
 void setup_exec_signals(void);
 void setup_child_signals(void);
+void setup_heredoc_signals(void);
 
 // pipe
 int setup_pipe(t_pipe_info *pipe_info, bool has_next);
@@ -131,8 +132,8 @@ void handle_pipe_input(t_pipe_info *pipe_info);
 void handle_pipe_output(t_pipe_info *pipe_info);
 
 //redirect and heredoc
-int	process_heredocs(t_cmd *cmd, t_rdrct *redirect);
-int handle_heredocument(char *delimiter, t_cmd *cmd);
+int	process_heredocs(t_cmd *cmd, t_rdrct *redirect, t_list* env);
+int handle_heredocument(t_rdrct *redirect, t_cmd *cmd, t_list *env);
 int handle_redirection(t_cmd *cmd, t_list *env);
 int restore_redirection(t_cmd *cmd);
 
