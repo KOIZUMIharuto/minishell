@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 21:59:46 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/25 13:32:13 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/25 17:01:11 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 static t_valid	prompt(t_builtin *builtins, t_list *env);
 
-int g_last_exit_status = 0;
+int	g_last_exit_status = 0;
 
 int	main(int argc, char **argv, char **envp)
 {

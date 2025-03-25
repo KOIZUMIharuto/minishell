@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 14:37:35 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/21 11:55:23 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/25 17:12:45 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,10 +65,14 @@ static bool	update_pwd(t_list *env_list)
 
 static int	perror_cd(char *arg, int errnum)
 {
-	ft_putstr_fd("minishell: cd: ", STDERR_FILENO);
-	ft_putstr_fd(arg, STDERR_FILENO);
-	ft_putstr_fd(": ", STDERR_FILENO);
-	ft_putstr_fd(strerror(errnum), STDERR_FILENO);
-	ft_putstr_fd("\n", STDERR_FILENO);
+	if (!print_msg("minishell: cd: ", STDERR_FILENO)
+		|| !print_msg(arg, STDERR_FILENO)
+		|| !print_msg(": ", STDERR_FILENO)
+		|| !print_msg(strerror(errnum), STDERR_FILENO)
+		|| !print_msg("\n", STDERR_FILENO))
+	{
+		g_last_exit_status = EXIT_FAILURE;
+		perror("write");
+	}
 	return (1);
 }
