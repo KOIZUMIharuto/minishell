@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser_expand_env_quote_utils.c                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 21:43:48 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/24 18:45:55 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/25 12:19:29 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ char	*recursive_expand(char **token, t_parser *data, t_quote quote, int len)
 	else
 		expanded = noenv_remain(token, data, quote, len);
 	if (!expanded)
-		return ((char *)perror_ptr("malloc", errno));
+		return ((char *)perror_ptr("malloc"));
 	return (expanded);
 }
 

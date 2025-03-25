@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser_split_tokens.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 02:05:55 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/23 10:57:52 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/25 12:44:04 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,10 @@ bool	split_tokens(t_list ***splited_tokens, t_list *tokens)
 {
 	*splited_tokens = recursive_split_tokens(tokens, 0);
 	if (!*splited_tokens)
-		return (perror_bool("malloc", errno));
+	{
+		ft_lstclear(&tokens, free);
+		return (perror_bool("malloc"));
+	}
 	return (true);
 }
 

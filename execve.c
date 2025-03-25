@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 03:20:59 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/23 01:27:38 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/25 12:18:39 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ void execute_cmd(char **cmd, t_data data)
 	else if (!find_cmd_path(&cmd_path, cmd[0], path_env))
 	{
 		free_data(data);
-		exit(perror_int("malloc", errno));
+		exit(perror_int("malloc"));
 	}
     if (!cmd_path)
     {
@@ -103,7 +103,7 @@ void execute_cmd(char **cmd, t_data data)
         if (cmd_path != cmd[0])
             free(cmd_path);
 		free_data(data);
-        exit(perror_int("malloc", errno));
+        exit(perror_int("malloc"));
     }
     if (execve(cmd_path, cmd, env_array) == -1)
     {

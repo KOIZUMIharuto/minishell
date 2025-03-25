@@ -73,7 +73,7 @@ static bool	set_heredocument(t_rdrct *redirect, t_quote quote, char *token)
 	if (!redirect->file || !redirect->file[0])
 	{
 		free(redirect->file);
-		return (perror_bool("malloc", errno));
+		return (perror_bool("malloc"));
 	}
 	i = -1;
 	heredoc_i = 0;
@@ -98,7 +98,7 @@ static char	**set_file_name(char *token, t_parser data)
 	if (!files)
 	{
 		ft_lstclear(&expanded_list, free);
-		return ((char **)perror_ptr("malloc", errno));
+		return ((char **)perror_ptr("malloc"));
 	}
 	file_count = -1;
 	while (expanded_list)
@@ -122,7 +122,7 @@ static t_rdrct	**list_to_rdrcts(t_list *rdrct_list)
 	if (!rdrcts)
 	{
 		ft_lstclear(&rdrct_list, free_rdrct);
-		return ((t_rdrct **)perror_ptr("malloc", errno));
+		return ((t_rdrct **)perror_ptr("malloc"));
 	}
 	rdrct_count = 0;
 	while (rdrct_list)

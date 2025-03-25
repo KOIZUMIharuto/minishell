@@ -26,8 +26,9 @@ LIBFT = $(LIBFT_DIR)/libft.a
 SRCS =\
 error.c\
 execve.c\
-signal.c\
 free.c \
+print.c\
+signal.c\
 
 # pipe
 PIPE_SRCS =\

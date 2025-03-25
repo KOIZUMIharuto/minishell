@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env_update.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 00:25:18 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/23 10:58:10 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/25 13:17:31 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ static t_list	*create_new_env(char *key, char *value)
 	{
 		free(key);
 		free(value);
-		return ((t_list *)perror_ptr("malloc", ENOMEM));
+		return ((t_list *)perror_ptr("malloc"));
 	}
 	env->key = key;
 	env->value = value;
@@ -79,7 +79,7 @@ static t_list	*create_new_env(char *key, char *value)
 	if (!new_env)
 	{
 		env_free((void *)env);
-		return ((t_list *)perror_ptr("malloc", ENOMEM));
+		return ((t_list *)perror_ptr("malloc"));
 	}
 	return (new_env);
 }

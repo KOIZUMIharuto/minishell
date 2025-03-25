@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 14:13:46 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/24 18:45:55 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/25 13:18:08 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,11 +160,11 @@ bool	print_invalid_key(char *cmd, char *key);
 char	**convert_env_list_to_array(t_list *env);
 
 // puerser
-t_cmd	**parser(char *line, int exit_status, t_list *env);
-t_list	*tokenize(char *line);
-bool	check_syntax(t_list *tokens);
+t_valid	parser(t_cmd ***cmds, char *line, int exit_status, t_list *env);
+bool	tokenize(t_list **tokens, char *line);
+t_valid	check_syntax(t_list *tokens);
 bool	split_tokens(t_list ***splited_tokens, t_list *tokens);
-t_list	*splited_tokens_to_cmd_list(t_list **splited_tokens, t_parser data);
+t_list	*to_cmd_list(t_list **splited_tokens, t_parser data);
 bool	get_rdrcts(t_rdrct ***rdrcts, t_list **tokens, t_parser data);
 bool	get_rdrct_list(t_list **rdrct_list, t_list **tokens);
 bool	expand_env_quote(t_list **expanded, char *token, t_parser *data);
@@ -178,10 +178,12 @@ void	free_rdrcts(void *content);
 void	free_rdrct(void *content);
 
 int		error_msg(char *cmd, char *msg);
-int		perror_int(char *msg, int errnum);
-bool	perror_bool(char *msg, int errnum);
-void	*perror_ptr(char *msg, int errnum);
-void	my_perror(char *msg, int errnum);
+int		perror_int(char *cmd);
+bool	perror_bool(char *cmd);
+void	*perror_ptr(char *cmd);
+
+
+bool	print_msg(char *msg, int fd);
 
 void	free_double_pointor(char **array);
 void	free_data(t_data data);

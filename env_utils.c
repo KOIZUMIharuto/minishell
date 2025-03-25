@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env_utils.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 23:50:11 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/24 16:10:32 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/25 12:19:29 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ t_valid	env_split(char *env, char **key, char **value, t_list *env_list)
 	*key = ft_substr(env, 0, key_len);
 	if (!*key)
 	{
-		my_perror("malloc", errno);
+		perror("malloc");
 		return (ERROR);
 	}
 	if (!get_value(value, *key, &(env[key_len]), env_list))
@@ -59,7 +59,7 @@ static bool	get_value(char **value, char *key, char *line, t_list *env_list)
 	if (!*value)
 	{
 		free(key);
-		return (perror_bool("maloc", errno));
+		return (perror_bool("maloc"));
 	}
 	return (true);
 }
