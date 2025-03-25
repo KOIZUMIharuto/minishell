@@ -1,0 +1,25 @@
+Process:         minishell [67168]
+Path:            /Users/USER/*/minishell
+Load Address:    0x10040c000
+Identifier:      minishell
+Version:         0
+Code Type:       ARM64
+Platform:        macOS
+Parent Process:  bash [65960]
+
+Date/Time:       2025-03-21 18:23:04.900 +0900
+Launch Time:     2025-03-21 18:22:13.101 +0900
+OS Version:      macOS 15.1 (24B83)
+Report Version:  7
+Analysis Tool:   /Applications/Xcode.app/Contents/Developer/usr/bin/leaks
+Analysis Tool Version:  Xcode 16.2 (16C5032a)
+
+Physical footprint:         2657K
+Physical footprint (peak):  2657K
+Idle exit:                  untracked
+----
+
+leaks Report Version: 4.0, multi-line stacks
+Process 67168: 585 nodes malloced for 373 KB
+Process 67168: 0 leaks for 0 total leaked bytes.
+

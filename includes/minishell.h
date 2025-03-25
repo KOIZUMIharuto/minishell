@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
+/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 14:13:46 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/24 18:45:55 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/25 23:23:14 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,8 +131,8 @@ void handle_pipe_input(t_pipe_info *pipe_info);
 void handle_pipe_output(t_pipe_info *pipe_info);
 
 //redirect and heredoc
-int	process_heredocs(t_cmd *cmd, t_rdrct *redirect, t_list* env);
-int handle_heredocument(t_rdrct *redirect, t_cmd *cmd, t_list *env);
+int	process_heredocs(t_cmd *cmd, t_rdrct *redirect);
+int handle_heredocument(char *delimiter, t_cmd *cmd);
 int handle_redirection(t_cmd *cmd, t_list *env);
 int restore_redirection(t_cmd *cmd);
 
@@ -185,5 +185,7 @@ void	my_perror(char *msg, int errnum);
 
 void	free_double_pointor(char **array);
 void	free_data(t_data data);
+
+
 
 #endif

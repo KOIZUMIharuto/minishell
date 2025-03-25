@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   pipe_command.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
+/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 12:30:41 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/24 12:32:11 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/25 23:20:58 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
 
-int	process_heredocs(t_cmd *cmd, t_rdrct *redirect, t_list* env)
+int	process_heredocs(t_cmd *cmd, t_rdrct *redirect)
 {
 	// int	j;
     int original_stdin = -1;
@@ -30,7 +30,7 @@ int	process_heredocs(t_cmd *cmd, t_rdrct *redirect, t_list* env)
         return (-1);
     }
 	dup2(original_stdin, STDIN_FILENO);
-	if (handle_heredocument(redirect, cmd, env) == -1)
+	if (handle_heredocument((char *)redirect->file[0], cmd) == -1)
 	{
 		close(original_stdin);
 		return (-1);
