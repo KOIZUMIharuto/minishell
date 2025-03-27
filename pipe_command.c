@@ -6,7 +6,7 @@
 /*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 12:30:41 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/26 03:26:33 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/27 16:52:26 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,9 +34,12 @@ int	process_heredocs(t_cmd *cmd, t_rdrct *redirect, t_list *env)
     
     // 標準入力を元に戻す
     dup2(original_stdin, STDIN_FILENO);
-    
+    printf("original_stdin: %d\n", original_stdin);
+    printf("backup_stdin: %d\n", cmd->backup_stdin);
     // ヒアドキュメント処理
     result = handle_heredocument(redirect, cmd, env);
+    dup2(original_stdin, STDIN_FILENO);
+    // restore_redirection(cmd);
     setup_interactive_signals();
     
     // 後処理
