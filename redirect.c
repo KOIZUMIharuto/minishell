@@ -6,7 +6,7 @@
 /*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 20:05:03 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/26 01:34:13 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/27 18:11:55 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,6 @@ int	handle_redirection(t_cmd *cmd, t_list *env)
 	int		j;
 	t_rdrct	*redirect;
 
-	(void)env;
 	if (backup_io(cmd))
 		return (1);
 	j = 0;
@@ -78,11 +77,10 @@ int	handle_redirection(t_cmd *cmd, t_list *env)
 		if (redirect->type != HEREDOCUMENT
 			&& (!redirect->file[0] || redirect->file[1]))
 			return (error_msg(redirect->token, "ambiguous redirect"));
-		// if ((redirect->type == INPUT_RDRCT && handle_input_rdrct(cmd, redirect))
-		if ((redirect->type == HEREDOCUMENT && process_heredocs(cmd, cmd->rdrcts[j],env) == -1)
+		
+		if ((redirect->type == HEREDOCUMENT && process_heredocs(cmd, redirect, env) == -1)
 			|| (redirect->type == INPUT_RDRCT && handle_input_rdrct(cmd, redirect))
-			|| ((redirect->type == OVERWRITE_RDRCT
-					|| redirect->type == APPEND_RDRCT)
+			|| ((redirect->type == OVERWRITE_RDRCT || redirect->type == APPEND_RDRCT)
 				&& handle_output_rdrct(cmd, redirect)))
 			return (1);
 		j++;
@@ -90,21 +88,21 @@ int	handle_redirection(t_cmd *cmd, t_list *env)
 	return (0);
 }
 
-int	restore_redirection(t_cmd *cmd)
+int restore_redirection(t_cmd *cmd)
 {
-	if (cmd->backup_stdin != -1)
-	{
-		if (dup2(cmd->backup_stdin, STDIN_FILENO) == -1)
-			return (perror_int("dup2", errno));
-		close(cmd->backup_stdin);
-		cmd->backup_stdin = -1;
-	}
-	if (cmd->backup_stdout != -1)
-	{
-		if (dup2(cmd->backup_stdout, STDOUT_FILENO) == -1)
-			return (perror_int("dup2", errno));
-		close(cmd->backup_stdout);
-		cmd->backup_stdout = -1;
-	}
-	return (0);
+    if (cmd->backup_stdin != -1)
+    {
+        if (dup2(cmd->backup_stdin, STDIN_FILENO) == -1)
+            return (perror_int("dup2", errno));
+        close(cmd->backup_stdin);
+        cmd->backup_stdin = -1;
+    }
+    if (cmd->backup_stdout != -1)
+    {
+        if (dup2(cmd->backup_stdout, STDOUT_FILENO) == -1)
+            return (perror_int("dup2", errno));
+        close(cmd->backup_stdout);
+        cmd->backup_stdout = -1;
+    }
+    return (0);
 }

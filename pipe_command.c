@@ -6,55 +6,17 @@
 /*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 12:30:41 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/27 16:52:26 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/27 21:40:13 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
-
-int	process_heredocs(t_cmd *cmd, t_rdrct *redirect, t_list *env)
-{
-	// int	j;
-    int original_stdin = -1;
-    int result;
-
-    if (cmd->backup_stdin == -1)
-    {
-        cmd->backup_stdin = dup(STDIN_FILENO);
-        if (cmd->backup_stdin == -1)
-            return (-1);
-    }
-    
-    original_stdin = dup(cmd->backup_stdin);
-    if (original_stdin == -1)
-    {
-        perror("dup");
-        return (-1);
-    }
-    
-    // 標準入力を元に戻す
-    dup2(original_stdin, STDIN_FILENO);
-    printf("original_stdin: %d\n", original_stdin);
-    printf("backup_stdin: %d\n", cmd->backup_stdin);
-    // ヒアドキュメント処理
-    result = handle_heredocument(redirect, cmd, env);
-    dup2(original_stdin, STDIN_FILENO);
-    // restore_redirection(cmd);
-    setup_interactive_signals();
-    
-    // 後処理
-    close(original_stdin);
-    
-    return result;
-}
-
 
 int execute_single_builtin(t_cmd *cmd, t_builtin *builtins, 
                            int builtin_index, t_list *env)
 {
     int result;
     
-    setup_builtin_signals();
     // if (process_heredocs(cmd, env) == -1)
     //     return (1);
     if (handle_redirection(cmd, env))
@@ -64,6 +26,7 @@ int execute_single_builtin(t_cmd *cmd, t_builtin *builtins,
         return (1);
     }
     
+    setup_builtin_signals();
     result = builtins[builtin_index].func(cmd->cmd, env);
     restore_redirection(cmd);
     if (ft_strcmp(cmd->cmd[0], "exit") != 0)
@@ -121,7 +84,7 @@ void	execute_command_in_child(t_cmd *cmd,
 	if (handle_redirection(cmd, data.env))
 	{
 		free_data(data);
-		exit(EXIT_FAILURE);
+		exit(g_last_exit_status);
 	}
 	if (!has_input_redirection(cmd))
 		handle_pipe_input(pipe_info);
@@ -157,7 +120,6 @@ static pid_t prepare_command(t_cmd *cmd, t_builtin *builtins,
 	builtin_index = get_builtin_index(builtins, cmd->cmd[0]);
 	if (builtin_index >= 0)
 		builtin_func = builtins[builtin_index].func;
-    setup_exec_signals();
     pid = fork();
     if (pid == -1)
     {
@@ -165,7 +127,10 @@ static pid_t prepare_command(t_cmd *cmd, t_builtin *builtins,
         return -1;
     }
     if (pid == 0)
+    {
+        setup_exec_signals();
         execute_command_in_child(cmd, builtin_func, data, pipe_info);
+    }
     return pid;
 }
 
