@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 10:58:22 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/17 13:53:56 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/25 17:14:57 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,36 +14,31 @@
 
 int	error_msg(char *command, char *msg)
 {
-	ft_putstr_fd("minishell: ", STDERR_FILENO);
-	ft_putstr_fd(command, STDERR_FILENO);
-	ft_putstr_fd(": ", STDERR_FILENO);
-	ft_putstr_fd(msg, STDERR_FILENO);
-	ft_putstr_fd("\n", STDERR_FILENO);
+	if (!print_msg("minishell: ", STDERR_FILENO)
+		|| !print_msg(command, STDERR_FILENO)
+		|| !print_msg(": ", STDERR_FILENO)
+		|| !print_msg(msg, STDERR_FILENO)
+		|| !print_msg("\n", STDERR_FILENO))
+	{
+		g_last_exit_status = EXIT_FAILURE;
+	}
 	return (1);
 }
 
-int	perror_int(char *msg, int errnum)
+int	perror_int(char *msg)
 {
-	my_perror(msg, errnum);
+	perror(msg);
 	return (1);
 }
 
-bool	perror_bool(char *msg, int errnum)
+bool	perror_bool(char *msg)
 {
-	my_perror(msg, errnum);
+	perror(msg);
 	return (false);
 }
 
-void	*perror_ptr(char *msg, int errnum)
+void	*perror_ptr(char *msg)
 {
-	my_perror(msg, errnum);
+	perror(msg);
 	return (NULL);
-}
-
-void	my_perror(char *msg, int errnum)
-{
-	ft_putstr_fd(msg, STDERR_FILENO);
-	ft_putstr_fd(": ", STDERR_FILENO);
-	ft_putstr_fd(strerror(errnum), STDERR_FILENO);
-	ft_putstr_fd("\n", STDERR_FILENO);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser_tokens_to_cmd.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 11:44:47 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/24 20:22:31 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/25 12:37:28 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,27 +16,27 @@ static t_cmd	*tokens_to_cmd(t_list **tokens, t_parser data);
 static bool		get_cmd(char ***cmd, t_list *tokens, t_parser data);
 static bool		copy_list_to_cmd(char ***cmd, t_list *tokens);
 
-t_list	*splited_tokens_to_cmd_list(t_list **splited_tokens, t_parser data)
+t_list	*to_cmd_list(t_list **tokens, t_parser data)
 {
 	t_list	*cmd_list;
 	t_list	*cmd_node;
 	t_cmd	*cmd;
 	int		i;
 
-	if (!splited_tokens)
+	if (!tokens)
 		return (NULL);
 	cmd_list = NULL;
 	i = -1;
-	while (splited_tokens[++i])
+	while (tokens[++i])
 	{
-		cmd = tokens_to_cmd(&(splited_tokens[i]), data);
+		cmd = tokens_to_cmd(&(tokens[i]), data);
 		if (cmd)
 			cmd_node = ft_lstnew(cmd);
 		if (!cmd || !cmd_node)
 		{
 			free(cmd);
 			ft_lstclear(&cmd_list, free);
-			return ((t_list *)perror_ptr("malloc", errno));
+			return ((t_list *)perror_ptr("malloc"));
 		}
 		ft_lstadd_back(&cmd_list, cmd_node);
 	}
@@ -95,7 +95,7 @@ static bool	copy_list_to_cmd(char ***cmd, t_list *expanded_list)
 	if (!*cmd)
 	{
 		ft_lstclear(&expanded_list, free);
-		return (perror_bool("malloc", errno));
+		return (perror_bool("malloc"));
 	}
 	i = -1;
 	while (expanded_list)

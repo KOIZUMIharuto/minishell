@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   env_delete.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 00:32:55 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/21 13:52:25 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/25 13:13:32 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
 
-static bool	hide_pwd(t_env *env_content);
+static void	hide_pwd(t_env *env_content);
 
 bool	env_delete(t_list **env_list, char *key)
 {
@@ -28,7 +28,7 @@ bool	env_delete(t_list **env_list, char *key)
 		if (ft_strcmp(env_content->key, key) == 0)
 		{
 			if (ft_strcmp(key, "PWD") == 0)
-				return (hide_pwd(env_content));
+				hide_pwd(env_content);
 			if (prev)
 				prev->next = env_list_tmp->next;
 			else
@@ -42,14 +42,9 @@ bool	env_delete(t_list **env_list, char *key)
 	return (true);
 }
 
-static bool	hide_pwd(t_env *env_content)
+static void	hide_pwd(t_env *env_content)
 {
-	if (ft_strcmp(env_content->key, "PWD") != 0)
-		return (true);
 	env_content->is_hidden = true;
 	free(env_content->value);
-	env_content->value = ft_strdup("");
-	if (!env_content->value)
-		return (perror_bool("malloc", errno));
-	return (true);
+	env_content->value = NULL;
 }

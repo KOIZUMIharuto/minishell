@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser_tokenize.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 16:43:17 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/23 10:57:58 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/25 12:19:29 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,14 +16,12 @@ static void	handle_quote(char *line, int i, int *token_start, t_quote *quote);
 static bool	handle_no_q(t_list **tokens, char *line, int *i, int *token_start);
 static bool	add_token(t_list **tokens, char *start, int length);
 
-t_list	*tokenize(char *line)
+bool	tokenize(t_list **tokens, char *line)
 {
-	t_list	*tokens;
 	int		i;
 	int		token_start;
 	t_quote	quote;
 
-	tokens = NULL;
 	i = 0;
 	token_start = -1;
 	quote = NONE_Q;
@@ -33,14 +31,14 @@ t_list	*tokenize(char *line)
 			|| (line[i] == '"' && quote != SINGLE_Q))
 			handle_quote(line, i, &token_start, &quote);
 		else if (quote == NONE_Q
-			&& !handle_no_q(&tokens, line, &i, &token_start))
-			return (NULL);
+			&& !handle_no_q(tokens, line, &i, &token_start))
+			return (false);
 		i++;
 	}
 	if (token_start != -1
-		&& !add_token(&tokens, line + token_start, i - token_start))
-		return (NULL);
-	return (tokens);
+		&& !add_token(tokens, line + token_start, i - token_start))
+		return (false);
+	return (true);
 }
 
 static void	handle_quote(char *line, int i, int *token_start, t_quote *quote)
@@ -100,13 +98,13 @@ static bool	add_token(t_list **tokens, char *start, int length)
 		return (true);
 	token_str = ft_substr(start, 0, length);
 	if (!token_str)
-		return (perror_bool("malloc", errno));
+		return (perror_bool("malloc"));
 	new_token = ft_lstnew(token_str);
 	if (!new_token)
 	{
 		free(token_str);
 		ft_lstclear(tokens, free);
-		return (perror_bool("malloc", errno));
+		return (perror_bool("malloc"));
 	}
 	ft_lstadd_back(tokens, new_token);
 	return (true);

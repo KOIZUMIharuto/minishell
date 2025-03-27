@@ -37,7 +37,7 @@ bool	get_rdrct_list(t_list **rdrct_list, t_list **tokens)
 		{
 			free_rdrct(rdrct);
 			ft_lstclear(rdrct_list, free_rdrct);
-			return (perror_bool("malloc", errno));
+			return (perror_bool("malloc"));
 		}
 		ft_lstadd_back(rdrct_list, rdrct_node);
 	}
@@ -90,7 +90,7 @@ static bool	set_rdrct(t_rdrct **rdrct, t_rdrct_type type, char *token)
 	if (!*rdrct)
 	{
 		free(token);
-		return (perror_bool("malloc", errno));
+		return (perror_bool("malloc"));
 	}
 	(*rdrct)->type = type;
 	(*rdrct)->token = token;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env_init.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 16:51:27 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/24 15:35:41 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/25 12:19:29 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ static bool	init_shlvl(t_list **env_list)
 		shlvl++;
 	shlvl_value = ft_itoa(shlvl);
 	if (!shlvl_value)
-		return (perror_bool("malloc", errno));
+		return (perror_bool("malloc"));
 	free(env->value);
 	env->value = shlvl_value;
 	return (true);
@@ -78,7 +78,7 @@ static bool	shlvl_not_exist(t_list **env_list)
 	{
 		free(shlvl_key);
 		free(shlvl_value);
-		return (perror_bool("malloc", errno));
+		return (perror_bool("malloc"));
 	}
 	return (env_update(env_list, shlvl_key, shlvl_value));
 }
@@ -97,7 +97,7 @@ static bool	init_oldpwd(t_list **env_list)
 	{
 		oldpwd_key = ft_strdup("OLDPWD");
 		if (!oldpwd_key)
-			return (perror_bool("malloc", errno));
+			return (perror_bool("malloc"));
 		if (!env_update(env_list, oldpwd_key, NULL))
 		{
 			free(oldpwd_key);
@@ -127,7 +127,7 @@ static bool	init_pwd(t_list **env_list)
 	if (!pwd_key)
 	{
 		free(pwd_value);
-		return (perror_bool("malloc", errno));
+		return (perror_bool("malloc"));
 	}
 	return (env_update(env_list, pwd_key, pwd_value));
 }

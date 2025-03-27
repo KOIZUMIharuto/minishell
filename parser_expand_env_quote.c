@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser_expand_env_quote.c                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 17:00:00 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/24 18:46:55 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/25 12:19:29 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ bool	expand_env_quote(t_list **expanded, char *token, t_parser *data)
 		expanded_node = ft_lstnew(expanded_token);
 		if (!expanded_node)
 			return (free_expanded_bool(expanded, expanded_token,
-					perror_bool("malloc", errno)));
+					perror_bool("malloc")));
 		ft_lstadd_back(expanded, expanded_node);
 		while ((data->tmp && *(data->tmp))
 			&& ft_strchr(data->del, *(data->tmp)))

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_export.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 14:44:22 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/24 15:35:52 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/25 12:18:29 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ static int	export_env(t_list *env_list)
 		if (printf("declare -x %s", env->key) < 0
 			|| (env->value && printf("=\"%s\"", env->value) < 0)
 			|| printf("\n") < 0)
-			return (perror_int("printf", errno));
+			return (perror_int("printf"));
 	}
 	return (0);
 }

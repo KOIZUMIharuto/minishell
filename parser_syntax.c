@@ -6,24 +6,24 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 23:24:37 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/20 10:23:52 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/25 12:23:01 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
 
-static bool	is_quote_closed(char *token);
-static bool	is_rdrct(char *token);
-static bool	print_syntax_error(char *token);
+static bool		is_quote_closed(char *token);
+static bool		is_rdrct(char *token);
+static t_valid	print_syntax_error(char *token);
 
-bool	check_syntax(t_list *tokens)
+t_valid	check_syntax(t_list *tokens)
 {
 	t_list	*cur;
 	char	*prev;
 	char	*token;
 
 	if (!tokens)
-		return (true);
+		return (VALID);
 	prev = NULL;
 	cur = tokens;
 	while (cur)
@@ -41,7 +41,7 @@ bool	check_syntax(t_list *tokens)
 	}
 	if (prev && (ft_strncmp(prev, "|", 2) == 0 || is_rdrct(prev)))
 		return (print_syntax_error("newline"));
-	return (true);
+	return (VALID);
 }
 
 static bool	is_quote_closed(char *token)
@@ -70,11 +70,13 @@ static bool	is_rdrct(char *token)
 		|| ft_strncmp(token, "<<", 3) == 0 || ft_strncmp(token, ">>", 3) == 0);
 }
 
-static bool	print_syntax_error(char *token)
+static t_valid	print_syntax_error(char *token)
 {
-	ft_putstr_fd("minishell: syntax error near unexpected token `", 2);
-	ft_putstr_fd(token, 2);
-	ft_putstr_fd("'\n", 2);
+	if (!print_msg("minishell: syntax error near unexpected token `",
+			STDERR_FILENO)
+		|| !print_msg(token, STDERR_FILENO)
+		|| !print_msg("'\n", STDERR_FILENO))
+		return (ERROR);
 	g_last_exit_status = 258;
-	return (false);
+	return (INVALID);
 }
