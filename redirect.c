@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirect.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 20:05:03 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/25 12:18:52 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/27 21:55:16 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,6 @@ int	handle_redirection(t_cmd *cmd, t_list *env)
 	int		j;
 	t_rdrct	*redirect;
 
-	(void)env;
 	if (backup_io(cmd))
 		return (1);
 	j = 0;
@@ -78,11 +77,10 @@ int	handle_redirection(t_cmd *cmd, t_list *env)
 		if (redirect->type != HEREDOCUMENT
 			&& (!redirect->file[0] || redirect->file[1]))
 			return (error_msg(redirect->token, "ambiguous redirect"));
-		// if ((redirect->type == INPUT_RDRCT && handle_input_rdrct(cmd, redirect))
-		if ((redirect->type == HEREDOCUMENT && process_heredocs(cmd, cmd->rdrcts[j], env) == -1)
+		
+		if ((redirect->type == HEREDOCUMENT && process_heredocs(cmd, redirect, env) == -1)
 			|| (redirect->type == INPUT_RDRCT && handle_input_rdrct(cmd, redirect))
-			|| ((redirect->type == OVERWRITE_RDRCT
-					|| redirect->type == APPEND_RDRCT)
+			|| ((redirect->type == OVERWRITE_RDRCT || redirect->type == APPEND_RDRCT)
 				&& handle_output_rdrct(cmd, redirect)))
 			return (1);
 		j++;
@@ -90,7 +88,7 @@ int	handle_redirection(t_cmd *cmd, t_list *env)
 	return (0);
 }
 
-int	restore_redirection(t_cmd *cmd)
+int restore_redirection(t_cmd *cmd)
 {
 	if (cmd->backup_stdin != -1)
 	{

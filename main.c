@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 21:59:46 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/25 17:01:11 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/27 21:54:16 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,6 @@ int	main(int argc, char **argv, char **envp)
 	(void)argc;
 	(void)argv;
 	init_builtins(builtins);
-	setup_interactive_signals();
 	env = env_init(envp);
 	if (!env)
 		return (perror_int("malloc"));
@@ -45,6 +44,7 @@ static t_valid	prompt(t_builtin *builtins, t_list *env)
 	t_valid	valid_status;
 	t_cmd	**cmds;
 
+	setup_interactive_signals();
 	line = readline(PROMPT);
 	if (!line)
 	{

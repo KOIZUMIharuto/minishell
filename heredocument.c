@@ -3,27 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   heredocument.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
+/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/19 17:33:18 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/24 11:34:58 by hkoizumi         ###   ########.fr       */
+/*   Created: 2025/03/27 18:07:49 by shiori            #+#    #+#             */
+/*   Updated: 2025/03/27 21:38:59 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+
+
 #include <minishell.h>
-
-static int	create_temp_file(void)
-{
-	int	tmp_fd;
-
-	tmp_fd = open("/tmp/minishell_heredoc", O_RDWR | O_CREAT | O_TRUNC, 0600);
-	if (tmp_fd == -1)
-	{
-		perror("open");
-		return (-1);
-	}
-	return (tmp_fd);
-}
 
 
 static int	write_expand_env(int tmp_fd, char *line, t_list *env_list)
@@ -32,8 +21,8 @@ static int	write_expand_env(int tmp_fd, char *line, t_list *env_list)
 	t_env	*env;
 	int		key_len;
 
-	while (*line)
-	{
+    while (*line)
+    {
 		if (*line == '$')
 		{
 			if (line[1] == '?')
@@ -75,80 +64,160 @@ static int	write_expand_env(int tmp_fd, char *line, t_list *env_list)
 	return (0);
 }
 
-static int	write_heredoc_content(int tmp_fd, t_rdrct *rdrct, t_list *env)
+static int setup_heredoc_pipe(int pipe_fds[2], t_cmd *cmd)
 {
-	char	*line;
-	size_t	delimiter_len;
-
-	delimiter_len = ft_strlen(rdrct->file[0]);
-	while (1)
-	{
-		write(STDOUT_FILENO, "> ", 2);
-		line = get_next_line(STDIN_FILENO);
-		if (!line || (ft_strncmp(line, rdrct->file[0], delimiter_len) == 0
-				&& ft_strlen(line) - 1 == delimiter_len))
-		{
-			free(line);
-			break ;
-		}
-		if (rdrct->is_quoted && write(tmp_fd, line, ft_strlen(line)) == -1)
-		{
-			free(line);
-			return (-1);
-		}
-		else if (!rdrct->is_quoted && write_expand_env(tmp_fd, line, env) == -1)
-		{
-			free(line);
-			return (-1);
-		}
-		free(line);
-	}
-	return (0);
+    if (pipe(pipe_fds) == -1)
+    {
+        perror("pipe");
+        return (-1);
+    }
+    if (cmd->backup_stdin == -1)
+    {
+        cmd->backup_stdin = dup(STDIN_FILENO);
+        if (cmd->backup_stdin == -1)
+        {
+            perror("dup");
+            close(pipe_fds[0]);
+            close(pipe_fds[1]);
+            return (-1);
+        }
+    }
+    else
+    {
+        dup2(cmd->backup_stdin, STDIN_FILENO);
+    }
+    return (0);
 }
 
-static int	setup_heredoc_input(int tmp_fd)
+static void	process_heredoc_child(int pipe_fds[2], t_rdrct *rdrct, t_list *env)
 {
-	close(tmp_fd);
-	tmp_fd = open("/tmp/minishell_heredoc", O_RDONLY);
-	if (tmp_fd == -1)
-	{
-		perror("open");
-		return (-1);
-	}
-	if (dup2(tmp_fd, STDIN_FILENO) == -1)
-	{
-		perror("dup2");
-		close(tmp_fd);
-		return (-1);
-	}
-	unlink("/tmp/minishell_heredoc");
-	close(tmp_fd);
-	return (0);
+    char	*line;
+    char	*delimiter;
+
+    delimiter = rdrct->file[0];
+    close(pipe_fds[0]);
+    setup_heredoc_signals();
+
+    while (1)
+    {
+        line = readline("> ");
+
+        // ✅ EOF (Ctrl+D) で終了
+        if (!line)
+        {
+            close(pipe_fds[1]);
+            exit(0);
+        }
+
+        // ✅ デリミタチェック
+        if (ft_strcmp(line, delimiter) == 0)
+        {
+            free(line);
+            break;
+        }
+
+        // ✅ 環境変数展開ありの場合
+        if (!rdrct->is_quoted && ft_strlen(line) > 0)
+            write_expand_env(pipe_fds[1], line, env);
+        else
+        {
+            write(pipe_fds[1], line, ft_strlen(line));
+        }
+        write(pipe_fds[1], "\n", 1);
+        free(line);
+    }
+
+    close(pipe_fds[1]);
+    exit(0);
 }
 
-int	handle_heredocument(t_rdrct *redirect, t_cmd *cmd, t_list *env)
+int	setup_parent_process(int pipe_fds[2], t_cmd *cmd, pid_t pid)
 {
-    
-	int	tmp_fd;
-	
-	if (cmd->backup_stdin == -1)
-	{
-		cmd->backup_stdin = dup(STDIN_FILENO);
-		if (cmd->backup_stdin == -1)
-		{
-			perror("dup");
-			return (-1);
-		}
-	}
-	tmp_fd = create_temp_file();
-	if (tmp_fd == -1)
-		return (-1);
-	if (write_heredoc_content(tmp_fd, redirect, env) == -1)
-	{
-		close(tmp_fd);
-		return (-1);
-	}
-	if (setup_heredoc_input(tmp_fd) == -1)
-		return (-1);
-	return (0);
+
+    int status;
+    pid_t result;
+
+    close(pipe_fds[1]);  // ✅ 書き込みパイプを閉じる
+
+    // ✅ EINTR の場合は再試行
+    while ((result = waitpid(pid, &status, 0)) == -1 && errno == EINTR)
+        ;
+    // {
+    //     perror("2 waitpid interrupted by signal, retrying...");
+    // }
+
+    if (result == -1)
+    {
+        perror("waitpid");
+        close(pipe_fds[0]);
+        return (-1);
+    }
+
+    // ✅ シグナルで中断された場合
+    if (WIFSIGNALED(status))
+    {
+        g_last_exit_status = WTERMSIG(status) + 128;
+        close(pipe_fds[0]);
+        if (cmd->backup_stdin != -1)
+        {
+            dup2(cmd->backup_stdin, STDIN_FILENO);
+            close(cmd->backup_stdin);
+            cmd->backup_stdin = -1;
+        }
+        return (-42); // ✅ 中断時は -42 を返す
+    }
+
+    // ✅ 正常終了の場合
+    if (WIFEXITED(status))
+    {
+        g_last_exit_status = WEXITSTATUS(status);
+        if (g_last_exit_status != 0)
+        {
+            close(pipe_fds[0]);
+            return (-1);
+        }
+    }
+
+    // ✅ ヒアドキュメントの内容を標準入力にリダイレクト
+    if (dup2(pipe_fds[0], STDIN_FILENO) == -1)
+    {
+        perror("dup2");
+        close(pipe_fds[0]);
+        return (-1);
+    }
+    close(pipe_fds[0]);
+    return (0);
+}
+
+int	process_heredocs(t_cmd *cmd, t_rdrct *rdrct, t_list *env)
+{
+    int pipe_fds[2];
+    pid_t pid;
+    int result;
+
+    if (setup_heredoc_pipe(pipe_fds, cmd) == -1)
+        return (-1);
+    pid = fork();
+    if (pid == -1)
+    {
+        perror("fork");
+        close(pipe_fds[0]);
+        close(pipe_fds[1]);
+        return (-1);
+    }
+    if (pid == 0)
+    {
+        process_heredoc_child(pipe_fds, rdrct, env);
+    }
+    result = setup_parent_process(pipe_fds, cmd, pid);
+    setup_interactive_signals();  
+    if (result == -42)
+    {
+        dup2(cmd->backup_stdin, STDIN_FILENO);
+        close(cmd->backup_stdin);
+        cmd->backup_stdin = -1;
+        return(-1);
+    }
+
+    return (0);
 }

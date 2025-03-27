@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipe.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 01:16:07 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/24 10:35:15 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/27 20:59:30 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,21 +35,35 @@ int wait_for_children(pid_t *pids, int cmd_count)
 {
     int status;
     int i;
-    
+
     i = 0;
     while (i < cmd_count)
     {
-        waitpid(pids[i], &status, 0);
+        
+        int result;
+        while ((result = waitpid(pids[i], &status, 0)) == -1 && errno == EINTR)
+            ;
+        // {
+        //     perror("1 waitpid interrupted by signal, retrying...");
+        // }
+        if (result == -1)
+        {
+            perror("waitpid");
+            continue;
+        }
         if (i == cmd_count - 1)
         {
             if (WIFEXITED(status))
                 g_last_exit_status = WEXITSTATUS(status);
             else if (WIFSIGNALED(status))
+            {
                 g_last_exit_status = WTERMSIG(status) + 128;
+                // if (WTERMSIG(status) == SIGINT)
+                    // printf("\nSIGINT detected. Terminating pipeline.\n");
+            }
         }
         i++;
     }
-    
     return g_last_exit_status;
 }
 
