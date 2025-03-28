@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   signal.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
+/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 22:01:52 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/28 13:08:49 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/28 17:55:52 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void sig_ctrl_c(int signal)
 void sig_ctrl_c_exec(int signal)
 {
     (void)signal;
-    write(STDOUT_FILENO, "\n", 1);
+    write(STDOUT_FILENO, "^C\n", 3);
     g_last_exit_status = 130;  // Ctrl+C で中断時
 }
 
@@ -84,8 +84,13 @@ void setup_builtin_signals(void)
 void setup_exec_signals(void)
 {
     struct sigaction sa;
+    struct termios term;
 
     ft_bzero(&sa, sizeof(sa));
+    tcgetattr(STDIN_FILENO, &term);
+    term.c_lflag &= ~(ECHOCTL);
+    tcsetattr(STDIN_FILENO, TCSANOW, &term);
+    // sa.sa_handler = SIG_IGN;
     sa.sa_handler = sig_ctrl_c_exec;
     sigemptyset(&sa.sa_mask);
     sigaction(SIGINT, &sa, NULL);
@@ -106,7 +111,7 @@ void setup_child_signals(void)
     ft_bzero(&sa, sizeof(sa));
     tcgetattr(STDIN_FILENO, &term);
 
-    term.c_lflag |= ECHOCTL;
+    term.c_lflag &= ~ECHOCTL;
     tcsetattr(STDIN_FILENO, TCSANOW, &term);
 
     sa.sa_handler = SIG_DFL;
@@ -128,7 +133,9 @@ void setup_heredoc_signals(void)
     ft_bzero(&sa, sizeof(sa));
     tcgetattr(STDIN_FILENO, &term);
 
-    term.c_lflag |= ECHOCTL;
+    // term.c_lflag |= ECHOCTL;
+    // tcsetattr(STDIN_FILENO, TCSANOW, &term);
+    term.c_lflag &= ~(ECHOCTL);
     tcsetattr(STDIN_FILENO, TCSANOW, &term);
 
     sa.sa_handler = SIG_DFL;

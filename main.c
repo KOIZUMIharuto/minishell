@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
+/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 21:59:46 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/28 12:39:17 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/28 17:43:14 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ static t_valid	prompt(t_builtin *builtins, t_list *env)
 
 	setup_interactive_signals();
 	line = readline(PROMPT);
-	setup_after_rl_signals();
+
 	if (!line)
 	{
 		if (!print_msg("exit\n", STDOUT_FILENO))
@@ -55,6 +55,7 @@ static t_valid	prompt(t_builtin *builtins, t_list *env)
 	}
 	if (ft_strlen(line) > 0)
 	{
+		setup_after_rl_signals();
 		add_history(line);
 		valid_status = parser(&cmds, line, g_last_exit_status, env);
 		free(line);
