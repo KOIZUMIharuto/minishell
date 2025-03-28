@@ -6,7 +6,7 @@
 /*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 01:16:07 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/27 20:59:30 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/28 16:06:04 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,13 +21,20 @@ static bool	check_pipeline(t_cmd **cmds, int *cmd_count)
     return (*cmd_count > 1);
 }
 
-static int try_execute_as_builtin(t_cmd *cmd, t_builtin *builtins, t_list *env)
+static int try_execute_as_builtin(t_cmd *cmd, t_builtin *builtins,t_data data)
 {
-	int	builtin_index;
+	int	builtin_index; 
+    int (*builtin_func)(char **, t_list *);
 
 	builtin_index = get_builtin_index(builtins, cmd->cmd[0]);
+    builtin_func = NULL;
+	builtin_index = get_builtin_index(builtins, cmd->cmd[0]);
 	if (builtin_index >= 0)
-		return (execute_single_builtin(cmd, builtins, builtin_index, env));
+    {
+        
+		builtin_func = builtins[builtin_index].func;
+		return (execute_single_builtin(cmd, builtin_func, data));
+    }
 	return (-1);
 }
 
@@ -74,9 +81,15 @@ int execute_pipeline(t_cmd **cmds, t_builtin *builtins, t_list *env)
     t_pipe_info pipe_info;
     int result;
     
+    pipe_info.prev_fd = -1;
+	data.env = env;
+	data.cmds = cmds;
+	data.pids = NULL;
+    data.pids = execute_commands(builtins, data, &pipe_info);
+    
     if (!check_pipeline(cmds, &cmd_count))
     {
-        result = try_execute_as_builtin(cmds[0], builtins, env);
+        result = try_execute_as_builtin(cmds[0], builtins,data);
         if (result != -1)
 		{
 			free_cmds(cmds);
@@ -86,12 +99,8 @@ int execute_pipeline(t_cmd **cmds, t_builtin *builtins, t_list *env)
     
     // data.pids = (pid_t *)malloc(sizeof(pid_t) * cmd_count);
     // if (!data.pids)
+    
     //     return (EXIT_FAILURE);
-    pipe_info.prev_fd = -1;
-	data.env = env;
-	data.cmds = cmds;
-	data.pids = NULL;
-    data.pids = execute_commands(builtins, data, &pipe_info);
     
 	free_cmds(cmds);
 	if (!data.pids)

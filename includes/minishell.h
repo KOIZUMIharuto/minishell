@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
+/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 14:13:46 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/28 11:04:08 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/28 15:45:24 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,8 +126,9 @@ void setup_after_rl_signals(void);
 // pipe
 int		setup_pipe(t_pipe_info *pipe_info, bool has_next);
 int		execute_pipeline(t_cmd **cmds, t_builtin *builtins, t_list *env);
-int		execute_single_builtin(t_cmd *cmd, t_builtin *builtins,
-			int builtin_index, t_list *env);
+// int		execute_single_builtin(t_cmd *cmd, t_builtin *builtins,
+// 			int builtin_index, t_list *env);
+int execute_single_builtin(t_cmd *cmd, int (*builtin_func)(char **, t_list *),t_data data);
 pid_t	*execute_commands(t_builtin *builtins, t_data data,
 			t_pipe_info *pipe_info);
 void	execute_cmd(char **cmd, t_data data);

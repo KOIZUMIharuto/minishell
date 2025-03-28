@@ -3,23 +3,31 @@
 /*                                                        :::      ::::::::   */
 /*   pipe_command.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
+/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 12:30:41 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/28 11:16:31 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/28 16:14:32 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
 
-int execute_single_builtin(t_cmd *cmd, t_builtin *builtins, 
-                           int builtin_index, t_list *env)
+int execute_single_builtin(t_cmd *cmd, int (*builtin_func)(char **, t_list *), t_data data)
 {
     int result;
     
-    // if (process_heredocs(cmd, env) == -1)
-    //     return (1);
-    if (handle_redirection(cmd, env))
+    printf("process_heredocs\n");
+    printf("backup_fd_1: %d\n", cmd->backup_stdin);
+    if (process_heredocs(cmd, data.env) == -1)
+	{   
+        printf("backup_fd_2: %d\n", cmd->backup_stdin);
+        restore_redirection(cmd);
+        printf("backup_fd_3: %d\n", cmd->backup_stdin);
+        g_last_exit_status = 1;
+        return (1);
+    }
+    setup_interactive_signals();
+    if (handle_redirection(cmd, data.env))
     {
         restore_redirection(cmd);
         g_last_exit_status = 1;
@@ -27,7 +35,7 @@ int execute_single_builtin(t_cmd *cmd, t_builtin *builtins,
     }
     
     setup_builtin_signals();
-    result = builtins[builtin_index].func(cmd->cmd, env);
+    result = builtin_func(cmd->cmd, data.env);
     restore_redirection(cmd);
     if (ft_strcmp(cmd->cmd[0], "exit") != 0)
         g_last_exit_status = result;
