@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirect.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 20:05:03 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/28 16:49:43 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/28 19:51:26 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ static int	handle_input_rdrct(t_cmd *cmd, t_rdrct *rdrct, bool is_last)
 {
 	cmd->infile_fd = open(rdrct->file[0], O_RDONLY);
 	if (cmd->infile_fd == -1)
-		return (error_msg(rdrct->file[0], strerror(errno)));
+		return (error_msg(rdrct->file[0], strerror(errno), INVALID));
 	if (is_last)
 		dup2(cmd->infile_fd, STDIN_FILENO);
 	close(cmd->infile_fd);
@@ -57,7 +57,7 @@ static int	handle_output_rdrct(t_cmd *cmd, t_rdrct *rdrct)
 		flags |= O_APPEND;
 	cmd->outfile_fd = open(rdrct->file[0], flags, 0644);
 	if (cmd->outfile_fd == -1)
-		return (error_msg(rdrct->file[0], strerror(errno)));
+		return (error_msg(rdrct->file[0], strerror(errno), INVALID));
 	dup2(cmd->outfile_fd, STDOUT_FILENO);
 	close(cmd->outfile_fd);
 	cmd->outfile_fd = -1;
@@ -87,19 +87,13 @@ int	handle_redirection(t_cmd *cmd, t_list *env)
 	t_rdrct	*redirect;
 
 	(void)env;
-	// if (backup_io(cmd))
-	// 	return (1);
-	// if (cmd->backup_stdin != -1)
-	// 	close(cmd->backup_stdin);
 	j = 0;
 	while (cmd->rdrcts[j])
 	{
 		redirect = cmd->rdrcts[j];
 		if (redirect->type != HEREDOCUMENT
 			&& (!redirect->file[0] || redirect->file[1]))
-			return (error_msg(redirect->token, "ambiguous redirect"));
-		// if ((redirect->type == HEREDOCUMENT && process_heredocs(cmd, redirect, env) == -1)
-		// 	|| (redirect->type == INPUT_RDRCT && handle_input_rdrct(cmd, redirect))
+			return (error_msg(redirect->token, "ambiguous redirect", INVALID));
 		if ((redirect->type == INPUT_RDRCT && handle_input_rdrct(cmd, redirect, is_last_input(cmd->rdrcts, j)))
 			|| ((redirect->type == OVERWRITE_RDRCT || redirect->type == APPEND_RDRCT)
 				&& handle_output_rdrct(cmd, redirect)))

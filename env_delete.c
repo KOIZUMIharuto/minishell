@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env_delete.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 00:32:55 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/25 13:13:32 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/28 19:11:59 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 static void	hide_pwd(t_env *env_content);
 
-bool	env_delete(t_list **env_list, char *key)
+void	env_delete(t_list **env_list, char *key)
 {
 	t_list	*env_list_tmp;
 	t_list	*prev;
@@ -34,12 +34,11 @@ bool	env_delete(t_list **env_list, char *key)
 			else
 				*env_list = env_list_tmp->next;
 			ft_lstdelone(env_list_tmp, env_free);
-			return (true);
+			return ;
 		}
 		prev = env_list_tmp;
 		env_list_tmp = env_list_tmp->next;
 	}
-	return (true);
 }
 
 static void	hide_pwd(t_env *env_content)

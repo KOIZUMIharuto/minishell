@@ -6,15 +6,15 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 14:37:28 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/24 20:20:14 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/28 19:21:09 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
 
-static void	print_token(char **token, bool newline);
+static int	print_token(char **token, bool newline);
 
-int	builtin_echo(char **cmd, t_list *env)
+t_valid	builtin_echo(char **cmd, t_list *env)
 {
 	int		i;
 	int		j;
@@ -33,19 +33,21 @@ int	builtin_echo(char **cmd, t_list *env)
 		newline = false;
 		i++;
 	}
-	print_token(&(cmd[i]), newline);
-	return (0);
+	if (print_token(&(cmd[i]), newline))
+		return (ERROR);
+	return (VALID);
 }
 
-static void	print_token(char **token, bool newline)
+static int	print_token(char **token, bool newline)
 {
 	while (*token)
 	{
-		ft_putstr_fd(*token, STDOUT_FILENO);
-		if (*(token + 1))
-			ft_putchar_fd(' ', STDOUT_FILENO);
+		if (write(STDOUT_FILENO, *token, ft_strlen(*token)) < 0)
+			return (perror_int("write"));
+		if (*(token + 1) && write(STDOUT_FILENO, ' ', 1) < 0)
+			return (perror_int("write"));
 		token++;
 	}
-	if (newline)
-		ft_putchar_fd('\n', STDOUT_FILENO);
+	if (newline && write(STDOUT_FILENO, "\n", 1) < 0)
+		return (perror_int("write"));
 }

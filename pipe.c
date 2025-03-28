@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipe.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 01:16:07 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/28 16:24:34 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/28 19:35:49 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,15 +23,12 @@ static bool	check_pipeline(t_cmd **cmds, int *cmd_count)
 
 static int try_execute_as_builtin(t_cmd *cmd, t_builtin *builtins,t_data data)
 {
-	int	builtin_index; 
-    int (*builtin_func)(char **, t_list *);
+	int		builtin_index; 
+	t_valid	(*builtin_func)(char **, t_list *);
 
-	builtin_index = get_builtin_index(builtins, cmd->cmd[0]);
-    builtin_func = NULL;
 	builtin_index = get_builtin_index(builtins, cmd->cmd[0]);
 	if (builtin_index >= 0)
     {
-        
 		builtin_func = builtins[builtin_index].func;
 		return (execute_single_builtin(cmd, builtin_func, data));
     }

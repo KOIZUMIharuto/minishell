@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 18:07:49 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/28 11:37:12 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/28 18:34:20 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,13 @@ static int setup_heredoc_pipe(int pipe_fds[2], t_cmd *cmd)
     }
     else
     {
-        dup2(cmd->backup_stdin, STDIN_FILENO);
+        if (dup2(cmd->backup_stdin, STDIN_FILENO) == -1)
+		{
+            perror("dup2");
+            close(pipe_fds[0]);
+            close(pipe_fds[1]);
+            return (-1);
+		}
     }
     return (0);
 }
@@ -94,9 +100,9 @@ static void	process_heredoc_child(int pipe_fds[2], t_rdrct *rdrct, t_list *env)
     char	*line;
     char	*delimiter;
 
-    delimiter = rdrct->file[0];
-    close(pipe_fds[0]);
-    setup_heredoc_signals();
+	delimiter = rdrct->file[0];
+	close(pipe_fds[0]);
+	setup_heredoc_signals();
 
     while (1)
     {
@@ -116,14 +122,20 @@ static void	process_heredoc_child(int pipe_fds[2], t_rdrct *rdrct, t_list *env)
             break;
         }
 
-        // ✅ 環境変数展開ありの場合
-        if (!rdrct->is_quoted && ft_strlen(line) > 0)
-            write_expand_env(pipe_fds[1], line, env);
-        else
-        {
-            write(pipe_fds[1], line, ft_strlen(line));
-        }
-        write(pipe_fds[1], "\n", 1);
+		if ((!rdrct->is_quoted && ft_strlen(line) > 0
+				&& write_expand_env(pipe_fds[1], line, env) == -1)
+			|| write(pipe_fds[1], line, ft_strlen(line)) == -1)
+		{
+			perror("write");
+			free(line);
+			exit(1);
+		}
+		if (write(pipe_fds[1], "\n", 1) == -1)
+		{
+			perror("write");
+			free(line);
+			exit (1);
+		}
         free(line);
     }
 
@@ -144,7 +156,6 @@ int	setup_parent_process(int pipe_fds[2], t_cmd *cmd, pid_t pid)
 	result = waitpid(pid, &status, 0);
 	while (result == -1 && errno == EINTR)
         result = waitpid(pid, &status, 0);
-	// printf("wait end\n");
 
     if (result == -1)
     {
@@ -160,7 +171,12 @@ int	setup_parent_process(int pipe_fds[2], t_cmd *cmd, pid_t pid)
         close(pipe_fds[0]);
         if (cmd->backup_stdin != -1)
         {
-            dup2(cmd->backup_stdin, STDIN_FILENO);
+            if (dup2(cmd->backup_stdin, STDIN_FILENO) == -1)
+			{
+				perror("dup2");
+				close(cmd->backup_stdin);
+				return (-1);
+			}
             close(cmd->backup_stdin);
             cmd->backup_stdin = -1;
         }
@@ -221,7 +237,12 @@ int	process_heredocs(t_cmd *cmd, t_list *env)
 		setup_interactive_signals();  
 		if (result == -42)
 		{
-			dup2(cmd->backup_stdin, STDIN_FILENO);
+			if (dup2(cmd->backup_stdin, STDIN_FILENO) == -1)
+			{
+				perror("dup2");
+				close(cmd->backup_stdin);
+				
+			}
 			close(cmd->backup_stdin);
 			cmd->backup_stdin = -1;
 			return(-1);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env_init.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/14 16:51:27 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/25 12:19:29 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/28 19:12:37 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,7 @@ static bool	init_oldpwd(t_list **env_list)
 	env = env_get(*env_list, "OLDPWD", false);
 	if (env && env->value
 		&& (stat(env->value, &path_stat) || !S_ISDIR(path_stat.st_mode)))
-		(void)env_delete(env_list, "OLDPWD");
+		env_delete(env_list, "OLDPWD");
 	else if (!env)
 	{
 		oldpwd_key = ft_strdup("OLDPWD");

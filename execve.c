@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execve.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 03:20:59 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/25 12:18:39 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/28 19:42:58 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,14 +74,14 @@ void execute_cmd(char **cmd, t_data data)
 	}
     if (!cmd_path)
     {
-		(void)error_msg(cmd[0], "command not found");
+		(void)error_msg(cmd[0], "command not found", ERROR);
 		free_data(data);
         exit(127);
     }
 
 	if (stat(cmd_path, &path_stat) == -1)
 	{
-		(void)error_msg(cmd_path, strerror(errno));
+		(void)error_msg(cmd_path, strerror(errno), INVALID);
 		if (cmd_path != cmd[0])
 			free(cmd_path);
 		free_data(data);
@@ -91,7 +91,7 @@ void execute_cmd(char **cmd, t_data data)
 	}
 	if (S_ISDIR(path_stat.st_mode))
 	{
-		(void)error_msg(cmd_path, "Is a directory");
+		(void)error_msg(cmd_path, "Is a directory", INVALID);
 		if (cmd_path != cmd[0])
 			free(cmd_path);
 		free_data(data);
@@ -107,7 +107,7 @@ void execute_cmd(char **cmd, t_data data)
     }
     if (execve(cmd_path, cmd, env_array) == -1)
     {
-        (void)error_msg(cmd_path, strerror(errno));
+        (void)error_msg(cmd_path, strerror(errno), INVALID);
         if (cmd_path != cmd[0])
             free(cmd_path);
 		free_data(data);
