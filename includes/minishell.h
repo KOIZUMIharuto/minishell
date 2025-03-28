@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 14:13:46 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/27 21:56:04 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/28 13:14:00 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,6 +120,8 @@ void setup_interactive_signals(void);
 void setup_builtin_signals(void);
 void setup_exec_signals(void);
 void setup_child_signals(void);
+void setup_heredoc_signals(void);
+void setup_after_rl_signals(void);
 
 // pipe
 int		setup_pipe(t_pipe_info *pipe_info, bool has_next);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   signal.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 22:01:52 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/27 21:30:12 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/28 13:08:49 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void sig_ctrl_c(int signal)
     write(STDOUT_FILENO, "\n", 1);
     rl_replace_line("", 0);
     rl_redisplay();
-    g_last_exit_status = 1;
+    g_last_exit_status = 130;
 }
 
 
@@ -32,6 +32,7 @@ void sig_ctrl_c(int signal)
 void sig_ctrl_c_exec(int signal)
 {
     (void)signal;
+    write(STDOUT_FILENO, "\n", 1);
     g_last_exit_status = 130;  // Ctrl+C で中断時
 }
 
@@ -48,8 +49,7 @@ void setup_interactive_signals(void)
     ft_bzero(&sa, sizeof(sa));
     tcgetattr(STDIN_FILENO, &term);
 
-    // ECHOCTL を無効化して ^C を表示しない
-    term.c_lflag &= ~(ECHOCTL);
+    term.c_lflag |= ECHOCTL;
     tcsetattr(STDIN_FILENO, TCSANOW, &term);
 
     sa.sa_handler = sig_ctrl_c;
@@ -101,8 +101,14 @@ void setup_exec_signals(void)
 void setup_child_signals(void)
 {
     struct sigaction sa;
+    struct termios term;
 
     ft_bzero(&sa, sizeof(sa));
+    tcgetattr(STDIN_FILENO, &term);
+
+    term.c_lflag |= ECHOCTL;
+    tcsetattr(STDIN_FILENO, TCSANOW, &term);
+
     sa.sa_handler = SIG_DFL;
     sigemptyset(&sa.sa_mask);
     sigaction(SIGINT, &sa, NULL);
@@ -122,13 +128,32 @@ void setup_heredoc_signals(void)
     ft_bzero(&sa, sizeof(sa));
     tcgetattr(STDIN_FILENO, &term);
 
-    // ECHOCTL を無効化
-    term.c_lflag &= ~(ECHOCTL);
+    term.c_lflag |= ECHOCTL;
     tcsetattr(STDIN_FILENO, TCSANOW, &term);
 
     sa.sa_handler = SIG_DFL;
     sa.sa_flags = 0;
     sigemptyset(&sa.sa_mask);
+    sigaction(SIGINT, &sa, NULL);
+
+    sa.sa_handler = SIG_IGN;
+    sigaction(SIGQUIT, &sa, NULL);
+}
+
+void setup_after_rl_signals(void)
+{
+    struct sigaction sa;
+    struct termios term;
+
+    ft_bzero(&sa, sizeof(sa));
+    tcgetattr(STDIN_FILENO, &term);
+
+    term.c_lflag &= ~(ECHOCTL);
+    tcsetattr(STDIN_FILENO, TCSANOW, &term);
+
+    sa.sa_handler = sig_ctrl_c_exec;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;
     sigaction(SIGINT, &sa, NULL);
 
     sa.sa_handler = SIG_IGN;
