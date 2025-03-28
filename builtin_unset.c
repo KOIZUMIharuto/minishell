@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 18:11:10 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/28 19:34:45 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/28 20:07:22 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,8 @@ t_valid	builtin_unset(char **cmd, t_list *env)
 	while (cmd[++i])
 	{
 		is_valid = is_valid_key(cmd[i]);
-		if (is_valid == ERROR)
-			return (ERROR);
+		if (is_valid == CRITICAL_ERROR)
+			return (CRITICAL_ERROR);
 		else if (is_valid == INVALID)
 		{
 			valid_status = INVALID;

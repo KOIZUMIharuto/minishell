@@ -28,10 +28,10 @@ t_valid	parser(t_cmd ***cmds, char *line, int exit_status, t_list *env)
 	init_parser(&data, exit_status, env);
 	tokens = NULL;
 	if (!tokenize(&tokens, line))
-		return (ERROR);
+		return (CRITICAL_ERROR);
 	valid_status = check_syntax(tokens);
 	if (valid_status == VALID && !split_tokens(&splited_tokens, tokens))
-		valid_status = ERROR;
+		valid_status = CRITICAL_ERROR;
 	if (valid_status != VALID)
 		return (valid_status);
 	cmd_list = to_cmd_list(splited_tokens, data);
@@ -40,7 +40,7 @@ t_valid	parser(t_cmd ***cmds, char *line, int exit_status, t_list *env)
 	if (!*cmds)
 	{
 		ft_lstclear(&cmd_list, free_cmd);
-		return (ERROR);
+		return (CRITICAL_ERROR);
 	}
 	return (VALID);
 }

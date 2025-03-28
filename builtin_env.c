@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 00:48:52 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/28 19:22:20 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/28 20:07:22 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ t_valid	builtin_env(char **cmd, t_list *env)
 {
 	(void)cmd;
 	if (print_env(env))
-		return (ERROR);
+		return (CRITICAL_ERROR);
 	return (VALID);
 }
 

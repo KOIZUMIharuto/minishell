@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 23:50:11 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/28 19:08:02 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/28 20:07:22 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,10 +31,10 @@ t_valid	env_split(char *env, char **key, char **value, t_list *env_list)
 	if (!*key)
 	{
 		perror("malloc");
-		return (ERROR);
+		return (CRITICAL_ERROR);
 	}
 	if (!get_value(value, *key, &(env[key_len]), env_list))
-		return (ERROR);
+		return (CRITICAL_ERROR);
 	return (VALID);
 }
 
@@ -92,7 +92,7 @@ t_valid	print_invalid_key(char *cmd, char *key)
 	{
 		perror("write");
 		g_last_exit_status = -1;
-		return (ERROR);
+		return (CRITICAL_ERROR);
 	}
 	return (INVALID);
 }

@@ -3,16 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 21:59:46 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/28 19:03:47 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/28 21:48:44 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
 
+
 static t_valid	prompt(t_builtin *builtins, t_list *env);
+static bool		is_skip_line(char *line);
 
 int	g_last_exit_status = 0;
 
@@ -27,11 +29,11 @@ int	main(int argc, char **argv, char **envp)
 	init_builtins(builtins);
 	env = env_init(envp);
 	if (!env)
-		return (pCRITICAL_ERROR_int("malloc"));
+		return (perror_int("malloc"));
 	while (true)
 	{
 		status = prompt(builtins, env);
-		if (status == CRITICAL_ERROR)
+		if (status != VALID)
 			break ;
 	}
 	ft_lstclear(&env, env_free);
@@ -41,7 +43,7 @@ int	main(int argc, char **argv, char **envp)
 static t_valid	prompt(t_builtin *builtins, t_list *env)
 {
 	char	*line;
-	t_valid	valid_status;
+	t_valid	is_valid;
 	t_cmd	**cmds;
 
 	setup_interactive_signals();
@@ -53,18 +55,32 @@ static t_valid	prompt(t_builtin *builtins, t_list *env)
 			g_last_exit_status = EXIT_FAILURE;
 		return (CRITICAL_ERROR);
 	}
-	if (ft_strlen(line) > 0)
+	if (!is_skip_line(line))
 	{
 		setup_after_rl_signals();
 		add_history(line);
-		valid_status = parser(&cmds, line, g_last_exit_status, env);
+		is_valid = parser(&cmds, line, g_last_exit_status, env);
 		free(line);
-		if (valid_status != VALID)
-			return (valid_status);
-		if (execute_pipeline(cmds, builtins, env) == -42)
-			return (CRITICAL_ERROR);
+		if (is_valid != VALID)
+			return (is_valid);
+		is_valid = execute_pipeline(cmds, builtins, env);
+		if (is_valid == EXIT_MAINT_LOOP || is_valid == CRITICAL_ERROR)
+			return (is_valid);
 	}
 	else
 		free(line);
 	return (VALID);
+}
+
+static bool	is_skip_line(char *line)
+{
+	if (ft_strlen(line) == 0)
+		return (true);
+	while (*line)
+	{
+		if (!ft_strchr(" \t\n\v\f\r", *line))
+			return (false);
+		line++;
+	}
+	return (true);
 }

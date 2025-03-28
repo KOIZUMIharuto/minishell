@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 00:54:17 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/28 19:29:05 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/28 21:51:53 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,11 @@ t_valid	builtin_exit(char **cmd, t_list *env)
 
 	(void)env;
 	result = 0;
+	if (write(STDOUT_FILENO, "exit\n", 5) < 0)
+	{
+		perror("write");
+		return (CRITICAL_ERROR);
+	}
 	if (cmd[1] && (!is_numeric(cmd[1]) || !is_in_long_range(&result, cmd[1])))
 	{
 		if (write(STDERR_FILENO, "minishell: exit: ", 17) < 0
@@ -28,7 +33,7 @@ t_valid	builtin_exit(char **cmd, t_list *env)
 			|| write(STDERR_FILENO, ": numeric argument required\n", 28) < 0)
 		{
 			perror("write");
-			return (ERROR);
+			return (CRITICAL_ERROR);
 		}
 		g_last_exit_status = 2;
 		exit(g_last_exit_status);
@@ -36,11 +41,6 @@ t_valid	builtin_exit(char **cmd, t_list *env)
 	if (cmd[1] && cmd[2])
 		return (error_msg("exit", "too many arguments", INVALID));
 	g_last_exit_status = (result % 256 + 256) % 256;
-	if (write(STDOUT_FILENO, "exit\n", 5) < 0)
-	{
-		perror("write");
-		return (ERROR);
-	}
 	return (VALID);
 }
 

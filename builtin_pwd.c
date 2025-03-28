@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 14:37:41 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/28 19:33:11 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/28 20:07:22 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,12 +20,12 @@ t_valid	builtin_pwd(char **cmd, t_list *env)
 	(void)env;
 	pwd = get_pwd();
 	if (!pwd)
-		return (ERROR);
+		return (CRITICAL_ERROR);
 	if (printf("%s\n", pwd) < 0)
 	{
 		perror_int("printf");
 		free(pwd);
-		return (ERROR);
+		return (CRITICAL_ERROR);
 	}
 	free(pwd);
 	return (VALID);

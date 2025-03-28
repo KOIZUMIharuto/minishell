@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 14:37:35 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/28 19:19:30 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/28 20:50:11 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,9 +37,9 @@ t_valid	builtin_cd(char **cmd, t_list *env)
 	if (!S_ISDIR(path_stat.st_mode))
 		return (perror_cd(directory, ENOTDIR, INVALID));
 	if (chdir(directory) != 0)
-		return (perror_cd(directory, errno, ERROR));
+		return (perror_cd(directory, errno, CRITICAL_ERROR));
 	if (!update_pwd(env))
-		return (ERROR);
+		return (CRITICAL_ERROR);
 	return (VALID);
 }
 
@@ -71,8 +71,7 @@ static t_valid	perror_cd(char *arg, int errnum, t_valid is_valid)
 		|| !print_msg(strerror(errnum), STDERR_FILENO)
 		|| !print_msg("\n", STDERR_FILENO))
 	{
-		g_last_exit_status = -1;
-		return (ERROR);
+		return (CRITICAL_ERROR);
 	}
 	return (is_valid);
 }

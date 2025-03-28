@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 14:44:22 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/28 19:32:17 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/28 20:07:22 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ t_valid	builtin_export(char **cmd, t_list *env)
 	while (*(++cmd))
 	{
 		is_valid = env_split(*cmd, &key, &value, env);
-		if (is_valid == ERROR)
+		if (is_valid == CRITICAL_ERROR)
 			return (is_valid);
 		if (is_valid == INVALID)
 		{
@@ -37,7 +37,7 @@ t_valid	builtin_export(char **cmd, t_list *env)
 		if (!env_update(&env, key, value))
 		{
 			g_last_exit_status = -1;
-			valid_status = ERROR;
+			valid_status = CRITICAL_ERROR;
 		}
 	}
 	return (valid_status);

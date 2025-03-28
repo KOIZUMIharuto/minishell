@@ -82,10 +82,12 @@ OBJS = $(addprefix $(OBJ_DIR)/, $(SRCS:.c=.o))
 
 MAIN = $(OBJ_DIR)/main.o
 
-.PHONY: all clean fclean re
+.PHONY: all bonus clean fclean re
 
 # デフォルトターゲット
 all: $(NAME)
+
+bonus: $(NAME)
 
 # バイナリ生成ルール（リンカオプションの順序を修正）
 $(NAME): $(MAIN) $(OBJS) $(LIBFT)

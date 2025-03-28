@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 14:37:28 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/28 19:21:09 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/28 21:24:39 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ t_valid	builtin_echo(char **cmd, t_list *env)
 		i++;
 	}
 	if (print_token(&(cmd[i]), newline))
-		return (ERROR);
+		return (CRITICAL_ERROR);
 	return (VALID);
 }
 
@@ -44,10 +44,11 @@ static int	print_token(char **token, bool newline)
 	{
 		if (write(STDOUT_FILENO, *token, ft_strlen(*token)) < 0)
 			return (perror_int("write"));
-		if (*(token + 1) && write(STDOUT_FILENO, ' ', 1) < 0)
+		if (*(token + 1) && write(STDOUT_FILENO, " ", 1) < 0)
 			return (perror_int("write"));
 		token++;
 	}
 	if (newline && write(STDOUT_FILENO, "\n", 1) < 0)
 		return (perror_int("write"));
+	return (0);
 }

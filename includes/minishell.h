@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 14:13:46 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/28 20:06:04 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/28 22:51:41 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ typedef enum e_valid
 	VALID=0,
 	INVALID=1,
     CMD_EXTERNAL=-2,
-    SIGINT_EXIT=-42,
+    SIGINT_EXIT=-24,
     EXIT_MAINT_LOOP=-42
 }	t_valid;
 
@@ -133,12 +133,12 @@ int		execute_pipeline(t_cmd **cmds, t_builtin *builtins, t_list *env);
 // int		execute_single_builtin(t_cmd *cmd, t_builtin *builtins,
 // 			int builtin_index, t_list *env);
 int execute_single_builtin(t_cmd *cmd, int (*builtin_func)(char **, t_list *),t_data data);
-pid_t	*execute_commands(t_builtin *builtins, t_data data,
+t_valid	execute_commands(t_builtin *builtins, t_data *data,
 			t_pipe_info *pipe_info);
 void	execute_cmd(char **cmd, t_data data);
 void	manage_pipes(t_pipe_info *pipe_info);
-void	handle_pipe_input(t_pipe_info *pipe_info);
-void	handle_pipe_output(t_pipe_info *pipe_info);
+t_valid	handle_pipe_input(t_pipe_info *pipe_info);
+t_valid	handle_pipe_output(t_pipe_info *pipe_info);
 
 //redirect and heredoc
 int	process_heredocs(t_cmd *cmd, t_list* env);
@@ -187,7 +187,7 @@ void	free_cmd(void *content);
 void	free_rdrcts(void *content);
 void	free_rdrct(void *content);
 
-int		error_msg(char *cmd, char *msg);
+int		error_msg(char *cmd, char *msg, t_valid is_valid);
 int		perror_int(char *cmd);
 bool	perror_bool(char *cmd);
 void	*perror_ptr(char *cmd);

@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 23:24:37 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/28 18:31:25 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/28 20:07:22 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ static t_valid	print_syntax_error(char *token)
 			STDERR_FILENO)
 		|| !print_msg(token, STDERR_FILENO)
 		|| !print_msg("'\n", STDERR_FILENO))
-		return (ERROR);
+		return (CRITICAL_ERROR);
 	g_last_exit_status = 2;
 	return (INVALID);
 }

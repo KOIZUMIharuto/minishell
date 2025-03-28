@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 03:20:59 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/28 19:42:58 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/28 21:12:53 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ bool	find_cmd_path(char **cmd_path, char *cmd, t_env *path_env) {
     return true;
 }
 
-void execute_cmd(char **cmd, t_data data)
+void execute_cmd(char **cmd, t_data data)	//ok
 {
 	t_env	*path_env;
     char *cmd_path;
@@ -70,11 +70,12 @@ void execute_cmd(char **cmd, t_data data)
 	else if (!find_cmd_path(&cmd_path, cmd[0], path_env))
 	{
 		free_data(data);
-		exit(perror_int("malloc"));
+		perror("malloc");
+		exit(CRITICAL_ERROR);
 	}
     if (!cmd_path)
     {
-		(void)error_msg(cmd[0], "command not found", ERROR);
+		(void)error_msg(cmd[0], "command not found", CRITICAL_ERROR);
 		free_data(data);
         exit(127);
     }
@@ -100,10 +101,11 @@ void execute_cmd(char **cmd, t_data data)
     env_array = convert_env_list_to_array(data.env);
     if (!env_array)
     {
+		perror("malloc");
         if (cmd_path != cmd[0])
             free(cmd_path);
 		free_data(data);
-        exit(perror_int("malloc"));
+        exit(CRITICAL_ERROR);
     }
     if (execve(cmd_path, cmd, env_array) == -1)
     {

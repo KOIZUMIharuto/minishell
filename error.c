@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 10:58:22 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/28 19:16:37 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/28 20:07:22 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ t_valid	error_msg(char *command, char *msg, t_valid is_valid)
 		|| !print_msg("\n", STDERR_FILENO))
 	{
 		g_last_exit_status = -1;
-		return (ERROR);
+		return (CRITICAL_ERROR);
 	}
 	return (is_valid);
 }
