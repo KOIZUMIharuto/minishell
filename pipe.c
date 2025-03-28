@@ -6,7 +6,7 @@
 /*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 01:16:07 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/28 16:24:34 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/28 19:42:40 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,21 +21,17 @@ static bool	check_pipeline(t_cmd **cmds, int *cmd_count)
     return (*cmd_count > 1);
 }
 
-static int try_execute_as_builtin(t_cmd *cmd, t_builtin *builtins,t_data data)
+static t_valid try_execute_as_builtin(t_cmd *cmd, t_builtin *builtins,t_data data)
 {
 	int	builtin_index; 
     int (*builtin_func)(char **, t_list *);
 
-	builtin_index = get_builtin_index(builtins, cmd->cmd[0]);
-    builtin_func = NULL;
-	builtin_index = get_builtin_index(builtins, cmd->cmd[0]);
 	if (builtin_index >= 0)
     {
-        
 		builtin_func = builtins[builtin_index].func;
 		return (execute_single_builtin(cmd, builtin_func, data));
     }
-	return (-1);
+	return (CMD_EXTERNAL);
 }
 
 int wait_for_children(pid_t *pids, int cmd_count)
@@ -74,7 +70,7 @@ int wait_for_children(pid_t *pids, int cmd_count)
     return g_last_exit_status;
 }
 
-int execute_pipeline(t_cmd **cmds, t_builtin *builtins, t_list *env)
+t_valid execute_pipeline(t_cmd **cmds, t_builtin *builtins, t_list *env)
 {
 	t_data	data;
     int cmd_count;
@@ -89,18 +85,12 @@ int execute_pipeline(t_cmd **cmds, t_builtin *builtins, t_list *env)
     
     if (!check_pipeline(cmds, &cmd_count))
     {
-        result = try_execute_as_builtin(cmds[0], builtins,data);
-        if (result != -1)
+        if (try_execute_as_builtin(cmds[0], builtins,data) != CMD_EXTERNAL)
 		{
 			free_cmds(cmds);
-            return result;
+            return (VALID);
 		}
     }
-    
-    // data.pids = (pid_t *)malloc(sizeof(pid_t) * cmd_count);
-    // if (!data.pids)
-    
-    //     return (EXIT_FAILURE);
     data.pids = execute_commands(builtins, data, &pipe_info);
     
 	free_cmds(cmds);

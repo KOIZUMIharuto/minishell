@@ -6,7 +6,7 @@
 /*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 14:13:46 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/28 15:45:24 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/28 19:40:21 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,9 +43,13 @@ typedef struct s_env
 
 typedef enum e_valid
 {
-	VALID,
-	INVALID,
-	ERROR
+    
+	CRITICAL_ERROR=-1,
+	VALID=0,
+	INVALID=1,
+    CMD_EXTERNAL=-2,
+    SIGINT_EXIT=-42,
+    EXIT_MAINT_LOOP=-42
 }	t_valid;
 
 typedef enum e_quote
@@ -183,10 +187,10 @@ void	free_cmd(void *content);
 void	free_rdrcts(void *content);
 void	free_rdrct(void *content);
 
-int		error_msg(char *cmd, char *msg);
-int		perror_int(char *cmd);
-bool	perror_bool(char *cmd);
-void	*perror_ptr(char *cmd);
+int		CRITICAL_ERROR_msg(char *cmd, char *msg);
+int		pCRITICAL_ERROR_int(char *cmd);
+bool	pCRITICAL_ERROR_bool(char *cmd);
+void	*pCRITICAL_ERROR_ptr(char *cmd);
 
 
 bool	print_msg(char *msg, int fd);

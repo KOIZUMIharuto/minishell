@@ -6,49 +6,46 @@
 /*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 12:30:41 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/28 16:52:47 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/28 19:56:39 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
 
-int execute_single_builtin(t_cmd *cmd, int (*builtin_func)(char **, t_list *), t_data data)
+t_valid execute_single_builtin(t_cmd *cmd, int (*builtin_func)(char **, t_list *), t_data data)
 {
     int result;
     
-    if (process_heredocs(cmd, data.env) == -1)
+    if (process_heredocs(cmd, data.env) == CRITICAL_ERROR)
+        return (CRITICAL_ERROR);
+    else if (process_heredocs(cmd, data.env) == INVALID ||process_heredocs(cmd, data.env) == SIGINT_EXIT)
     {
-        g_last_exit_status = 1;
-        return (1);
+        g_last_exit_status = INVALID;
+        return (INVALID);
     }
 
-    if (handle_redirection(cmd, data.env))
-    {
-        restore_redirection(cmd);
-        g_last_exit_status = 1;
-        return (1);
-    }
+    if (handle_redirection(cmd, data.env)==CRITICAL_ERROR)
+        return (CRITICAL_ERROR);
+    if(restore_redirection(cmd)==CRITICAL_ERROR)
+        return (CRITICAL_ERROR);
 
-    
     setup_builtin_signals();
     result = builtin_func(cmd->cmd, data.env);
-    restore_redirection(cmd);
-
-
+    if(restore_redirection(cmd)==CRITICAL_ERROR)
+        return (CRITICAL_ERROR);
     if (ft_strcmp(cmd->cmd[0], "exit") != 0)
         g_last_exit_status = result;
-    
     if (ft_strcmp(cmd->cmd[0], "exit") == 0)
     {
-        if (result == -1)
+        if (result == -1) //koko
         {
             setup_interactive_signals();
             return (1);
         }
-        return (-42);
+        return (EXIT_MAINT_LOOP);
     }
     setup_interactive_signals();
-    return result;
+    return (VALID);
 }
 
 bool has_input_redirection(t_cmd *cmd)
@@ -85,15 +82,27 @@ void	execute_command_in_child(t_cmd *cmd,
 
 	free(data.pids);
 	data.pids = NULL;
-	if (handle_redirection(cmd, data.env))
+	if (handle_redirection(cmd, data.env)==CRITICAL_ERROR)
 	{
 		free_data(data);
-		exit(g_last_exit_status);
+		exit(CRITICAL_ERROR);
 	}
 	if (!has_input_redirection(cmd))
-		handle_pipe_input(pipe_info);
+    {
+		if(handle_pipe_input(pipe_info) == CRITICAL_ERROR)
+        {
+            free_data(data);
+            exit(CRITICAL_ERROR);
+        }
+    }
 	if (!has_output_redirection(cmd))
-		handle_pipe_output(pipe_info);
+    {
+        if(handle_pipe_output(pipe_info) == CRITICAL_ERROR)
+		{
+            free_data(data);
+            exit(CRITICAL_ERROR);
+        }
+    }
 	if (!cmd->cmd[0])
 	{
 		free_data(data);
@@ -124,13 +133,18 @@ static pid_t prepare_command(t_cmd *cmd, t_builtin *builtins,
 	builtin_index = get_builtin_index(builtins, cmd->cmd[0]);
 	if (builtin_index >= 0)
 		builtin_func = builtins[builtin_index].func;
-	if (process_heredocs(cmd, data.env) == -1)
-		return (-1);
+    if (process_heredocs(cmd, data.env) == CRITICAL_ERROR)
+        return (CRITICAL_ERROR);
+    else if (process_heredocs(cmd, data.env) == INVALID ||process_heredocs(cmd, data.env) == SIGINT_EXIT)
+    {
+        g_last_exit_status = INVALID;
+        return (INVALID);
+    }
     pid = fork();
     if (pid == -1)
     {
         perror("fork");
-        return -1;
+        return (CRITICAL_ERROR);
     }
     if (pid == 0)
     {
@@ -156,11 +170,14 @@ pid_t	*execute_commands(t_builtin *builtins, t_data data, t_pipe_info *pipe_info
 		i++;
 	data.pids = (pid_t *)malloc(sizeof(pid_t) * i);
     if (!data.pids)
+    {
+        perror("malloc");
         return (NULL);
+    }
     i = 0;
     while (data.cmds[i])
     {
-        if (setup_pipe(pipe_info, data.cmds[i + 1] != NULL) == -1)
+        if (setup_pipe(pipe_info, data.cmds[i + 1] != NULL) == CRITICAL_ERROR)
 		{
 			free(data.pids);
 			return (NULL);

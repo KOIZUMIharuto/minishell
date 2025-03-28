@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredocument.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
+/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 18:07:49 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/28 11:37:12 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/28 19:15:24 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,12 +64,12 @@ static int	write_expand_env(int tmp_fd, char *line, t_list *env_list)
 	return (0);
 }
 
-static int setup_heredoc_pipe(int pipe_fds[2], t_cmd *cmd)
+static t_valid setup_heredoc_pipe(int pipe_fds[2], t_cmd *cmd)
 {
     if (pipe(pipe_fds) == -1)
     {
         perror("pipe");
-        return (-1);
+        return (CRITICAL_ERROR);
     }
     if (cmd->backup_stdin == -1)
     {
@@ -79,14 +79,20 @@ static int setup_heredoc_pipe(int pipe_fds[2], t_cmd *cmd)
             perror("dup");
             close(pipe_fds[0]);
             close(pipe_fds[1]);
-            return (-1);
+            return (CRITICAL_ERROR);
         }
     }
     else
     {
-        dup2(cmd->backup_stdin, STDIN_FILENO);
+        if(dup2(cmd->backup_stdin, STDIN_FILENO) == -1) 
+        {
+            perror("dup2");
+            close(pipe_fds[0]);
+            close(pipe_fds[1]);
+            return (CRITICAL_ERROR);
+        }
     }
-    return (0);
+    return (VALID);
 }
 
 static void	process_heredoc_child(int pipe_fds[2], t_rdrct *rdrct, t_list *env)
@@ -117,7 +123,7 @@ static void	process_heredoc_child(int pipe_fds[2], t_rdrct *rdrct, t_list *env)
         }
 
         // ✅ 環境変数展開ありの場合
-        if (!rdrct->is_quoted && ft_strlen(line) > 0)
+        if (!rdrct->is_quoted && ft_strlen(line) > 0) //kokomitemorau
             write_expand_env(pipe_fds[1], line, env);
         else
         {
@@ -128,10 +134,10 @@ static void	process_heredoc_child(int pipe_fds[2], t_rdrct *rdrct, t_list *env)
     }
 
     close(pipe_fds[1]);
-    exit(0);
+    exit(VALID);
 }
 
-int	setup_parent_process(int pipe_fds[2], t_cmd *cmd, pid_t pid)
+t_valid	setup_parent_process(int pipe_fds[2], t_cmd *cmd, pid_t pid)
 {
 
     int status;
@@ -150,7 +156,7 @@ int	setup_parent_process(int pipe_fds[2], t_cmd *cmd, pid_t pid)
     {
         perror("waitpid");
         close(pipe_fds[0]);
-        return (-1);
+        return (CRITICAL_ERROR);
     }
 
     // ✅ シグナルで中断された場合
@@ -160,11 +166,16 @@ int	setup_parent_process(int pipe_fds[2], t_cmd *cmd, pid_t pid)
         close(pipe_fds[0]);
         if (cmd->backup_stdin != -1)
         {
-            dup2(cmd->backup_stdin, STDIN_FILENO);
+            if(dup2(cmd->backup_stdin, STDIN_FILENO)==-1);
+            {
+                perror("dup2");
+                close(cmd->backup_stdin);
+                return (CRITICAL_ERROR);
+            }
             close(cmd->backup_stdin);
             cmd->backup_stdin = -1;
         }
-        return (-42); // ✅ 中断時は -42 を返す
+        return (SIGINT_EXIT); // ✅ 中断時は -42 を返す
     }
 
     // ✅ 正常終了の場合
@@ -173,8 +184,9 @@ int	setup_parent_process(int pipe_fds[2], t_cmd *cmd, pid_t pid)
         g_last_exit_status = WEXITSTATUS(status);
         if (g_last_exit_status != 0)
         {
-            close(pipe_fds[0]);
-            return (-1);
+            
+            close(pipe_fds[0]); 
+            return (CRITICAL_ERROR); //koko
         }
     }
 
@@ -183,13 +195,13 @@ int	setup_parent_process(int pipe_fds[2], t_cmd *cmd, pid_t pid)
     {
         perror("dup2");
         close(pipe_fds[0]);
-        return (-1);
+        return (CRITICAL_ERROR);
     }
     close(pipe_fds[0]);
-    return (0);
+    return (VALID);
 }
 
-int	process_heredocs(t_cmd *cmd, t_list *env)
+t_valid process_heredocs(t_cmd *cmd, t_list *env)
 {
 	int		i;
     int pipe_fds[2];
@@ -201,15 +213,15 @@ int	process_heredocs(t_cmd *cmd, t_list *env)
 	{
 		if (cmd->rdrcts[i]->type != HEREDOCUMENT)
 			continue ;
-		if (setup_heredoc_pipe(pipe_fds, cmd) == -1)
-			return (-1);
+		if (setup_heredoc_pipe(pipe_fds, cmd) == CRITICAL_ERROR)
+			return (CRITICAL_ERROR);
 		pid = fork();
 		if (pid == -1)
 		{
 			perror("fork");
 			close(pipe_fds[0]);
 			close(pipe_fds[1]);
-			return (-1);
+			return (CRITICAL_ERROR);
 		}
 		if (pid == 0)
 		{
@@ -219,13 +231,18 @@ int	process_heredocs(t_cmd *cmd, t_list *env)
 		}
 		result = setup_parent_process(pipe_fds, cmd, pid);
 		setup_interactive_signals();  
-		if (result == -42)
+		if (result == SIGINT_EXIT)
 		{
-			dup2(cmd->backup_stdin, STDIN_FILENO);
+			if(dup2(cmd->backup_stdin, STDIN_FILENO)==-1)
+			{
+				perror("dup2");
+				close(cmd->backup_stdin);
+				return (CRITICAL_ERROR);
+			}
 			close(cmd->backup_stdin);
 			cmd->backup_stdin = -1;
-			return(-1);
+			return(SIGINT_EXIT); //koko
 		}
 	}
-    return (0);
+    return (VALID);
 }

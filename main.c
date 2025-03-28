@@ -6,7 +6,7 @@
 /*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 21:59:46 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/28 17:43:14 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/28 19:03:47 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,11 +27,11 @@ int	main(int argc, char **argv, char **envp)
 	init_builtins(builtins);
 	env = env_init(envp);
 	if (!env)
-		return (perror_int("malloc"));
+		return (pCRITICAL_ERROR_int("malloc"));
 	while (true)
 	{
 		status = prompt(builtins, env);
-		if (status == ERROR)
+		if (status == CRITICAL_ERROR)
 			break ;
 	}
 	ft_lstclear(&env, env_free);
@@ -51,7 +51,7 @@ static t_valid	prompt(t_builtin *builtins, t_list *env)
 	{
 		if (!print_msg("exit\n", STDOUT_FILENO))
 			g_last_exit_status = EXIT_FAILURE;
-		return (ERROR);
+		return (CRITICAL_ERROR);
 	}
 	if (ft_strlen(line) > 0)
 	{
@@ -62,7 +62,7 @@ static t_valid	prompt(t_builtin *builtins, t_list *env)
 		if (valid_status != VALID)
 			return (valid_status);
 		if (execute_pipeline(cmds, builtins, env) == -42)
-			return (ERROR);
+			return (CRITICAL_ERROR);
 	}
 	else
 		free(line);

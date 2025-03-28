@@ -6,7 +6,7 @@
 /*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 20:05:03 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/28 16:49:43 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/28 19:26:06 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,19 +34,29 @@
 // 	return (0);
 // }
 
-static int	handle_input_rdrct(t_cmd *cmd, t_rdrct *rdrct, bool is_last)
+static t_valid handle_input_rdrct(t_cmd *cmd, t_rdrct *rdrct, bool is_last)
 {
-	cmd->infile_fd = open(rdrct->file[0], O_RDONLY);
+	cmd->infile_fd =open(rdrct->file[0], O_RDONLY);
 	if (cmd->infile_fd == -1)
-		return (error_msg(rdrct->file[0], strerror(errno)));
-	if (is_last)
-		dup2(cmd->infile_fd, STDIN_FILENO);
-	close(cmd->infile_fd);
-	cmd->infile_fd = -1;
-	return (0);
+	{
+        error_msg(rdrct->file[0], strerror(errno));
+        return (CRITICAL_ERROR);
+    }
+    if (is_last)
+    {
+        if(dup2(cmd->infile_fd, STDIN_FILENO)==-1)
+        {
+            perror("dup2");
+            close(cmd->infile_fd);
+            return (CRITICAL_ERROR);
+        }
+    }
+    close(cmd->infile_fd);
+    cmd->infile_fd = -1;
+    return (VALID);
 }
 
-static int	handle_output_rdrct(t_cmd *cmd, t_rdrct *rdrct)
+static t_valid handle_output_rdrct(t_cmd *cmd, t_rdrct *rdrct)
 {
 	int	flags;
 
@@ -57,11 +67,19 @@ static int	handle_output_rdrct(t_cmd *cmd, t_rdrct *rdrct)
 		flags |= O_APPEND;
 	cmd->outfile_fd = open(rdrct->file[0], flags, 0644);
 	if (cmd->outfile_fd == -1)
-		return (error_msg(rdrct->file[0], strerror(errno)));
-	dup2(cmd->outfile_fd, STDOUT_FILENO);
+    {
+		error_msg(rdrct->file[0], strerror(errno));
+        return (CRITICAL_ERROR);
+    }
+	if(dup2(cmd->outfile_fd, STDOUT_FILENO)==-1)
+	{
+		perror("dup2");
+		close(cmd->outfile_fd);
+		return (CRITICAL_ERROR);
+	}
 	close(cmd->outfile_fd);
 	cmd->outfile_fd = -1;
-	return (0);
+	return (VALID);
 }
 
 bool	is_last_input(t_rdrct **redirect, int i)
@@ -81,7 +99,7 @@ bool	is_last_input(t_rdrct **redirect, int i)
 	return (is_last);
 }
 
-int	handle_redirection(t_cmd *cmd, t_list *env)
+t_valid handle_redirection(t_cmd *cmd, t_list *env)
 {
 	int		j;
 	t_rdrct	*redirect;
@@ -100,30 +118,38 @@ int	handle_redirection(t_cmd *cmd, t_list *env)
 			return (error_msg(redirect->token, "ambiguous redirect"));
 		// if ((redirect->type == HEREDOCUMENT && process_heredocs(cmd, redirect, env) == -1)
 		// 	|| (redirect->type == INPUT_RDRCT && handle_input_rdrct(cmd, redirect))
-		if ((redirect->type == INPUT_RDRCT && handle_input_rdrct(cmd, redirect, is_last_input(cmd->rdrcts, j)))
+		if ((redirect->type == INPUT_RDRCT && handle_input_rdrct(cmd, redirect, is_last_input(cmd->rdrcts, j)==CRITICAL_ERROR))
 			|| ((redirect->type == OVERWRITE_RDRCT || redirect->type == APPEND_RDRCT)
-				&& handle_output_rdrct(cmd, redirect)))
-			return (1);
+				&& handle_output_rdrct(cmd, redirect))==CRITICAL_ERROR)
+			return (CRITICAL_ERROR);
 		j++;
 	}
-	return (0);
+	return (VALID);
 }
 
-int restore_redirection(t_cmd *cmd)
+t_valid restore_redirection(t_cmd *cmd)
 {
 	if (cmd->backup_stdin != -1)
 	{
 		if (dup2(cmd->backup_stdin, STDIN_FILENO) == -1)
-			return (perror_int("dup2"));
+        {
+            perror_int("dup2");
+		    close(cmd->backup_stdin);
+            return (CRITICAL_ERROR);
+        }
 		close(cmd->backup_stdin);
 		cmd->backup_stdin = -1;
 	}
 	if (cmd->backup_stdout != -1)
 	{
 		if (dup2(cmd->backup_stdout, STDOUT_FILENO) == -1)
-			return (perror_int("dup2"));
+        {
+            perror("dup2");
+            close(cmd->backup_stdout);
+            return (CRITICAL_ERROR);
+        }
 		close(cmd->backup_stdout);
 		cmd->backup_stdout = -1;
 	}
-	return (0);
+	return (VALID);
 }
