@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipe_command.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 12:30:41 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/27 21:40:13 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/28 11:16:31 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,6 +120,8 @@ static pid_t prepare_command(t_cmd *cmd, t_builtin *builtins,
 	builtin_index = get_builtin_index(builtins, cmd->cmd[0]);
 	if (builtin_index >= 0)
 		builtin_func = builtins[builtin_index].func;
+	if (process_heredocs(cmd, data.env) == -1)
+		return (-1);
     pid = fork();
     if (pid == -1)
     {
@@ -131,6 +133,12 @@ static pid_t prepare_command(t_cmd *cmd, t_builtin *builtins,
         setup_exec_signals();
         execute_command_in_child(cmd, builtin_func, data, pipe_info);
     }
+	if (cmd->backup_stdin != -1)
+	{
+		dup2(cmd->backup_stdin, STDIN_FILENO);
+		close(cmd->backup_stdin);
+		cmd->backup_stdin = -1;
+	}
     return pid;
 }
 
