@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirect.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
+/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 20:05:03 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/28 11:35:12 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/28 16:49:43 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,8 +89,8 @@ int	handle_redirection(t_cmd *cmd, t_list *env)
 	(void)env;
 	// if (backup_io(cmd))
 	// 	return (1);
-	if (cmd->backup_stdin != -1)
-		close(cmd->backup_stdin);
+	// if (cmd->backup_stdin != -1)
+	// 	close(cmd->backup_stdin);
 	j = 0;
 	while (cmd->rdrcts[j])
 	{

@@ -6,7 +6,7 @@
 /*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 01:16:07 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/28 16:06:04 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/28 16:24:34 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ int execute_pipeline(t_cmd **cmds, t_builtin *builtins, t_list *env)
 	data.env = env;
 	data.cmds = cmds;
 	data.pids = NULL;
-    data.pids = execute_commands(builtins, data, &pipe_info);
+    data.pids = NULL;
     
     if (!check_pipeline(cmds, &cmd_count))
     {
@@ -101,6 +101,7 @@ int execute_pipeline(t_cmd **cmds, t_builtin *builtins, t_list *env)
     // if (!data.pids)
     
     //     return (EXIT_FAILURE);
+    data.pids = execute_commands(builtins, data, &pipe_info);
     
 	free_cmds(cmds);
 	if (!data.pids)

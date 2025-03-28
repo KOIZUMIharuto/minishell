@@ -6,7 +6,7 @@
 /*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 12:30:41 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/28 16:14:32 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/28 16:52:47 by shiori           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,30 +16,27 @@ int execute_single_builtin(t_cmd *cmd, int (*builtin_func)(char **, t_list *), t
 {
     int result;
     
-    printf("process_heredocs\n");
-    printf("backup_fd_1: %d\n", cmd->backup_stdin);
     if (process_heredocs(cmd, data.env) == -1)
-	{   
-        printf("backup_fd_2: %d\n", cmd->backup_stdin);
-        restore_redirection(cmd);
-        printf("backup_fd_3: %d\n", cmd->backup_stdin);
+    {
         g_last_exit_status = 1;
         return (1);
     }
-    setup_interactive_signals();
+
     if (handle_redirection(cmd, data.env))
     {
         restore_redirection(cmd);
         g_last_exit_status = 1;
         return (1);
     }
+
     
     setup_builtin_signals();
     result = builtin_func(cmd->cmd, data.env);
     restore_redirection(cmd);
+
+
     if (ft_strcmp(cmd->cmd[0], "exit") != 0)
         g_last_exit_status = result;
-    
     
     if (ft_strcmp(cmd->cmd[0], "exit") == 0)
     {
@@ -88,7 +85,6 @@ void	execute_command_in_child(t_cmd *cmd,
 
 	free(data.pids);
 	data.pids = NULL;
-	// if (process_heredocs(cmd, data.env) == -1 || handle_redirection(cmd, data.env))
 	if (handle_redirection(cmd, data.env))
 	{
 		free_data(data);
