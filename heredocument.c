@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredocument.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 18:07:49 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/27 21:38:59 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/28 11:37:12 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,11 +140,11 @@ int	setup_parent_process(int pipe_fds[2], t_cmd *cmd, pid_t pid)
     close(pipe_fds[1]);  // ✅ 書き込みパイプを閉じる
 
     // ✅ EINTR の場合は再試行
-    while ((result = waitpid(pid, &status, 0)) == -1 && errno == EINTR)
-        ;
-    // {
-    //     perror("2 waitpid interrupted by signal, retrying...");
-    // }
+	// printf("wait start\n");
+	result = waitpid(pid, &status, 0);
+	while (result == -1 && errno == EINTR)
+        result = waitpid(pid, &status, 0);
+	// printf("wait end\n");
 
     if (result == -1)
     {
@@ -189,35 +189,43 @@ int	setup_parent_process(int pipe_fds[2], t_cmd *cmd, pid_t pid)
     return (0);
 }
 
-int	process_heredocs(t_cmd *cmd, t_rdrct *rdrct, t_list *env)
+int	process_heredocs(t_cmd *cmd, t_list *env)
 {
+	int		i;
     int pipe_fds[2];
     pid_t pid;
     int result;
 
-    if (setup_heredoc_pipe(pipe_fds, cmd) == -1)
-        return (-1);
-    pid = fork();
-    if (pid == -1)
-    {
-        perror("fork");
-        close(pipe_fds[0]);
-        close(pipe_fds[1]);
-        return (-1);
-    }
-    if (pid == 0)
-    {
-        process_heredoc_child(pipe_fds, rdrct, env);
-    }
-    result = setup_parent_process(pipe_fds, cmd, pid);
-    setup_interactive_signals();  
-    if (result == -42)
-    {
-        dup2(cmd->backup_stdin, STDIN_FILENO);
-        close(cmd->backup_stdin);
-        cmd->backup_stdin = -1;
-        return(-1);
-    }
-
+	i = -1;
+	while (cmd->rdrcts[++i])
+	{
+		if (cmd->rdrcts[i]->type != HEREDOCUMENT)
+			continue ;
+		if (setup_heredoc_pipe(pipe_fds, cmd) == -1)
+			return (-1);
+		pid = fork();
+		if (pid == -1)
+		{
+			perror("fork");
+			close(pipe_fds[0]);
+			close(pipe_fds[1]);
+			return (-1);
+		}
+		if (pid == 0)
+		{
+			if (cmd->backup_stdin != -1)
+				close(cmd->backup_stdin);
+			process_heredoc_child(pipe_fds, cmd->rdrcts[i], env);
+		}
+		result = setup_parent_process(pipe_fds, cmd, pid);
+		setup_interactive_signals();  
+		if (result == -42)
+		{
+			dup2(cmd->backup_stdin, STDIN_FILENO);
+			close(cmd->backup_stdin);
+			cmd->backup_stdin = -1;
+			return(-1);
+		}
+	}
     return (0);
 }
