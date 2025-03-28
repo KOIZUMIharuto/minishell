@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_export.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 14:44:22 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/25 12:18:29 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/28 19:32:17 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,32 +14,33 @@
 
 static int	export_env(t_list *env_list);
 
-int	builtin_export(char **cmd, t_list *env)
+t_valid	builtin_export(char **cmd, t_list *env)
 {
-	int		i;
-	int		status;
 	char	*key;
 	char	*value;
 	t_valid	is_valid;
+	t_valid	valid_status;
 
 	if (!cmd[1])
 		return (export_env(env));
-	i = 0;
-	status = 0;
-	while (cmd[++i])
+	valid_status = VALID;
+	while (*(++cmd))
 	{
-		is_valid = env_split(cmd[i], &key, &value, env);
+		is_valid = env_split(*cmd, &key, &value, env);
 		if (is_valid == ERROR)
-			return (1);
+			return (is_valid);
 		if (is_valid == INVALID)
 		{
-			status = 1;
+			valid_status = INVALID;
 			continue ;
 		}
 		if (!env_update(&env, key, value))
-			status = 1;
+		{
+			g_last_exit_status = -1;
+			valid_status = ERROR;
+		}
 	}
-	return (status);
+	return (valid_status);
 }
 
 static int	export_env(t_list *env_list)

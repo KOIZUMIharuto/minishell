@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredocument.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 18:07:49 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/28 19:15:24 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/28 20:05:18 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,9 +100,9 @@ static void	process_heredoc_child(int pipe_fds[2], t_rdrct *rdrct, t_list *env)
     char	*line;
     char	*delimiter;
 
-    delimiter = rdrct->file[0];
-    close(pipe_fds[0]);
-    setup_heredoc_signals();
+	delimiter = rdrct->file[0];
+	close(pipe_fds[0]);
+	setup_heredoc_signals();
 
     while (1)
     {
@@ -122,14 +122,20 @@ static void	process_heredoc_child(int pipe_fds[2], t_rdrct *rdrct, t_list *env)
             break;
         }
 
-        // ✅ 環境変数展開ありの場合
-        if (!rdrct->is_quoted && ft_strlen(line) > 0) //kokomitemorau
-            write_expand_env(pipe_fds[1], line, env);
-        else
-        {
-            write(pipe_fds[1], line, ft_strlen(line));
-        }
-        write(pipe_fds[1], "\n", 1);
+		if ((!rdrct->is_quoted && ft_strlen(line) > 0
+				&& write_expand_env(pipe_fds[1], line, env) == -1)
+			|| write(pipe_fds[1], line, ft_strlen(line)) == -1)
+		{
+			perror("write");
+			free(line);
+			exit(1);
+		}
+		if (write(pipe_fds[1], "\n", 1) == -1)
+		{
+			perror("write");
+			free(line);
+			exit (1);
+		}
         free(line);
     }
 
@@ -150,7 +156,6 @@ t_valid	setup_parent_process(int pipe_fds[2], t_cmd *cmd, pid_t pid)
 	result = waitpid(pid, &status, 0);
 	while (result == -1 && errno == EINTR)
         result = waitpid(pid, &status, 0);
-	// printf("wait end\n");
 
     if (result == -1)
     {

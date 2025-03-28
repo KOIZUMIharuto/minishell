@@ -17,7 +17,6 @@ static void		set_exit_status(t_parser *data, int exit_status);
 static t_cmd	**list_to_cmds(t_list *cmd_list);
 static void		free_splited_tokens(t_list ***splited_tokens);
 
-
 t_valid	parser(t_cmd ***cmds, char *line, int exit_status, t_list *env)
 {
 	t_parser	data;

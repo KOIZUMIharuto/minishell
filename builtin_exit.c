@@ -6,13 +6,45 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 00:54:17 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/23 10:58:21 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/28 19:29:05 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
 
-bool	is_numeric(const char *str)
+static bool	is_numeric(const char *str);
+static bool	is_in_long_range(long *result, const char *str);
+
+t_valid	builtin_exit(char **cmd, t_list *env)
+{
+	long	result;
+
+	(void)env;
+	result = 0;
+	if (cmd[1] && (!is_numeric(cmd[1]) || !is_in_long_range(&result, cmd[1])))
+	{
+		if (write(STDERR_FILENO, "minishell: exit: ", 17) < 0
+			|| write(STDERR_FILENO, cmd[1], ft_strlen(cmd[1])) < 0
+			|| write(STDERR_FILENO, ": numeric argument required\n", 28) < 0)
+		{
+			perror("write");
+			return (ERROR);
+		}
+		g_last_exit_status = 2;
+		exit(g_last_exit_status);
+	}
+	if (cmd[1] && cmd[2])
+		return (error_msg("exit", "too many arguments", INVALID));
+	g_last_exit_status = (result % 256 + 256) % 256;
+	if (write(STDOUT_FILENO, "exit\n", 5) < 0)
+	{
+		perror("write");
+		return (ERROR);
+	}
+	return (VALID);
+}
+
+static bool	is_numeric(const char *str)
 {
 	int	i;
 
@@ -32,7 +64,7 @@ bool	is_numeric(const char *str)
 	return (true);
 }
 
-bool	is_in_long_range(long *result, const char *str)
+static bool	is_in_long_range(long *result, const char *str)
 {
 	int		sign;
 
@@ -56,29 +88,4 @@ bool	is_in_long_range(long *result, const char *str)
 		*result += sign * (*(str++) - '0');
 	}
 	return (true);
-}
-
-int	builtin_exit(char **cmd, t_list *env)
-{
-	long	result;
-
-	(void)env;
-	result = 0;
-	if (cmd[1] && (!is_numeric(cmd[1]) || !is_in_long_range(&result, cmd[1])))
-	{
-		ft_putstr_fd("minishell: exit: ", STDERR_FILENO);
-		ft_putstr_fd(cmd[1], STDERR_FILENO);
-		ft_putstr_fd(": numeric argument required\n", STDERR_FILENO);
-		g_last_exit_status = 2;
-		exit(g_last_exit_status);
-	}
-	if (cmd[1] && cmd[2])
-	{
-		ft_putstr_fd("minishell: exit: too many arguments\n", STDERR_FILENO);
-		g_last_exit_status = 1;
-		return (-1);
-	}
-	g_last_exit_status = (result % 256 + 256) % 256;
-	ft_putstr_fd("exit\n", STDOUT_FILENO);
-	return (0);
 }

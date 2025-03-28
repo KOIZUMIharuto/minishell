@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 14:13:46 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/28 19:40:21 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/28 20:06:04 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,7 +101,7 @@ typedef struct s_parser
 typedef struct s_builtin
 {
 	char	*name;
-	int		(*func)(char **, t_list *);
+	t_valid	(*func)(char **, t_list *);
 }	t_builtin;
 
 typedef struct s_pipe_info
@@ -149,24 +149,24 @@ int  restore_redirection(t_cmd *cmd);
 // builtin
 void	init_builtins(t_builtin *builtins);
 int		get_builtin_index(t_builtin *builtins, char *cmd);
-int		builtin_echo(char **cmd, t_list *env);
-int		builtin_cd(char **cmd, t_list *env);
-int		builtin_pwd(char **cmd, t_list *env);
+t_valid	builtin_echo(char **cmd, t_list *env);
+t_valid	builtin_cd(char **cmd, t_list *env);
+t_valid	builtin_pwd(char **cmd, t_list *env);
 char	*get_pwd(void);
-int		builtin_export(char **cmd, t_list *env);
-int		builtin_unset(char **cmd, t_list *env);
-int		builtin_env(char **cmd, t_list *env);
-int		builtin_exit(char **cmd, t_list *env);
+t_valid	builtin_export(char **cmd, t_list *env);
+t_valid	builtin_unset(char **cmd, t_list *env);
+t_valid	builtin_env(char **cmd, t_list *env);
+t_valid	builtin_exit(char **cmd, t_list *env);
 
 // env
 t_list	*env_init(char **env);
 t_valid	env_split(char *env, char **key, char **value, t_list *env_list);
-bool	env_delete(t_list **env_list, char *key);
+void	env_delete(t_list **env_list, char *key);
 void	env_free(void *content);
 t_env	*env_get(t_list *env_list, char *key, bool even_if_shell_var);
 bool	env_update(t_list **env_list, char *key, char *value);
-bool	is_valid_key(char *key);
-bool	print_invalid_key(char *cmd, char *key);
+t_valid	is_valid_key(char *key);
+t_valid	print_invalid_key(char *cmd, char *key);
 char	**convert_env_list_to_array(t_list *env);
 
 // puerser
@@ -187,10 +187,10 @@ void	free_cmd(void *content);
 void	free_rdrcts(void *content);
 void	free_rdrct(void *content);
 
-int		CRITICAL_ERROR_msg(char *cmd, char *msg);
-int		pCRITICAL_ERROR_int(char *cmd);
-bool	pCRITICAL_ERROR_bool(char *cmd);
-void	*pCRITICAL_ERROR_ptr(char *cmd);
+int		error_msg(char *cmd, char *msg);
+int		perror_int(char *cmd);
+bool	perror_bool(char *cmd);
+void	*perror_ptr(char *cmd);
 
 
 bool	print_msg(char *msg, int fd);
