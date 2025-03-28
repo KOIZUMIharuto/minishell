@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 21:59:46 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/27 21:54:16 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/28 12:39:17 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ static t_valid	prompt(t_builtin *builtins, t_list *env)
 
 	setup_interactive_signals();
 	line = readline(PROMPT);
+	setup_after_rl_signals();
 	if (!line)
 	{
 		if (!print_msg("exit\n", STDOUT_FILENO))

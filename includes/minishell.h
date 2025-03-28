@@ -121,6 +121,7 @@ void setup_builtin_signals(void);
 void setup_exec_signals(void);
 void setup_child_signals(void);
 void setup_heredoc_signals(void);
+void setup_after_rl_signals(void);
 
 // pipe
 int		setup_pipe(t_pipe_info *pipe_info, bool has_next);
