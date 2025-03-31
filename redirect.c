@@ -3,52 +3,94 @@
 /*                                                        :::      ::::::::   */
 /*   redirect.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 20:05:03 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/28 16:49:43 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/31 13:48:31 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
 
-// static int	backup_io(t_cmd *cmd)
-// {
-// 	if (cmd->backup_stdin == -1)
-// 	{
-// 		cmd->backup_stdin = dup(STDIN_FILENO);
-// 		if (cmd->backup_stdin == -1)
-// 			return (perror_int("dup"));
-// 	}
-// 	if (cmd->backup_stdout == -1)
-// 	{
-// 		cmd->backup_stdout = dup(STDOUT_FILENO);
-// 		if (cmd->backup_stdout == -1)
-// 		{
-// 			(void)perror_int("dup");
-// 			close(cmd->backup_stdin);
-// 			cmd->backup_stdin = -1;
-// 			return (1);
-// 		}
-// 	}
-// 	return (0);
-// }
+static int		backup_io(t_cmd *cmd);
+static t_valid	handle_input_rdrct(t_cmd *cmd, t_rdrct *rdrct, int i);
+static t_valid	handle_output_rdrct(t_cmd *cmd, t_rdrct *rdrct);
+static bool		is_last_in(t_rdrct **redirect, int i);
 
-static int	handle_input_rdrct(t_cmd *cmd, t_rdrct *rdrct, bool is_last)
+t_valid	handle_redirection(t_cmd *cmd, t_list *env)
 {
-	cmd->infile_fd = open(rdrct->file[0], O_RDONLY);
-	if (cmd->infile_fd == -1)
-		return (error_msg(rdrct->file[0], strerror(errno)));
-	if (is_last)
-		dup2(cmd->infile_fd, STDIN_FILENO);
-	close(cmd->infile_fd);
-	cmd->infile_fd = -1;
+	int		i;
+	t_rdrct	*rdrct;
+	t_valid	is_valid;
+
+	(void)env;
+	if (backup_io(cmd))
+		return (CRITICAL_ERROR);
+	i = 0;
+	is_valid = VALID;
+	while (cmd->rdrcts[i])
+	{
+		rdrct = cmd->rdrcts[i];
+		if (rdrct->type != HEREDOCUMENT
+			&& (!rdrct->file[0] || rdrct->file[1]))
+			return (error_msg(rdrct->token, "ambiguous redirect", INVALID));
+		if (rdrct->type == INPUT_RDRCT)
+			is_valid = handle_input_rdrct(cmd, rdrct, i);
+		else if (rdrct->type == OVERWRITE_RDRCT || rdrct->type == APPEND_RDRCT)
+			is_valid = handle_output_rdrct(cmd, rdrct);
+		if (is_valid != VALID)
+			return (is_valid);
+		i++;
+	}
+	return (is_valid);
+}
+
+static int	backup_io(t_cmd *cmd)
+{
+	if (cmd->backup_stdin == -1)
+	{
+		cmd->backup_stdin = dup(STDIN_FILENO);
+		if (cmd->backup_stdin == -1)
+			return (perror_int("dup"));
+	}
+	if (cmd->backup_stdout == -1)
+	{
+		cmd->backup_stdout = dup(STDOUT_FILENO);
+		if (cmd->backup_stdout == -1)
+		{
+			(void)perror_int("dup");
+			close_wrapper(&(cmd->backup_stdin));
+			return (1);
+		}
+	}
 	return (0);
 }
 
-static int	handle_output_rdrct(t_cmd *cmd, t_rdrct *rdrct)
+static t_valid	handle_input_rdrct(t_cmd *cmd, t_rdrct *rdrct, int i)
 {
-	int	flags;
+	bool	is_last;
+
+	is_last = is_last_in(cmd->rdrcts, i);
+	cmd->infile_fd = open(rdrct->file[0], O_RDONLY);
+	if (cmd->infile_fd == -1)
+		return (error_msg(rdrct->file[0], strerror(errno), INVALID));
+	if (is_last)
+	{
+		if (dup2(cmd->infile_fd, STDIN_FILENO) == -1)
+		{
+			perror("dup2");
+			close_wrapper(&(cmd->infile_fd));
+			return (CRITICAL_ERROR);
+		}
+	}
+	close_wrapper(&(cmd->infile_fd));
+	return (VALID);
+}
+
+static t_valid	handle_output_rdrct(t_cmd *cmd, t_rdrct *rdrct)
+{
+	int		flags;
+	bool	is_success;
 
 	flags = O_WRONLY | O_CREAT;
 	if (rdrct->type == OVERWRITE_RDRCT)
@@ -56,15 +98,23 @@ static int	handle_output_rdrct(t_cmd *cmd, t_rdrct *rdrct)
 	else if (rdrct->type == APPEND_RDRCT)
 		flags |= O_APPEND;
 	cmd->outfile_fd = open(rdrct->file[0], flags, 0644);
+	is_success = true;
 	if (cmd->outfile_fd == -1)
-		return (error_msg(rdrct->file[0], strerror(errno)));
-	dup2(cmd->outfile_fd, STDOUT_FILENO);
-	close(cmd->outfile_fd);
-	cmd->outfile_fd = -1;
-	return (0);
+	{
+		if (errno == EACCES || errno == ENOTDIR || errno == EISDIR)
+			return (error_msg(rdrct->file[0], strerror(errno), INVALID));
+		else
+			is_success = perror_bool("open");
+	}
+	if (is_success && dup2(cmd->outfile_fd, STDOUT_FILENO) == -1)
+		is_success = perror_bool("dup2");
+	close_wrapper(&(cmd->outfile_fd));
+	if (!is_success)
+		return (CRITICAL_ERROR);
+	return (VALID);
 }
 
-bool	is_last_input(t_rdrct **redirect, int i)
+static bool	is_last_in(t_rdrct **redirect, int i)
 {
 	bool	is_last;
 
@@ -79,51 +129,4 @@ bool	is_last_input(t_rdrct **redirect, int i)
 		}
 	}
 	return (is_last);
-}
-
-int	handle_redirection(t_cmd *cmd, t_list *env)
-{
-	int		j;
-	t_rdrct	*redirect;
-
-	(void)env;
-	// if (backup_io(cmd))
-	// 	return (1);
-	// if (cmd->backup_stdin != -1)
-	// 	close(cmd->backup_stdin);
-	j = 0;
-	while (cmd->rdrcts[j])
-	{
-		redirect = cmd->rdrcts[j];
-		if (redirect->type != HEREDOCUMENT
-			&& (!redirect->file[0] || redirect->file[1]))
-			return (error_msg(redirect->token, "ambiguous redirect"));
-		// if ((redirect->type == HEREDOCUMENT && process_heredocs(cmd, redirect, env) == -1)
-		// 	|| (redirect->type == INPUT_RDRCT && handle_input_rdrct(cmd, redirect))
-		if ((redirect->type == INPUT_RDRCT && handle_input_rdrct(cmd, redirect, is_last_input(cmd->rdrcts, j)))
-			|| ((redirect->type == OVERWRITE_RDRCT || redirect->type == APPEND_RDRCT)
-				&& handle_output_rdrct(cmd, redirect)))
-			return (1);
-		j++;
-	}
-	return (0);
-}
-
-int restore_redirection(t_cmd *cmd)
-{
-	if (cmd->backup_stdin != -1)
-	{
-		if (dup2(cmd->backup_stdin, STDIN_FILENO) == -1)
-			return (perror_int("dup2"));
-		close(cmd->backup_stdin);
-		cmd->backup_stdin = -1;
-	}
-	if (cmd->backup_stdout != -1)
-	{
-		if (dup2(cmd->backup_stdout, STDOUT_FILENO) == -1)
-			return (perror_int("dup2"));
-		close(cmd->backup_stdout);
-		cmd->backup_stdout = -1;
-	}
-	return (0);
 }

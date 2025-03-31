@@ -3,44 +3,44 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_cd.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 14:37:35 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/25 17:12:45 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/28 20:50:11 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
 
-static bool	update_pwd(t_list *env_list);
-static int	perror_cd(char *arg, int errnum);
+static bool		update_pwd(t_list *env_list);
+static t_valid	perror_cd(char *arg, int errnum, t_valid is_valid);
 
-int	builtin_cd(char **cmd, t_list *env)
+t_valid	builtin_cd(char **cmd, t_list *env)
 {
 	struct stat	path_stat;
 	t_env		*home_dir;
 	char		*directory;
 
 	if (cmd[1] && cmd[2])
-		return (error_msg("cd", "too many arguments"));
+		return (error_msg("cd", "too many arguments", INVALID));
 	if (cmd[1] == NULL)
 	{
 		home_dir = env_get(env, "HOME", false);
 		if (!home_dir)
-			return (error_msg("cd", "HOME not set"));
+			return (error_msg("cd", "HOME not set", INVALID));
 		directory = home_dir->value;
 	}
 	else
 		directory = cmd[1];
 	if (stat(directory, &path_stat) != 0)
-		return (perror_cd(directory, errno));
+		return (perror_cd(directory, errno, INVALID));
 	if (!S_ISDIR(path_stat.st_mode))
-		return (perror_cd(directory, ENOTDIR));
+		return (perror_cd(directory, ENOTDIR, INVALID));
 	if (chdir(directory) != 0)
-		return (perror_cd(directory, errno));
+		return (perror_cd(directory, errno, CRITICAL_ERROR));
 	if (!update_pwd(env))
-		return (1);
-	return (0);
+		return (CRITICAL_ERROR);
+	return (VALID);
 }
 
 static bool	update_pwd(t_list *env_list)
@@ -63,7 +63,7 @@ static bool	update_pwd(t_list *env_list)
 	return (true);
 }
 
-static int	perror_cd(char *arg, int errnum)
+static t_valid	perror_cd(char *arg, int errnum, t_valid is_valid)
 {
 	if (!print_msg("minishell: cd: ", STDERR_FILENO)
 		|| !print_msg(arg, STDERR_FILENO)
@@ -71,8 +71,7 @@ static int	perror_cd(char *arg, int errnum)
 		|| !print_msg(strerror(errnum), STDERR_FILENO)
 		|| !print_msg("\n", STDERR_FILENO))
 	{
-		g_last_exit_status = EXIT_FAILURE;
-		perror("write");
+		return (CRITICAL_ERROR);
 	}
-	return (1);
+	return (is_valid);
 }

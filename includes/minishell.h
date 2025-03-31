@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 14:13:46 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/28 15:45:24 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/31 13:40:40 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,9 +43,12 @@ typedef struct s_env
 
 typedef enum e_valid
 {
-	VALID,
-	INVALID,
-	ERROR
+	CRITICAL_ERROR=-1,
+	VALID=0,
+	INVALID=1,
+	CMD_EXTERNAL=-2,
+	SIGINT_EXIT=-24,
+	EXIT_MAINT_LOOP=-42
 }	t_valid;
 
 typedef enum e_quote
@@ -81,7 +84,7 @@ typedef struct s_cmd
 	int		outfile_fd;
 	int		backup_stdin;
 	int		backup_stdout;
-    int     original_stdin;
+	int		original_stdin;
 }	t_cmd;
 
 typedef struct s_parser
@@ -97,7 +100,7 @@ typedef struct s_parser
 typedef struct s_builtin
 {
 	char	*name;
-	int		(*func)(char **, t_list *);
+	t_valid	(*func)(char **, t_list *);
 }	t_builtin;
 
 typedef struct s_pipe_info
@@ -129,12 +132,12 @@ int		execute_pipeline(t_cmd **cmds, t_builtin *builtins, t_list *env);
 // int		execute_single_builtin(t_cmd *cmd, t_builtin *builtins,
 // 			int builtin_index, t_list *env);
 int execute_single_builtin(t_cmd *cmd, int (*builtin_func)(char **, t_list *),t_data data);
-pid_t	*execute_commands(t_builtin *builtins, t_data data,
+t_valid	execute_commands(t_builtin *builtins, t_data *data,
 			t_pipe_info *pipe_info);
 void	execute_cmd(char **cmd, t_data data);
 void	manage_pipes(t_pipe_info *pipe_info);
-void	handle_pipe_input(t_pipe_info *pipe_info);
-void	handle_pipe_output(t_pipe_info *pipe_info);
+t_valid	handle_pipe_input(t_pipe_info *pipe_info);
+t_valid	handle_pipe_output(t_pipe_info *pipe_info);
 
 //redirect and heredoc
 int	process_heredocs(t_cmd *cmd, t_list* env);
@@ -145,24 +148,24 @@ int  restore_redirection(t_cmd *cmd);
 // builtin
 void	init_builtins(t_builtin *builtins);
 int		get_builtin_index(t_builtin *builtins, char *cmd);
-int		builtin_echo(char **cmd, t_list *env);
-int		builtin_cd(char **cmd, t_list *env);
-int		builtin_pwd(char **cmd, t_list *env);
+t_valid	builtin_echo(char **cmd, t_list *env);
+t_valid	builtin_cd(char **cmd, t_list *env);
+t_valid	builtin_pwd(char **cmd, t_list *env);
 char	*get_pwd(void);
-int		builtin_export(char **cmd, t_list *env);
-int		builtin_unset(char **cmd, t_list *env);
-int		builtin_env(char **cmd, t_list *env);
-int		builtin_exit(char **cmd, t_list *env);
+t_valid	builtin_export(char **cmd, t_list *env);
+t_valid	builtin_unset(char **cmd, t_list *env);
+t_valid	builtin_env(char **cmd, t_list *env);
+t_valid	builtin_exit(char **cmd, t_list *env);
 
 // env
 t_list	*env_init(char **env);
 t_valid	env_split(char *env, char **key, char **value, t_list *env_list);
-bool	env_delete(t_list **env_list, char *key);
+void	env_delete(t_list **env_list, char *key);
 void	env_free(void *content);
 t_env	*env_get(t_list *env_list, char *key, bool even_if_shell_var);
 bool	env_update(t_list **env_list, char *key, char *value);
-bool	is_valid_key(char *key);
-bool	print_invalid_key(char *cmd, char *key);
+t_valid	is_valid_key(char *key);
+t_valid	print_invalid_key(char *cmd, char *key);
 char	**convert_env_list_to_array(t_list *env);
 
 // puerser
@@ -183,12 +186,12 @@ void	free_cmd(void *content);
 void	free_rdrcts(void *content);
 void	free_rdrct(void *content);
 
-int		error_msg(char *cmd, char *msg);
+int		error_msg(char *cmd, char *msg, t_valid is_valid);
 int		perror_int(char *cmd);
 bool	perror_bool(char *cmd);
 void	*perror_ptr(char *cmd);
 
-
+void	close_wrapper(int *fd);
 bool	print_msg(char *msg, int fd);
 
 void	free_double_pointor(char **array);

@@ -1,36 +1,38 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   builtin_unset.c                                    :+:      :+:    :+:   */
+/*   redirect_utils.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/12 18:11:10 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/28 20:07:22 by hkoizumi         ###   ########.fr       */
+/*   Created: 2025/03/31 13:44:54 by hkoizumi          #+#    #+#             */
+/*   Updated: 2025/03/31 13:47:06 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
 
-t_valid	builtin_unset(char **cmd, t_list *env)
+t_valid	restore_redirection(t_cmd *cmd)
 {
-	int		i;
-	t_valid	is_valid;
-	t_valid	valid_status;
-
-	i = 0;
-	valid_status = VALID;
-	while (cmd[++i])
+	if (cmd->backup_stdin != -1)
 	{
-		is_valid = is_valid_key(cmd[i]);
-		if (is_valid == CRITICAL_ERROR)
-			return (CRITICAL_ERROR);
-		else if (is_valid == INVALID)
+		if (dup2(cmd->backup_stdin, STDIN_FILENO) == -1)
 		{
-			valid_status = INVALID;
-			continue ;
+			perror("dup2");
+			close_wrapper(&(cmd->backup_stdin));
+			return (CRITICAL_ERROR);
 		}
-		env_delete(&env, cmd[i]);
+		close_wrapper(&(cmd->backup_stdin));
 	}
-	return (valid_status);
+	if (cmd->backup_stdout != -1)
+	{
+		if (dup2(cmd->backup_stdout, STDOUT_FILENO) == -1)
+		{
+			perror("dup2");
+			close_wrapper(&(cmd->backup_stdout));
+			return (CRITICAL_ERROR);
+		}
+		close_wrapper(&(cmd->backup_stdout));
+	}
+	return (VALID);
 }

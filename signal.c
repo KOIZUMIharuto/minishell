@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   signal.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: shiori <shiori@student.42.fr>              +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 22:01:52 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/28 17:55:52 by shiori           ###   ########.fr       */
+/*   Updated: 2025/03/31 10:56:40 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ void setup_interactive_signals(void)
     struct termios term;
 
     ft_bzero(&sa, sizeof(sa));
+    ft_bzero(&term, sizeof(term));
     tcgetattr(STDIN_FILENO, &term);
 
     term.c_lflag |= ECHOCTL;
@@ -87,6 +88,7 @@ void setup_exec_signals(void)
     struct termios term;
 
     ft_bzero(&sa, sizeof(sa));
+    ft_bzero(&term, sizeof(term));
     tcgetattr(STDIN_FILENO, &term);
     term.c_lflag &= ~(ECHOCTL);
     tcsetattr(STDIN_FILENO, TCSANOW, &term);
@@ -109,6 +111,7 @@ void setup_child_signals(void)
     struct termios term;
 
     ft_bzero(&sa, sizeof(sa));
+    ft_bzero(&term, sizeof(term));
     tcgetattr(STDIN_FILENO, &term);
 
     term.c_lflag &= ~ECHOCTL;
@@ -131,6 +134,7 @@ void setup_heredoc_signals(void)
     struct termios term;
 
     ft_bzero(&sa, sizeof(sa));
+    ft_bzero(&term, sizeof(term));
     tcgetattr(STDIN_FILENO, &term);
 
     // term.c_lflag |= ECHOCTL;
@@ -153,6 +157,7 @@ void setup_after_rl_signals(void)
     struct termios term;
 
     ft_bzero(&sa, sizeof(sa));
+    ft_bzero(&term, sizeof(term));
     tcgetattr(STDIN_FILENO, &term);
 
     term.c_lflag &= ~(ECHOCTL);

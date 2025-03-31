@@ -1,36 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   builtin_unset.c                                    :+:      :+:    :+:   */
+/*   close_wrapper.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/12 18:11:10 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/28 20:07:22 by hkoizumi         ###   ########.fr       */
+/*   Created: 2025/03/31 13:32:33 by hkoizumi          #+#    #+#             */
+/*   Updated: 2025/03/31 13:40:30 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
 
-t_valid	builtin_unset(char **cmd, t_list *env)
+void	close_wrapper(int *fd)
 {
-	int		i;
-	t_valid	is_valid;
-	t_valid	valid_status;
-
-	i = 0;
-	valid_status = VALID;
-	while (cmd[++i])
-	{
-		is_valid = is_valid_key(cmd[i]);
-		if (is_valid == CRITICAL_ERROR)
-			return (CRITICAL_ERROR);
-		else if (is_valid == INVALID)
-		{
-			valid_status = INVALID;
-			continue ;
-		}
-		env_delete(&env, cmd[i]);
-	}
-	return (valid_status);
+	if (*fd == -1)
+		return ;
+	close(*fd);
+	*fd = -1;
 }

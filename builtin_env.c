@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 00:48:52 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/21 13:52:25 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/28 20:07:22 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,12 @@
 
 static int	print_env(t_list *env_list);
 
-int	builtin_env(char **cmd, t_list *env)
+t_valid	builtin_env(char **cmd, t_list *env)
 {
 	(void)cmd;
-	return (print_env(env));
+	if (print_env(env))
+		return (CRITICAL_ERROR);
+	return (VALID);
 }
 
 static int	print_env(t_list *env_list)
@@ -33,7 +35,7 @@ static int	print_env(t_list *env_list)
 		if (env_content->is_hidden || !env_content->value)
 			continue ;
 		if (printf("%s=%s\n", env_content->key, env_content->value) < 0)
-			return (1);
+			return (perror_int("printf"));
 	}
 	return (0);
 }
