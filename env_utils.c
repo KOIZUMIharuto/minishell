@@ -3,16 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   env_utils.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 23:50:11 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/28 20:07:22 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/31 23:37:37 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
 
-static bool	get_value(char **value, char *key, char *line, t_list *env_list);
+static bool		get_value(char **value, char *key,
+					char *line, t_list *env_list);
+static t_valid	print_invalid_key(char *cmd, char *key);
 
 t_valid	env_split(char *env, char **key, char **value, t_list *env_list)
 {
@@ -82,15 +84,14 @@ t_valid	is_valid_key(char *key)
 	return (VALID);
 }
 
-t_valid	print_invalid_key(char *cmd, char *key)
+static t_valid	print_invalid_key(char *cmd, char *key)
 {
-	if (write(STDERR_FILENO, "minishell: ", 11) < 0
-		|| write(STDERR_FILENO, cmd, ft_strlen(cmd)) < 0
-		|| write(STDERR_FILENO, ": `", 3) < 0
-		|| write(STDERR_FILENO, key, ft_strlen(key)) < 0
-		|| write(STDERR_FILENO, "': not a valid identifier\n", 26) < 0)
+	if (!print_msg("minishell: ", STDERR_FILENO)
+		|| !print_msg(cmd, ft_strlen(cmd))
+		|| !print_msg(": `", STDERR_FILENO)
+		|| !print_msg(key, STDERR_FILENO)
+		|| !print_msg("': not a valid identifier\n", STDERR_FILENO))
 	{
-		perror("write");
 		g_last_exit_status = -1;
 		return (CRITICAL_ERROR);
 	}

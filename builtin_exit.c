@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_exit.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 00:54:17 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/28 21:51:53 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/31 23:36:01 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,20 +21,14 @@ t_valid	builtin_exit(char **cmd, t_list *env)
 
 	(void)env;
 	result = 0;
-	if (write(STDOUT_FILENO, "exit\n", 5) < 0)
-	{
-		perror("write");
+	if (!print_msg("exit\n", STDOUT_FILENO))
 		return (CRITICAL_ERROR);
-	}
 	if (cmd[1] && (!is_numeric(cmd[1]) || !is_in_long_range(&result, cmd[1])))
 	{
-		if (write(STDERR_FILENO, "minishell: exit: ", 17) < 0
-			|| write(STDERR_FILENO, cmd[1], ft_strlen(cmd[1])) < 0
-			|| write(STDERR_FILENO, ": numeric argument required\n", 28) < 0)
-		{
-			perror("write");
+		if (!print_msg("minishell: exit: ", STDERR_FILENO)
+			|| !print_msg(cmd[1], STDERR_FILENO)
+			|| !print_msg(": numeric argument required\n", STDERR_FILENO))
 			return (CRITICAL_ERROR);
-		}
 		g_last_exit_status = 2;
 		exit(g_last_exit_status);
 	}

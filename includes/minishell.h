@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 14:13:46 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/31 23:05:50 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/31 23:29:51 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,7 +117,6 @@ typedef struct s_data
 	pid_t	*pids;
 }	t_data;
 
-// signals
 void	setup_interactive_signals(void);
 void	setup_builtin_signals(void);
 void	setup_exec_signals(void);
@@ -125,9 +124,8 @@ void	setup_child_signals(void);
 void	setup_heredoc_signals(void);
 void	setup_after_rl_signals(void);
 
-// pipe
-int		setup_pipe(t_pipe_info *pipe_info, bool has_next);
-int		execute_pipeline(t_cmd **cmds, t_builtin *builtins, t_list *env);
+t_valid	setup_pipe(t_pipe_info *pipe_info, bool has_next);
+t_valid	execute_pipeline(t_cmd **cmds, t_builtin *builtins, t_list *env);
 t_valid	exec_single_builtin(t_cmd *cmd,
 			t_valid (*builtin_func)(char **, t_list *), t_data data);
 t_valid	exec_cmds(t_builtin *builtins, t_data *data,
@@ -138,14 +136,12 @@ void	manage_pipes(t_pipe_info *pipe_info);
 t_valid	handle_pipe_input(t_pipe_info *pipe_info);
 t_valid	handle_pipe_output(t_pipe_info *pipe_info);
 
-//redirect and heredoc
-int		process_heredocs(t_cmd *cmd, t_list *env);
+t_valid	process_heredocs(t_cmd *cmd, t_list *env);
 int		write_expand_env(int pipe_fd, char *line, t_list *env_list);
 t_valid	wait_heredoc(int pipe_fds[2], t_cmd *cmd, pid_t pid);
-int		handle_redirection(t_cmd *cmd, t_list *env);
-int		restore_redirection(t_cmd *cmd);
+t_valid	handle_redirection(t_cmd *cmd, t_list *env);
+t_valid	restore_redirection(t_cmd *cmd);
 
-// builtin
 void	init_builtins(t_builtin *builtins);
 int		get_builtin_index(t_builtin *builtins, char *cmd);
 t_valid	builtin_echo(char **cmd, t_list *env);
@@ -157,7 +153,6 @@ t_valid	builtin_unset(char **cmd, t_list *env);
 t_valid	builtin_env(char **cmd, t_list *env);
 t_valid	builtin_exit(char **cmd, t_list *env);
 
-// env
 t_list	*env_init(char **env);
 t_valid	env_split(char *env, char **key, char **value, t_list *env_list);
 void	env_delete(t_list **env_list, char *key);
@@ -165,10 +160,8 @@ void	env_free(void *content);
 t_env	*env_get(t_list *env_list, char *key, bool even_if_shell_var);
 bool	env_update(t_list **env_list, char *key, char *value);
 t_valid	is_valid_key(char *key);
-t_valid	print_invalid_key(char *cmd, char *key);
 char	**convert_env_list_to_array(t_list *env);
 
-// puerser
 t_valid	parser(t_cmd ***cmds, char *line, int exit_status, t_list *env);
 bool	tokenize(t_list **tokens, char *line);
 t_valid	check_syntax(t_list *tokens);
@@ -186,7 +179,7 @@ void	free_cmd(void *content);
 void	free_rdrcts(void *content);
 void	free_rdrct(void *content);
 
-int		error_msg(char *cmd, char *msg, t_valid is_valid);
+t_valid	error_msg(char *cmd, char *msg, t_valid is_valid);
 int		perror_int(char *cmd);
 bool	perror_bool(char *cmd);
 void	*perror_ptr(char *cmd);

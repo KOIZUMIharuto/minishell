@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   signal.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 22:01:52 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/31 16:28:04 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/31 23:42:01 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ void	setup_exec_signals(void)
 static void	sig_ctrl_c_exec(int signal)
 {
 	(void)signal;
-	write(STDOUT_FILENO, "^C\n", 3);
+	print_msg("^C\n", STDOUT_FILENO);
 	g_last_exit_status = 130;
 }
 
@@ -79,7 +79,7 @@ static void	sig_ctrl_c(int signal)
 {
 	(void)signal;
 	rl_on_new_line();
-	write(STDOUT_FILENO, "\n", 1);
+	print_msg("\n", STDOUT_FILENO);
 	rl_replace_line("", 0);
 	rl_redisplay();
 	g_last_exit_status = 130;

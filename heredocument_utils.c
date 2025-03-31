@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredocument_utils.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 16:16:15 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/31 17:16:58 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/31 23:43:55 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,10 @@ int	write_expand_env(int pipe_fd, char *line, t_list *env_list)
 			}
 		}
 		if (write(pipe_fd, line++, 1) == -1)
+		{
+			perror("write");
 			return (-1);
+		}
 	}
 	return (0);
 }
@@ -53,7 +56,7 @@ static t_valid	write_env(int pipe_fd, char **line, t_list *env_list)
 		if (ft_strncmp(env->key, *line, key_len) == 0
 			&& !(ft_isalnum((*line)[key_len]) || (*line)[key_len] == '_'))
 		{
-			if (write(pipe_fd, env->value, ft_strlen(env->value)) == -1)
+			if (!print_msg(env->value, pipe_fd))
 				return (CRITICAL_ERROR);
 			*line += key_len;
 			break ;
@@ -64,7 +67,7 @@ static t_valid	write_env(int pipe_fd, char **line, t_list *env_list)
 		return (VALID);
 	while (ft_isalnum(**line) || **line == '_')
 		(*line)++;
-	if (write(pipe_fd, "", 0) == -1)
+	if (!print_msg("", pipe_fd))
 		return (CRITICAL_ERROR);
 	return (VALID);
 }

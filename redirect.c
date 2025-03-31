@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirect.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 20:05:03 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/31 13:48:31 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/31 23:24:05 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 static int		backup_io(t_cmd *cmd);
 static t_valid	handle_input_rdrct(t_cmd *cmd, t_rdrct *rdrct, int i);
 static t_valid	handle_output_rdrct(t_cmd *cmd, t_rdrct *rdrct);
-static bool		is_last_in(t_rdrct **redirect, int i);
+static bool		is_last_input_rdrct(t_rdrct **redirect, int i);
 
 t_valid	handle_redirection(t_cmd *cmd, t_list *env)
 {
@@ -70,7 +70,7 @@ static t_valid	handle_input_rdrct(t_cmd *cmd, t_rdrct *rdrct, int i)
 {
 	bool	is_last;
 
-	is_last = is_last_in(cmd->rdrcts, i);
+	is_last = is_last_input_rdrct(cmd->rdrcts, i);
 	cmd->infile_fd = open(rdrct->file[0], O_RDONLY);
 	if (cmd->infile_fd == -1)
 		return (error_msg(rdrct->file[0], strerror(errno), INVALID));
@@ -114,7 +114,7 @@ static t_valid	handle_output_rdrct(t_cmd *cmd, t_rdrct *rdrct)
 	return (VALID);
 }
 
-static bool	is_last_in(t_rdrct **redirect, int i)
+static bool	is_last_input_rdrct(t_rdrct **redirect, int i)
 {
 	bool	is_last;
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_echo.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 14:37:28 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/28 21:24:39 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/31 23:35:28 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,13 +42,12 @@ static int	print_token(char **token, bool newline)
 {
 	while (*token)
 	{
-		if (write(STDOUT_FILENO, *token, ft_strlen(*token)) < 0)
-			return (perror_int("write"));
-		if (*(token + 1) && write(STDOUT_FILENO, " ", 1) < 0)
-			return (perror_int("write"));
+		if (!print_msg(*token, STDOUT_FILENO)
+			|| (*(token + 1) && !print_msg(" ", STDOUT_FILENO)))
+			return (1);
 		token++;
 	}
-	if (newline && write(STDOUT_FILENO, "\n", 1) < 0)
-		return (perror_int("write"));
+	if (newline && !print_msg("\n", STDOUT_FILENO))
+		return (1);
 	return (0);
 }
