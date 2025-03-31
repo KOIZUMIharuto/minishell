@@ -1,5 +1,3 @@
-# Makefile for Minishell
-
 NAME = minishell
 
 CC = cc
@@ -7,14 +5,11 @@ RM = rm
 FSANITIZE = -fsanitize=address
 CFLAGS = -Wall -Wextra -Werror 
 
-# OSに応じた設定
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Darwin)
-    # MacOS用の設定
     INCLUDES = -I./includes -I/usr/local/opt/readline/include
     READLINE = -L/usr/local/opt/readline/lib -lreadline
 else
-    # Linux用の設定
     INCLUDES = -I./includes
     READLINE = -lreadline
 endif
@@ -22,7 +17,6 @@ endif
 LIBFT_DIR = libft
 LIBFT = $(LIBFT_DIR)/libft.a
 
-# src
 SRCS =\
 close_wrapper.c\
 error.c\
@@ -30,23 +24,20 @@ execve.c\
 free.c \
 print.c\
 signal_utils.c\
-signal.c\
+signal.c
 
-# pipe
 PIPE_SRCS =\
-pipe.c\
 pipe_command_utils.c\
 pipe_command.c\
 pipe_utils.c\
+pipe.c
 
-# redirect and heredocument
 REDIRECT_HEREDOC_SRCS =\
-redirect_utils.c\
-redirect.c\
 heredocument_utils.c\
 heredocument.c\
+redirect_utils.c\
+redirect.c
 
-# builtin
 BUILTIN_SRCS =\
 builtin_cd.c\
 builtin_echo.c\
@@ -57,7 +48,6 @@ builtin_pwd.c\
 builtin_unset.c\
 builtin.c
 
-# env
 ENV_SRCS =\
 env_init.c\
 env_convert_to_array.c \
@@ -89,36 +79,28 @@ MAIN = $(OBJ_DIR)/main.o
 
 .PHONY: all bonus clean fclean re
 
-# デフォルトターゲット
 all: $(NAME)
 
 bonus: $(NAME)
 
-# バイナリ生成ルール（リンカオプションの順序を修正）
 $(NAME): $(MAIN) $(OBJS) $(LIBFT)
 	$(CC) $(CFLAGS) $(INCLUDES) $(MAIN) $(OBJS) $(LIBFT) $(READLINE) -o $(NAME)
 
-# ソースファイルからオブジェクトファイル生成
 $(OBJ_DIR)/%.o: %.c | $(OBJ_DIR)
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
-# オブジェクトファイル生成ディレクトリ生成
 $(OBJ_DIR):
 	mkdir -p $(OBJ_DIR)
 
-# libftのビルドルール
 $(LIBFT):
 	$(MAKE) bonus -C $(LIBFT_DIR)
 
-# クリーンアップ
 clean:
 	$(MAKE) clean -C $(LIBFT_DIR)
 	$(RM) -frd $(OBJ_DIR)
 
-# 全ての生成物を削除
 fclean: clean
 	$(MAKE) fclean -C $(LIBFT_DIR)
 	$(RM) -f $(NAME)
 
-# 再ビルド
 re: fclean all

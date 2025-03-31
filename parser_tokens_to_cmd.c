@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 11:44:47 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/25 12:37:28 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/31 23:51:04 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ static t_cmd	*tokens_to_cmd(t_list **tokens, t_parser data)
 	cmd = (t_cmd *)ft_calloc(1, sizeof(t_cmd));
 	if (!cmd)
 		return (NULL);
-	if (!get_rdrcts(&(cmd->rdrcts), tokens, data)
+	if (!get_redirects(&(cmd->redirects), tokens, data)
 		|| !get_cmd(&(cmd->cmd), *tokens, data))
 	{
 		free_cmd((void *)cmd);

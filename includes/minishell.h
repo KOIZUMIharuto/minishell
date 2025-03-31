@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 14:13:46 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/31 23:29:51 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/31 23:54:57 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,33 +58,33 @@ typedef enum e_quote
 	DOUBLE_Q
 }	t_quote;
 
-typedef enum s_rdrct_type
+typedef enum s_redirect_type
 {
 	NONE_RDRCT,
 	OVERWRITE_RDRCT,
 	APPEND_RDRCT,
 	INPUT_RDRCT,
 	HEREDOCUMENT
-}	t_rdrct_type;
+}	t_redirect_type;
 
-typedef struct s_rdrct
+typedef struct s_redirect
 {
-	t_rdrct_type	type;
+	t_redirect_type	type;
 	char			*token;
 	char			**file;
 	bool			is_quoted;
 	int				fd;
-}	t_rdrct;
+}	t_redirect;
 
 typedef struct s_cmd
 {
-	char	**cmd;
-	t_rdrct	**rdrcts;
-	int		infile_fd;
-	int		outfile_fd;
-	int		backup_stdin;
-	int		backup_stdout;
-	int		original_stdin;
+	char		**cmd;
+	t_redirect	**redirects;
+	int			infile_fd;
+	int			outfile_fd;
+	int			backup_stdin;
+	int			backup_stdout;
+	int			original_stdin;
 }	t_cmd;
 
 typedef struct s_parser
@@ -167,8 +167,8 @@ bool	tokenize(t_list **tokens, char *line);
 t_valid	check_syntax(t_list *tokens);
 bool	split_tokens(t_list ***splited_tokens, t_list *tokens);
 t_list	*to_cmd_list(t_list **splited_tokens, t_parser data);
-bool	get_rdrcts(t_rdrct ***rdrcts, t_list **tokens, t_parser data);
-bool	get_rdrct_list(t_list **rdrct_list, t_list **tokens);
+bool	get_redirects(t_redirect ***redirects, t_list **tokens, t_parser data);
+bool	get_redirect_list(t_list **redirect_list, t_list **tokens);
 bool	expand_env_quote(t_list **expanded, char *token, t_parser *data);
 char	*recursive_expand(char **token, t_parser *data, t_quote quote, int len);
 bool	is_in_quote(char c, t_quote *quote, bool is_include_quote);
@@ -176,8 +176,8 @@ bool	is_effective_quote(char c, t_quote *quote);
 
 void	free_cmds(t_cmd **cmds);
 void	free_cmd(void *content);
-void	free_rdrcts(void *content);
-void	free_rdrct(void *content);
+void	free_redirects(void *content);
+void	free_redirect(void *content);
 
 t_valid	error_msg(char *cmd, char *msg, t_valid is_valid);
 int		perror_int(char *cmd);

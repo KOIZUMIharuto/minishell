@@ -1,61 +1,62 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parser_rdrct.c                                  :+:      :+:    :+:   */
+/*   parser_redirect.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/19 11:02:47 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/19 21:49:55 by hkoizumi         ###   ########.fr       */
+/*   Created: 2025/03/31 23:55:23 by hkoizumi          #+#    #+#             */
+/*   Updated: 2025/03/31 23:55:30 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
 
-static bool		token_to_file(t_rdrct **rdrcts, t_parser data);
-static bool		set_heredocument(t_rdrct *redirect, t_quote quote, char *token);
-static char		**set_file_name(char *token, t_parser data);
-static t_rdrct	**list_to_rdrcts(t_list *rdrct_list);
+static bool			token_to_file(t_redirect **redirects, t_parser data);
+static bool			set_heredocument(t_redirect *redirect,
+						t_quote quote, char *token);
+static char			**set_file_name(char *token, t_parser data);
+static t_redirect	**list_to_redirects(t_list *redirect_list);
 
-bool	get_rdrcts(t_rdrct ***rdrcts, t_list **tokens, t_parser data)
+bool	get_redirects(t_redirect ***redirects, t_list **tokens, t_parser data)
 {
-	t_list	*rdrct_list;
+	t_list	*redirect_list;
 
-	rdrct_list = NULL;
-	if (!get_rdrct_list(&rdrct_list, tokens))
+	redirect_list = NULL;
+	if (!get_redirect_list(&redirect_list, tokens))
 		return (false);
-	*rdrcts = list_to_rdrcts(rdrct_list);
-	if (!*rdrcts)
+	*redirects = list_to_redirects(redirect_list);
+	if (!*redirects)
 		return (false);
-	if (!token_to_file(*rdrcts, data))
+	if (!token_to_file(*redirects, data))
 	{
-		free_rdrcts(*rdrcts);
-		*rdrcts = NULL;
+		free_redirects(*redirects);
+		*redirects = NULL;
 		return (false);
 	}
 	return (true);
 }
 
-static bool	token_to_file(t_rdrct **rdrcts, t_parser data)
+static bool	token_to_file(t_redirect **redirects, t_parser data)
 {
 	int		i;
 
 	i = 0;
-	while (rdrcts[i])
+	while (redirects[i])
 	{
-		if (rdrcts[i]->type == HEREDOCUMENT
-			&& !set_heredocument(rdrcts[i], NONE_Q, rdrcts[i]->token))
+		if (redirects[i]->type == HEREDOCUMENT
+			&& !set_heredocument(redirects[i], NONE_Q, redirects[i]->token))
 			return (false);
-		else if (rdrcts[i]->type != HEREDOCUMENT)
-			rdrcts[i]->file = set_file_name(rdrcts[i]->token, data);
-		if (!rdrcts[i]->file)
+		else if (redirects[i]->type != HEREDOCUMENT)
+			redirects[i]->file = set_file_name(redirects[i]->token, data);
+		if (!redirects[i]->file)
 			return (false);
 		i++;
 	}
 	return (true);
 }
 
-static bool	set_heredocument(t_rdrct *redirect, t_quote quote, char *token)
+static bool	set_heredocument(t_redirect *redirect, t_quote quote, char *token)
 {
 	int		i;
 	int		heredoc_i;
@@ -111,27 +112,28 @@ static char	**set_file_name(char *token, t_parser data)
 	return (files);
 }
 
-static t_rdrct	**list_to_rdrcts(t_list *rdrct_list)
+static t_redirect	**list_to_redirects(t_list *redirect_list)
 {
-	t_rdrct	**rdrcts;
-	t_list	*tmp;
-	int		rdrct_count;
+	t_redirect	**redirects;
+	t_list		*tmp;
+	int			redirect_count;
 
-	rdrct_count = ft_lstsize(rdrct_list);
-	rdrcts = (t_rdrct **)ft_calloc(rdrct_count + 1, sizeof(t_rdrct *));
-	if (!rdrcts)
+	redirect_count = ft_lstsize(redirect_list);
+	redirects = (t_redirect **)ft_calloc(redirect_count + 1,
+			sizeof(t_redirect *));
+	if (!redirects)
 	{
-		ft_lstclear(&rdrct_list, free_rdrct);
-		return ((t_rdrct **)perror_ptr("malloc"));
+		ft_lstclear(&redirect_list, free_redirect);
+		return ((t_redirect **)perror_ptr("malloc"));
 	}
-	rdrct_count = 0;
-	while (rdrct_list)
+	redirect_count = 0;
+	while (redirect_list)
 	{
-		rdrcts[rdrct_count] = (t_rdrct *)rdrct_list->content;
-		tmp = rdrct_list;
-		rdrct_list = rdrct_list->next;
+		redirects[redirect_count] = (t_redirect *)redirect_list->content;
+		tmp = redirect_list;
+		redirect_list = redirect_list->next;
 		free(tmp);
-		rdrct_count++;
+		redirect_count++;
 	}
-	return (rdrcts);
+	return (redirects);
 }

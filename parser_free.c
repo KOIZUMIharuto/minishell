@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser_free.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 12:08:45 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/31 13:35:38 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/31 23:51:53 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,31 +29,31 @@ void	free_cmd(void *content)
 	cmd = (t_cmd *)content;
 	if (cmd->cmd)
 		free_double_pointor(cmd->cmd);
-	if (cmd->rdrcts)
-		free_rdrcts((void *)cmd->rdrcts);
+	if (cmd->redirects)
+		free_redirects((void *)cmd->redirects);
 	close_wrapper(&(cmd->backup_stdin));
 	close_wrapper(&(cmd->backup_stdout));
 	free(cmd);
 }
 
-void	free_rdrcts(void *content)
+void	free_redirects(void *content)
 {
-	t_rdrct	**rdrcts;
-	int		i;
+	t_redirect	**redirects;
+	int			i;
 
-	rdrcts = (t_rdrct **)content;
+	redirects = (t_redirect **)content;
 	i = 0;
-	while (rdrcts[i])
-		free_rdrct((void *)rdrcts[i++]);
-	free(rdrcts);
+	while (redirects[i])
+		free_redirect((void *)redirects[i++]);
+	free(redirects);
 }
 
-void	free_rdrct(void *content)
+void	free_redirect(void *content)
 {
-	t_rdrct	*rdrct;
+	t_redirect	*redirect;
 
-	rdrct = (t_rdrct *)content;
-	free(rdrct->token);
-	free_double_pointor(rdrct->file);
-	free(rdrct);
+	redirect = (t_redirect *)content;
+	free(redirect->token);
+	free_double_pointor(redirect->file);
+	free(redirect);
 }

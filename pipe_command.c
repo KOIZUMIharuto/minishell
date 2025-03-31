@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 12:30:41 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/31 23:14:18 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/31 23:51:04 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,10 +89,10 @@ static bool	has_input_redirection(t_cmd *cmd)
 	int	i;
 
 	i = 0;
-	while (cmd->rdrcts[i])
+	while (cmd->redirects[i])
 	{
-		if (cmd->rdrcts[i]->type == INPUT_RDRCT
-			|| cmd->rdrcts[i]->type == HEREDOCUMENT)
+		if (cmd->redirects[i]->type == INPUT_RDRCT
+			|| cmd->redirects[i]->type == HEREDOCUMENT)
 			return (true);
 		i++;
 	}
@@ -104,10 +104,10 @@ static bool	has_output_redirection(t_cmd *cmd)
 	int	i;
 
 	i = 0;
-	while (cmd->rdrcts[i])
+	while (cmd->redirects[i])
 	{
-		if (cmd->rdrcts[i]->type == OVERWRITE_RDRCT
-			|| cmd->rdrcts[i]->type == APPEND_RDRCT)
+		if (cmd->redirects[i]->type == OVERWRITE_RDRCT
+			|| cmd->redirects[i]->type == APPEND_RDRCT)
 			return (true);
 		i++;
 	}

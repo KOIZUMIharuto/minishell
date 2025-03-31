@@ -6,14 +6,14 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 23:24:37 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/31 23:44:30 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/31 23:51:04 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
 
 static bool		is_quote_closed(char *token);
-static bool		is_rdrct(char *token);
+static bool		is_redirect(char *token);
 static t_valid	print_syntax_error(char *token);
 
 t_valid	check_syntax(t_list *tokens)
@@ -33,13 +33,13 @@ t_valid	check_syntax(t_list *tokens)
 			return (print_syntax_error(token));
 		if ((!prev && !ft_strncmp(token, "|", 2))
 			|| (prev && !ft_strncmp(prev, "|", 2) && !ft_strncmp(token, "|", 2))
-			|| (prev && is_rdrct(prev)
-				&& (!ft_strncmp(token, "|", 2) || is_rdrct(token))))
+			|| (prev && is_redirect(prev)
+				&& (!ft_strncmp(token, "|", 2) || is_redirect(token))))
 			return (print_syntax_error(token));
 		prev = token;
 		cur = cur->next;
 	}
-	if (prev && (ft_strncmp(prev, "|", 2) == 0 || is_rdrct(prev)))
+	if (prev && (ft_strncmp(prev, "|", 2) == 0 || is_redirect(prev)))
 		return (print_syntax_error("newline"));
 	return (VALID);
 }
@@ -64,7 +64,7 @@ static bool	is_quote_closed(char *token)
 	return (quote == NONE_Q);
 }
 
-static bool	is_rdrct(char *token)
+static bool	is_redirect(char *token)
 {
 	return (ft_strncmp(token, "<", 2) == 0 || ft_strncmp(token, ">", 2) == 0
 		|| ft_strncmp(token, "<<", 3) == 0 || ft_strncmp(token, ">>", 3) == 0);

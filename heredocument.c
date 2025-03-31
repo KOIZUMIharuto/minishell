@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 18:07:49 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/31 23:41:06 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/31 23:51:32 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 static t_valid	setup_heredoc_pipe(int pipe_fds[2], t_cmd *cmd);
 static void		process_heredoc_child(int pipe_fds[2],
-					t_rdrct *rdrct, t_list *env);
+					t_redirect *redirect, t_list *env);
 static t_valid	do_heredoc(int pipe_fds[2], t_cmd *cmd, pid_t pid);
 
 t_valid	process_heredocs(t_cmd *cmd, t_list *env)
@@ -25,9 +25,9 @@ t_valid	process_heredocs(t_cmd *cmd, t_list *env)
 	t_valid	is_valid;
 
 	i = -1;
-	while (cmd->rdrcts[++i])
+	while (cmd->redirects[++i])
 	{
-		if (cmd->rdrcts[i]->type != HEREDOCUMENT)
+		if (cmd->redirects[i]->type != HEREDOCUMENT)
 			continue ;
 		if (setup_heredoc_pipe(pipe_fds, cmd) == CRITICAL_ERROR)
 			return (CRITICAL_ERROR);
@@ -35,7 +35,7 @@ t_valid	process_heredocs(t_cmd *cmd, t_list *env)
 		if (pid == 0)
 		{
 			close_wrapper(&(cmd->backup_stdin));
-			process_heredoc_child(pipe_fds, cmd->rdrcts[i], env);
+			process_heredoc_child(pipe_fds, cmd->redirects[i], env);
 		}
 		is_valid = do_heredoc(pipe_fds, cmd, pid);
 		if (is_valid != VALID)
@@ -73,7 +73,8 @@ static t_valid	setup_heredoc_pipe(int pipe_fds[2], t_cmd *cmd)
 	return (CRITICAL_ERROR);
 }
 
-static void	process_heredoc_child(int pipe_fds[2], t_rdrct *rdrct, t_list *env)
+static void	process_heredoc_child(int pipe_fds[2],
+				t_redirect *redirect, t_list *env)
 {
 	char	*line;
 
@@ -82,14 +83,14 @@ static void	process_heredoc_child(int pipe_fds[2], t_rdrct *rdrct, t_list *env)
 	while (1)
 	{
 		line = readline("> ");
-		if (!line || ft_strcmp(line, rdrct->file[0]) == 0)
+		if (!line || ft_strcmp(line, redirect->file[0]) == 0)
 		{
 			free(line);
 			break ;
 		}
-		if (((!rdrct->is_quoted && ft_strlen(line) > 0
+		if (((!redirect->is_quoted && ft_strlen(line) > 0
 					&& write_expand_env(pipe_fds[1], line, env) == -1)
-				|| (rdrct->is_quoted && ft_strlen(line) > 0
+				|| (redirect->is_quoted && ft_strlen(line) > 0
 					&& !print_msg(line, pipe_fds[1])))
 			|| !print_msg("\n", pipe_fds[1]))
 		{

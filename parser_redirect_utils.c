@@ -1,69 +1,71 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parser_rdrct_utils.c                            :+:      :+:    :+:   */
+/*   parser_redirect_utils.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/19 13:54:00 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/19 21:24:20 by hkoizumi         ###   ########.fr       */
+/*   Created: 2025/03/31 23:55:14 by hkoizumi          #+#    #+#             */
+/*   Updated: 2025/03/31 23:55:18 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
 
-static bool			get_rdrct(t_rdrct **rdrct, t_list **tokens);
-static t_rdrct_type	get_rdrct_type(char *token);
-static bool			set_rdrct(t_rdrct **rdrct, t_rdrct_type type, char *token);
-static void			rejoin_tokens(t_list **tokens, t_list **cur, t_list *prev);
+static bool				get_redirect(t_redirect **redirect, t_list **tokens);
+static t_redirect_type	get_redirect_type(char *token);
+static bool				set_redirect(t_redirect **redirect,
+							t_redirect_type type, char *token);
+static void				rejoin_tokens(t_list **tokens,
+							t_list **cur, t_list *prev);
 
-bool	get_rdrct_list(t_list **rdrct_list, t_list **tokens)
+bool	get_redirect_list(t_list **redirect_list, t_list **tokens)
 {
-	t_rdrct	*rdrct;
-	t_list	*rdrct_node;
+	t_redirect	*redirect;
+	t_list		*redirect_node;
 
 	while (true)
 	{
-		rdrct = NULL;
-		if (!get_rdrct(&rdrct, tokens))
+		redirect = NULL;
+		if (!get_redirect(&redirect, tokens))
 		{
-			ft_lstclear(rdrct_list, free);
+			ft_lstclear(redirect_list, free);
 			return (false);
 		}
-		if (!rdrct)
+		if (!redirect)
 			break ;
-		rdrct_node = ft_lstnew(rdrct);
-		if (!rdrct_node)
+		redirect_node = ft_lstnew(redirect);
+		if (!redirect_node)
 		{
-			free_rdrct(rdrct);
-			ft_lstclear(rdrct_list, free_rdrct);
+			free_redirect(redirect);
+			ft_lstclear(redirect_list, free_redirect);
 			return (perror_bool("malloc"));
 		}
-		ft_lstadd_back(rdrct_list, rdrct_node);
+		ft_lstadd_back(redirect_list, redirect_node);
 	}
 	return (true);
 }
 
-static bool	get_rdrct(t_rdrct **rdrct, t_list **tokens)
+static bool	get_redirect(t_redirect **redirect, t_list **tokens)
 {
 	t_list			*prev;
 	t_list			*cur;
 	char			*token;
-	t_rdrct_type	rdrct_type;
+	t_redirect_type	redirect_type;
 
 	prev = NULL;
 	cur = *tokens;
 	while (cur)
 	{
 		token = (char *)cur->content;
-		rdrct_type = get_rdrct_type(token);
-		if (rdrct_type != NONE_RDRCT)
+		redirect_type = get_redirect_type(token);
+		if (redirect_type != NONE_RDRCT)
 		{
 			token = (char *)cur->next->content;
 			rejoin_tokens(tokens, &cur, prev);
 			cur->content = NULL;
 			rejoin_tokens(tokens, &cur, prev);
-			return (set_rdrct(rdrct, rdrct_type, token));
+			return (set_redirect(redirect, redirect_type, token));
 		}
 		prev = cur;
 		cur = prev->next;
@@ -71,7 +73,7 @@ static bool	get_rdrct(t_rdrct **rdrct, t_list **tokens)
 	return (true);
 }
 
-static t_rdrct_type	get_rdrct_type(char *token)
+static t_redirect_type	get_redirect_type(char *token)
 {
 	if (token[0] == '<' && token[1] == '\0')
 		return (INPUT_RDRCT);
@@ -84,19 +86,20 @@ static t_rdrct_type	get_rdrct_type(char *token)
 	return (NONE_RDRCT);
 }
 
-static bool	set_rdrct(t_rdrct **rdrct, t_rdrct_type type, char *token)
+static bool	set_redirect(t_redirect **redirect,
+				t_redirect_type type, char *token)
 {
-	*rdrct = (t_rdrct *)ft_calloc(1, sizeof(t_rdrct));
-	if (!*rdrct)
+	*redirect = (t_redirect *)ft_calloc(1, sizeof(t_redirect));
+	if (!*redirect)
 	{
 		free(token);
 		return (perror_bool("malloc"));
 	}
-	(*rdrct)->type = type;
-	(*rdrct)->token = token;
-	(*rdrct)->file = NULL;
-	(*rdrct)->is_quoted = false;
-	(*rdrct)->fd = -1;
+	(*redirect)->type = type;
+	(*redirect)->token = token;
+	(*redirect)->file = NULL;
+	(*redirect)->is_quoted = false;
+	(*redirect)->fd = -1;
 	return (true);
 }
 
