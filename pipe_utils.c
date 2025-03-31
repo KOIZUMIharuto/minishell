@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipe_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 12:30:41 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/31 16:37:33 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/31 22:21:06 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 t_valid	setup_pipe(t_pipe_info *pipe_info, bool has_next)
 {
 	pipe_info->has_next = has_next;
-
 	if (has_next)
 	{
 		if (pipe(pipe_info->pipe_fds) == -1)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 14:13:46 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/31 17:34:02 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/31 23:05:50 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,12 +43,12 @@ typedef struct s_env
 
 typedef enum e_valid
 {
+	EXIT_MAINT_LOOP=-42,
+	SIGINT_EXIT=-24,
+	CMD_EXTERNAL=-2,
 	CRITICAL_ERROR=-1,
 	VALID=0,
-	INVALID=1,
-	CMD_EXTERNAL=-2,
-	SIGINT_EXIT=-24,
-	EXIT_MAINT_LOOP=-42
+	INVALID=1
 }	t_valid;
 
 typedef enum e_quote
@@ -117,35 +117,33 @@ typedef struct s_data
 	pid_t	*pids;
 }	t_data;
 
-
 // signals
-void setup_interactive_signals(void);
-void setup_builtin_signals(void);
-void setup_exec_signals(void);
-void setup_child_signals(void);
-void setup_heredoc_signals(void);
-void setup_after_rl_signals(void);
+void	setup_interactive_signals(void);
+void	setup_builtin_signals(void);
+void	setup_exec_signals(void);
+void	setup_child_signals(void);
+void	setup_heredoc_signals(void);
+void	setup_after_rl_signals(void);
 
 // pipe
 int		setup_pipe(t_pipe_info *pipe_info, bool has_next);
 int		execute_pipeline(t_cmd **cmds, t_builtin *builtins, t_list *env);
-// int		exec_single_builtin(t_cmd *cmd, t_builtin *builtins,
-// 			int builtin_index, t_list *env);
-t_valid exec_single_builtin(t_cmd *cmd, int (*builtin_func)(char **, t_list *),t_data data);
-t_valid	exec_commands(t_builtin *builtins, t_data *data,
+t_valid	exec_single_builtin(t_cmd *cmd,
+			t_valid (*builtin_func)(char **, t_list *), t_data data);
+t_valid	exec_cmds(t_builtin *builtins, t_data *data,
 			t_pipe_info *pipe_info);
+void	exec_cmd_redirect(t_cmd *cmd, t_pipe_info *pipe_info, t_data data);
 void	execute_cmd(char **cmd, t_data data);
 void	manage_pipes(t_pipe_info *pipe_info);
 t_valid	handle_pipe_input(t_pipe_info *pipe_info);
 t_valid	handle_pipe_output(t_pipe_info *pipe_info);
 
 //redirect and heredoc
-int	process_heredocs(t_cmd *cmd, t_list* env);
-int	write_expand_env(int pipe_fd, char *line, t_list *env_list);
+int		process_heredocs(t_cmd *cmd, t_list *env);
+int		write_expand_env(int pipe_fd, char *line, t_list *env_list);
 t_valid	wait_heredoc(int pipe_fds[2], t_cmd *cmd, pid_t pid);
-// int handle_heredocument(t_rdrct *rdrct, t_cmd *cmd, t_list *env);
-int handle_redirection(t_cmd *cmd, t_list *env);
-int  restore_redirection(t_cmd *cmd);
+int		handle_redirection(t_cmd *cmd, t_list *env);
+int		restore_redirection(t_cmd *cmd);
 
 // builtin
 void	init_builtins(t_builtin *builtins);
@@ -198,7 +196,5 @@ bool	print_msg(char *msg, int fd);
 
 void	free_double_pointor(char **array);
 void	free_data(t_data data);
-
-
 
 #endif

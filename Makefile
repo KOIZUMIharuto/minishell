@@ -35,6 +35,7 @@ signal.c\
 # pipe
 PIPE_SRCS =\
 pipe.c\
+pipe_command_utils.c\
 pipe_command.c\
 pipe_utils.c\
 
