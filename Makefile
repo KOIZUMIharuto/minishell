@@ -33,14 +33,15 @@ signal.c\
 
 # pipe
 PIPE_SRCS =\
-pipe.c \
-pipe_command.c \
-pipe_utils.c \
+pipe.c\
+pipe_command.c\
+pipe_utils.c\
 
 # redirect and heredocument
 REDIRECT_HEREDOC_SRCS =\
 redirect_utils.c\
-redirect.c \
+redirect.c\
+heredocument_utils.c\
 heredocument.c\
 
 # builtin
