@@ -24,6 +24,7 @@ LIBFT = $(LIBFT_DIR)/libft.a
 
 # src
 SRCS =\
+close_wrapper.c\
 error.c\
 execve.c\
 free.c \
@@ -38,6 +39,7 @@ pipe_utils.c \
 
 # redirect and heredocument
 REDIRECT_HEREDOC_SRCS =\
+redirect_utils.c\
 redirect.c \
 heredocument.c\
 

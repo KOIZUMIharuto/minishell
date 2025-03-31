@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 12:08:45 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/24 12:50:30 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/31 13:35:38 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,10 +31,8 @@ void	free_cmd(void *content)
 		free_double_pointor(cmd->cmd);
 	if (cmd->rdrcts)
 		free_rdrcts((void *)cmd->rdrcts);
-	if (cmd->backup_stdin != -1)
-		close(cmd->backup_stdin);
-	if (cmd->backup_stdout != -1)
-		close(cmd->backup_stdout);
+	close_wrapper(&(cmd->backup_stdin));
+	close_wrapper(&(cmd->backup_stdout));
 	free(cmd);
 }
 

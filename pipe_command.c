@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 12:30:41 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/31 12:00:23 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/31 13:46:52 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,12 +157,10 @@ static pid_t prepare_command(t_cmd *cmd, t_builtin *builtins,
 		if (dup2(cmd->backup_stdin, STDIN_FILENO) == -1)
 		{
 			perror("dup2");
-			close(cmd->backup_stdin);
-			cmd->backup_stdin = -1;
+			close_wrapper(&(cmd->backup_stdin));
 			return (CRITICAL_ERROR);
 		}
-		close(cmd->backup_stdin);
-		cmd->backup_stdin = -1;
+		close_wrapper(&(cmd->backup_stdin));
 	}
     return (pid);
 }

@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 14:13:46 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/28 22:51:41 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/31 13:40:40 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,13 +43,12 @@ typedef struct s_env
 
 typedef enum e_valid
 {
-    
 	CRITICAL_ERROR=-1,
 	VALID=0,
 	INVALID=1,
-    CMD_EXTERNAL=-2,
-    SIGINT_EXIT=-24,
-    EXIT_MAINT_LOOP=-42
+	CMD_EXTERNAL=-2,
+	SIGINT_EXIT=-24,
+	EXIT_MAINT_LOOP=-42
 }	t_valid;
 
 typedef enum e_quote
@@ -85,7 +84,7 @@ typedef struct s_cmd
 	int		outfile_fd;
 	int		backup_stdin;
 	int		backup_stdout;
-    int     original_stdin;
+	int		original_stdin;
 }	t_cmd;
 
 typedef struct s_parser
@@ -192,7 +191,7 @@ int		perror_int(char *cmd);
 bool	perror_bool(char *cmd);
 void	*perror_ptr(char *cmd);
 
-
+void	close_wrapper(int *fd);
 bool	print_msg(char *msg, int fd);
 
 void	free_double_pointor(char **array);
