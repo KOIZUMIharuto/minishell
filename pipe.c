@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 01:16:07 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/28 22:49:11 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/31 12:01:11 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,12 +48,12 @@ void wait_for_children(pid_t *pids, int cmd_count)
 		result = waitpid(pids[i], &status, 0);
         while (result == -1 && errno == EINTR)
 		{
-			printf("wait restart\n");
+			// printf("wait restart\n");
             result = waitpid(pids[i], &status, 0);
 		}
         if (result == -1)
         {
-            perror("waitpid?");
+            perror("waitpid");
             continue;
         }
         if (i == cmd_count - 1)

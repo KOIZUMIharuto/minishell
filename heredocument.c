@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 18:07:49 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/31 11:16:15 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/31 12:01:21 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,7 +139,7 @@ t_valid	setup_parent_process(int pipe_fds[2], t_cmd *cmd, pid_t pid)	//ok
 
 	if (result == -1)
 	{
-		perror("waitpid!");
+		perror("waitpid");
 		close(pipe_fds[0]);
 		return (CRITICAL_ERROR);
 	}

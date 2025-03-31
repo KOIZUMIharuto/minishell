@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 12:30:41 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/28 22:47:14 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/31 12:00:23 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,7 +138,7 @@ static pid_t prepare_command(t_cmd *cmd, t_builtin *builtins,
 	is_valid = process_heredocs(cmd, data.env);
     if (is_valid != VALID)
 	{
-		printf("heredoc invalid : [%d]\n", is_valid);
+		// printf("heredoc invalid : [%d]\n", is_valid);
         return (is_valid);
 	}
     pid = fork();
