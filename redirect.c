@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 20:05:03 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/28 22:56:24 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/31 10:58:26 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,6 +111,7 @@ t_valid handle_redirection(t_cmd *cmd, t_list *env)	//ok
 	if (backup_io(cmd))
 		return (CRITICAL_ERROR);		
 	j = 0;
+	is_valid = VALID;
 	while (cmd->rdrcts[j])
 	{
 		redirect = cmd->rdrcts[j];
@@ -125,7 +126,7 @@ t_valid handle_redirection(t_cmd *cmd, t_list *env)	//ok
 			return (is_valid);
 		j++;
 	}
-	return (VALID);
+	return (is_valid);
 }
 
 t_valid restore_redirection(t_cmd *cmd)	//ok
