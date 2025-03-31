@@ -29,6 +29,7 @@ error.c\
 execve.c\
 free.c \
 print.c\
+signal_utils.c\
 signal.c\
 
 # pipe

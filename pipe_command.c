@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 12:30:41 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/31 17:25:10 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/31 17:26:32 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,7 +140,7 @@ void	exec_command_in_child(t_cmd *cmd, t_pipe_info *pipe_info,
 static int prepare_command(t_cmd *cmd, t_builtin *builtins, 
 	t_data data, t_pipe_info *pipe_info)
 {
-	t_valid	builtin_func(char **, t_list *);	//fix
+	t_valid	(*builtin_func)(char **, t_list *);	//fix
 	pid_t	pid;
 	int		builtin_index;
 	t_valid	is_valid;

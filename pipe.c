@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 01:16:07 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/31 16:36:42 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/03/31 17:29:56 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ t_valid	execute_pipeline(t_cmd **cmds, t_builtin *builtins, t_list *env)
 			return (is_valid);
 		}
 	}
-	is_valid = execute_commands(builtins, &data, &pipe_info);
+	is_valid = exec_commands(builtins, &data, &pipe_info);
 	free_cmds(cmds);
 	if (is_valid != VALID)
 		return (is_valid);
@@ -61,7 +61,7 @@ static t_valid	try_exec_builtin(t_cmd *cmd, t_builtin *builtins, t_data data)
 	if (builtin_index >= 0)
 	{
 		builtin_func = builtins[builtin_index].func;
-		return (execute_single_builtin(cmd, builtin_func, data));
+		return (exec_single_builtin(cmd, builtin_func, data));
 	}
 	return (CMD_EXTERNAL);
 }
