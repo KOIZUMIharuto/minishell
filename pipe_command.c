@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipe_command.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: syonekur <syonekur@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/19 12:30:41 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/31 23:51:04 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/04/01 19:41:39 by syonekur         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ static bool		has_input_redirection(t_cmd *cmd);
 static bool		has_output_redirection(t_cmd *cmd);
 
 t_valid	exec_single_builtin(t_cmd *cmd,
-	t_valid (*builtin_func)(char **, t_list *), t_data data)
+			t_valid (*builtin_func)(char **, t_list *), t_data data)
 {
 	t_valid	is_valid;
 

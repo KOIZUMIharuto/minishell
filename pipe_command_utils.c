@@ -3,19 +3,19 @@
 /*                                                        :::      ::::::::   */
 /*   pipe_command_utils.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: syonekur <syonekur@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 22:57:09 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/03/31 23:10:55 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/04/01 19:41:24 by syonekur         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <minishell.h>
 
-static t_valid	exec_cmd(t_data *data,
-					t_builtin *builtins, t_pipe_info *pipe_info);
-static pid_t	prepare_cmd(t_cmd *cmd, t_builtin *builtins,
-					t_data data, t_pipe_info *pipe_info);
+static t_valid	exec_cmd(t_data *data, t_builtin *builtins,
+					t_pipe_info *pipe_info);
+static pid_t	prepare_cmd(t_cmd *cmd, t_builtin *builtins, t_data data,
+					t_pipe_info *pipe_info);
 static pid_t	fork_exec_process(t_cmd *cmd, t_pipe_info *pipe_info,
 					t_valid (*builtin_func)(char **, t_list *), t_data data);
 static void		exec_cmd_in_child(t_cmd *cmd, t_pipe_info *pipe_info,
@@ -23,7 +23,7 @@ static void		exec_cmd_in_child(t_cmd *cmd, t_pipe_info *pipe_info,
 
 t_valid	exec_cmds(t_builtin *builtins, t_data *data, t_pipe_info *pipe_info)
 {
-	int		i;
+	int	i;
 
 	i = 0;
 	while (data->cmds[i])
@@ -37,8 +37,8 @@ t_valid	exec_cmds(t_builtin *builtins, t_data *data, t_pipe_info *pipe_info)
 	return (exec_cmd(data, builtins, pipe_info));
 }
 
-static t_valid	exec_cmd(t_data *data,
-					t_builtin *builtins, t_pipe_info *pipe_info)
+static t_valid	exec_cmd(t_data *data, t_builtin *builtins,
+					t_pipe_info *pipe_info)
 {
 	int		i;
 	pid_t	pid;
@@ -64,20 +64,20 @@ static t_valid	exec_cmd(t_data *data,
 	return (VALID);
 }
 
-static pid_t	prepare_cmd(t_cmd *cmd, t_builtin *builtins,
-					t_data data, t_pipe_info *pipe_info)
+static pid_t	prepare_cmd(t_cmd *cmd, t_builtin *builtins, t_data data,
+					t_pipe_info *pipe_info)
 {
 	int		builtin_index;
 	t_valid	is_valid;
 
-	t_valid (*builtin_func)(char **, t_list *);
+	t_valid((*builtin_func)(char **, t_list *));
 	builtin_func = NULL;
 	builtin_index = get_builtin_index(builtins, cmd->cmd[0]);
 	if (builtin_index >= 0)
 		builtin_func = builtins[builtin_index].func;
 	is_valid = process_heredocs(cmd, data.env);
 	if (is_valid != VALID)
-		return (-1);
+		return (is_valid);
 	return (fork_exec_process(cmd, pipe_info, builtin_func, data));
 }
 
@@ -128,7 +128,7 @@ static void	exec_cmd_in_child(t_cmd *cmd, t_pipe_info *pipe_info,
 		setup_builtin_signals();
 		is_valid = builtin_func(cmd->cmd, data.env);
 		free_data(data);
-		exit (is_valid);
+		exit(is_valid);
 	}
 	else
 	{

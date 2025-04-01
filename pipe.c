@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipe.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: syonekur <syonekur@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/16 01:16:07 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/31 23:00:11 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/04/01 18:54:02 by syonekur         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,9 +54,9 @@ static bool	check_pipeline(t_cmd **cmds, int *cmd_count)
 
 static t_valid	try_exec_builtin(t_cmd *cmd, t_builtin *builtins, t_data data)
 {
-	int		builtin_index;
+	int	builtin_index;
 
-	t_valid (*builtin_func)(char **, t_list *);
+	t_valid((*builtin_func)(char **, t_list *));
 	builtin_index = get_builtin_index(builtins, cmd->cmd[0]);
 	if (builtin_index >= 0)
 	{
