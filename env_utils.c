@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env_utils.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 23:50:11 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/31 23:37:37 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/04/01 13:45:29 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ t_valid	is_valid_key(char *key)
 static t_valid	print_invalid_key(char *cmd, char *key)
 {
 	if (!print_msg("minishell: ", STDERR_FILENO)
-		|| !print_msg(cmd, ft_strlen(cmd))
+		|| !print_msg(cmd, STDERR_FILENO)
 		|| !print_msg(": `", STDERR_FILENO)
 		|| !print_msg(key, STDERR_FILENO)
 		|| !print_msg("': not a valid identifier\n", STDERR_FILENO))
