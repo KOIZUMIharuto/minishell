@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 18:07:49 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/31 23:51:32 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/04/03 21:06:34 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ t_valid	process_heredocs(t_cmd *cmd, t_list *env)
 			continue ;
 		if (setup_heredoc_pipe(pipe_fds, cmd) == CRITICAL_ERROR)
 			return (CRITICAL_ERROR);
+		setup_ignore_quit();
 		pid = fork();
 		if (pid == 0)
 		{

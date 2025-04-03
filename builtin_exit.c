@@ -6,7 +6,7 @@
 /*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 00:54:17 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/31 23:36:01 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/04/03 21:13:12 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ t_valid	builtin_exit(char **cmd, t_list *env)
 	if (cmd[1] && cmd[2])
 		return (error_msg("exit", "too many arguments", INVALID));
 	g_last_exit_status = (result % 256 + 256) % 256;
-	return (VALID);
+	return (g_last_exit_status);
 }
 
 static bool	is_numeric(const char *str)

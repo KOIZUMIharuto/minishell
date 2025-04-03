@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipe_command_utils.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: syonekur <syonekur@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 22:57:09 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/04/01 19:41:24 by syonekur         ###   ########.fr       */
+/*   Updated: 2025/04/03 21:18:42 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,11 +90,11 @@ static pid_t	fork_exec_process(t_cmd *cmd, t_pipe_info *pipe_info,
 	if (pid == -1)
 	{
 		perror("fork");
-		return (-1);
+		return (CRITICAL_ERROR);
 	}
 	if (pid == 0)
 	{
-		setup_exec_signals();
+		setup_after_rl_signals();
 		exec_cmd_in_child(cmd, pipe_info, builtin_func, data);
 	}
 	if (cmd->backup_stdin != -1)
@@ -103,7 +103,7 @@ static pid_t	fork_exec_process(t_cmd *cmd, t_pipe_info *pipe_info,
 		{
 			perror("dup2");
 			close_wrapper(&(cmd->backup_stdin));
-			return (-1);
+			return (CRITICAL_ERROR);
 		}
 		close_wrapper(&(cmd->backup_stdin));
 	}

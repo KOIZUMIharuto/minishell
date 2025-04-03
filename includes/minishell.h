@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: syonekur <syonekur@student.42.fr>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/13 14:13:46 by hkoizumi          #+#    #+#             */
-/*   Updated: 2025/04/01 18:53:36 by syonekur         ###   ########.fr       */
+/*   Updated: 2025/04/03 21:16:51 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,10 +45,10 @@ typedef enum e_valid
 {
 	EXIT_MAINT_LOOP = -42,
 	SIGINT_EXIT = -24,
+	INVALID = -3,
 	CMD_EXTERNAL = -2,
 	CRITICAL_ERROR = -1,
-	VALID = 0,
-	INVALID = 1
+	VALID = 0
 }					t_valid;
 
 typedef enum e_quote
@@ -119,7 +119,7 @@ typedef struct s_data
 
 void				setup_interactive_signals(void);
 void				setup_builtin_signals(void);
-void				setup_exec_signals(void);
+void				setup_ignore_quit(void);
 void				setup_child_signals(void);
 void				setup_heredoc_signals(void);
 void				setup_after_rl_signals(void);

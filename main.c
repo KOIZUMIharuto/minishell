@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hkoizumi <hkoizumi@student.42.jp>          +#+  +:+       +#+        */
+/*   By: hkoizumi <hkoizumi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/13 21:59:46 by shiori            #+#    #+#             */
-/*   Updated: 2025/03/31 16:21:28 by hkoizumi         ###   ########.fr       */
+/*   Updated: 2025/04/03 21:12:31 by hkoizumi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ int	main(int argc, char **argv, char **envp)
 		setup_interactive_signals();
 		line = readline(PROMPT);
 		status = prompt(line, builtins, env);
-		if (status != VALID)
+		if (status != VALID && status != INVALID)
 			break ;
 	}
 	ft_lstclear(&env, env_free);
